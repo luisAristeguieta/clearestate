@@ -103,12 +103,12 @@ function ContractsPage() {
   };
 
   return (
-    <div>
+    <div className="phase2-view">
       <PageHeader
         title="Contratos de Obras Tercerizadas"
         description="Contratos con constructoras y consultores externos. La empresa no compra materiales: solo servicios y avances por hitos."
         actions={
-          <Button variant="ink" className="rounded-full" onClick={() => setIsFormOpen((previous) => !previous)}>
+          <Button variant="default" className="rounded-full" onClick={() => setIsFormOpen((previous) => !previous)}>
             <Plus /> {isFormOpen ? "Cerrar formulario" : "Nuevo contrato"}
           </Button>
         }
@@ -118,7 +118,7 @@ function ContractsPage() {
         <form onSubmit={handleSubmit} className="surface-card mb-6 space-y-5 p-6">
           <div className="flex items-center gap-3">
             <span className="grid h-10 w-10 place-items-center rounded-full bg-secondary">
-              <FileSignature className="h-5 w-5 text-primary" />
+              <FileSignature className="h-5 w-5 text-foreground" />
             </span>
             <h2 className="text-lg font-bold tracking-tight">Registrar contrato de obra</h2>
           </div>
@@ -179,14 +179,14 @@ function ContractsPage() {
           </div>
 
           <div className="space-y-3">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-wrap items-center justify-between gap-3">
               <Label>Hitos de avance (la suma debe igualar el monto)</Label>
               <Button type="button" variant="outline" size="sm" className="rounded-full" onClick={() => setMilestones((previous) => [...previous, { ...EMPTY_MILESTONE }])}>
                 <Plus /> Añadir hito
               </Button>
             </div>
             {milestones.map((milestone, index) => (
-              <div key={index} className="grid gap-3 rounded-2xl bg-secondary p-4 sm:grid-cols-[1fr_100px_140px_auto]">
+              <div key={index} className="grid gap-3 border-t border-border py-4 lg:grid-cols-[minmax(0,1fr)_100px_140px_auto]">
                 <Input required maxLength={120} value={milestone.name} onChange={(event) => updateMilestone(index, { name: event.target.value })} placeholder="Nombre del hito" />
                 <Input required type="number" min={1} max={100} value={milestone.percent} onChange={(event) => updateMilestone(index, { percent: event.target.value })} placeholder="%" />
                 <Input required type="number" min={1} step="0.01" value={milestone.amount} onChange={(event) => updateMilestone(index, { amount: event.target.value })} placeholder="Monto" />
@@ -195,6 +195,8 @@ function ContractsPage() {
                   variant="ghost"
                   size="icon"
                   className="rounded-full"
+                  aria-label="Eliminar hito"
+                  title="Eliminar hito"
                   disabled={milestones.length === 1}
                   onClick={() => setMilestones((previous) => previous.filter((_, position) => position !== index))}
                 >
@@ -204,7 +206,7 @@ function ContractsPage() {
             ))}
           </div>
 
-          <Button type="submit" variant="ink" className="rounded-full">
+          <Button type="submit" variant="default" className="rounded-full">
             Registrar contrato
           </Button>
         </form>
@@ -219,7 +221,7 @@ function ContractsPage() {
             .reduce((sum, milestone) => sum + milestone.amount, 0);
           const progressPercent = contract.amount > 0 ? Math.round((validatedAmount / contract.amount) * 100) : 0;
           return (
-            <article key={contract.id} className="surface-card p-5">
+            <article key={contract.id} className="surface-card">
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div className="min-w-0">
                   <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
@@ -243,13 +245,13 @@ function ContractsPage() {
 
               <div className="mt-4 space-y-2">
                 {contract.milestones.map((milestone) => (
-                  <div key={milestone.id} className="flex flex-wrap items-center justify-between gap-2 rounded-2xl bg-secondary px-4 py-3">
+                  <div key={milestone.id} className="flex flex-wrap items-center justify-between gap-3 border-t border-border py-4">
                     <div>
                       <p className="text-sm font-semibold">{milestone.name}</p>
                       <p className="text-xs text-muted-foreground">{milestone.percent}% · {formatCurrency(milestone.amount)}</p>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <StatusBadge tone={milestone.status === "validated" ? "green" : milestone.status === "billed" ? "yellow" : "neutral"}>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <StatusBadge tone={milestone.status === "validated" ? "complete" : milestone.status === "billed" ? "yellow" : "neutral"}>
                         {MILESTONE_STATUS_LABELS[milestone.status]}
                       </StatusBadge>
                       {milestone.status !== "validated" && (

@@ -76,14 +76,14 @@ function LogisticsPage() {
   };
 
   return (
-    <div>
+    <div className="phase2-view">
       <PageHeader
         title="Logística y Adquisiciones"
         description="Recibe los requerimientos aprobados, invita proveedores al portal externo y adjudica con cuadro comparativo."
       />
 
       <Tabs defaultValue="bandeja">
-        <TabsList className="rounded-full">
+        <TabsList className="h-auto max-w-full flex-wrap rounded-full">
           <TabsTrigger value="bandeja" className="rounded-full">Bandeja</TabsTrigger>
           <TabsTrigger value="comparador" className="rounded-full">Cuadro comparativo</TabsTrigger>
           <TabsTrigger value="ordenes" className="rounded-full">Órdenes emitidas</TabsTrigger>
@@ -96,7 +96,7 @@ function LogisticsPage() {
           {approvedRequisitions.map((requisition) => {
             const requisitionInvitations = invitations.filter((invitation) => invitation.requisitionId === requisition.id);
             return (
-              <article key={requisition.id} className="surface-card p-5">
+              <article key={requisition.id} className="surface-card">
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div className="min-w-0">
                     <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{requisition.code} · {requisition.requesterArea}</p>
@@ -114,7 +114,7 @@ function LogisticsPage() {
                         <p className="text-xs text-muted-foreground">{invitation.supplierEmail}</p>
                       </div>
                       <div className="flex items-center gap-2">
-                        <StatusBadge tone={invitation.status === "submitted" ? "green" : "yellow"}>
+                        <StatusBadge tone={invitation.status === "submitted" ? "complete" : "yellow"}>
                           {invitation.status === "submitted" ? "Oferta recibida" : "Invitado"}
                         </StatusBadge>
                         <Button variant="outline" size="sm" className="rounded-full" onClick={() => handleCopyLink(invitation.token)}>
@@ -136,7 +136,7 @@ function LogisticsPage() {
                       <Input id={`sup-email-${requisition.id}`} required type="email" maxLength={255} value={supplierEmail} onChange={(event) => setSupplierEmail(event.target.value)} placeholder="contacto@proveedor.ec" />
                     </div>
                     <div className="flex items-end">
-                      <Button type="submit" variant="ink" className="rounded-full"><Send /> Generar enlace</Button>
+                      <Button type="submit" variant="default" className="rounded-full"><Send /> Generar enlace</Button>
                     </div>
                   </form>
                 ) : (
@@ -158,7 +158,7 @@ function LogisticsPage() {
             const submittedOffers = requisitionInvitations.filter((invitation) => invitation.status === "submitted" && invitation.offer);
             const bestPrice = Math.min(...submittedOffers.map((invitation) => invitation.offer?.price ?? Number.POSITIVE_INFINITY));
             return (
-              <article key={requisition.id} className="surface-card p-5">
+              <article key={requisition.id} className="surface-card">
                 <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{requisition.code}</p>
                 <h3 className="mt-1 text-base font-bold tracking-tight">{requisition.title}</h3>
                 <p className="mt-1 text-sm text-muted-foreground">Referencia: {formatCurrency(requisition.estimatedAmount)}</p>
@@ -167,7 +167,7 @@ function LogisticsPage() {
                   {requisitionInvitations.map((invitation) => {
                     const isBestPrice = invitation.offer?.price === bestPrice;
                     return (
-                      <div key={invitation.id} className="rounded-[18px] border border-border bg-background p-4">
+                      <div key={invitation.id} className="min-w-0 border-t border-border py-4">
                         <div className="flex items-center justify-between gap-2">
                           <p className="text-sm font-bold">{invitation.supplierName}</p>
                           {invitation.offer ? (
@@ -194,9 +194,9 @@ function LogisticsPage() {
                 {submittedOffers.length > 0 && requisition.status !== "ordered" && (
                   <div className="mt-4 space-y-3 border-t border-border pt-4">
                     {submittedOffers.map((invitation) => (
-                      <div key={invitation.id} className="grid gap-3 rounded-2xl bg-secondary p-4">
+                      <div key={invitation.id} className="grid gap-3 border-t border-border py-4">
                         <p className="flex items-center gap-2 text-sm font-semibold">
-                          <Scale className="h-4 w-4 text-primary" /> Adjudicar a {invitation.supplierName}
+                          <Scale className="h-4 w-4 text-foreground" /> Adjudicar a {invitation.supplierName}
                         </p>
                         <Textarea
                           rows={2}
@@ -205,7 +205,7 @@ function LogisticsPage() {
                           onChange={(event) => setAwardCriteria((previous) => ({ ...previous, [invitation.id]: event.target.value }))}
                           placeholder="Criterio de adjudicación (mínimo 10 caracteres)"
                         />
-                        <Button variant="ink" className="w-fit rounded-full" onClick={() => handleAdjudicate(invitation.id, invitation.supplierName)}>
+                        <Button variant="default" className="w-fit rounded-full" onClick={() => handleAdjudicate(invitation.id, invitation.supplierName)}>
                           <Award /> Emitir orden de compra / servicio
                         </Button>
                       </div>
@@ -232,7 +232,7 @@ function LogisticsPage() {
                 </div>
                 <div className="flex items-center gap-3">
                   <span className="text-base font-bold tracking-tight">{formatCurrency(order.amount)}</span>
-                  <StatusBadge tone={order.status === "invoiced" ? "green" : "blue"}>
+                  <StatusBadge tone={order.status === "invoiced" ? "complete" : "neutral"}>
                     {order.status === "issued" ? "Emitida" : order.status === "invoiced" ? "Facturada" : "Cerrada"}
                   </StatusBadge>
                 </div>

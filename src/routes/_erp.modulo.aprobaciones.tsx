@@ -55,7 +55,7 @@ function ApprovalsPage() {
   };
 
   return (
-    <div>
+    <div className="phase2-view">
       <PageHeader
         title="Bandeja de Aprobaciones"
         description="Gerencia aprueba o devuelve las solicitudes de las áreas. Cada decisión queda en la línea de tiempo del expediente."
@@ -70,7 +70,7 @@ function ApprovalsPage() {
           const line = budgetLines.find((item) => item.id === requisition.budgetLineId);
           const project = PROJECTS.find((item) => item.id === requisition.projectId);
           return (
-            <article key={requisition.id} className="surface-card p-5">
+            <article key={requisition.id} className="surface-card">
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div className="min-w-0">
                   <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
@@ -91,7 +91,7 @@ function ApprovalsPage() {
               </div>
 
               {requisition.overdraftJustification && (
-                <p className="mt-3 rounded-2xl bg-red-50 px-3 py-2 text-sm text-red-700">
+                <p className="mt-3 rounded-2xl bg-secondary px-3 py-2 text-sm text-foreground">
                   Excepción por sobregiro declarada: {requisition.overdraftJustification}
                 </p>
               )}
@@ -105,7 +105,7 @@ function ApprovalsPage() {
                   maxLength={300}
                 />
                 <div className="flex flex-wrap gap-2">
-                  <Button variant="ink" className="rounded-full" onClick={() => handleApprove(requisition.id, requisition.code)}>
+                  <Button variant="default" className="rounded-full" onClick={() => handleApprove(requisition.id, requisition.code)}>
                     <CheckCheck /> Aprobar
                   </Button>
                   <Button variant="outline" className="rounded-full" onClick={() => handleReturn(requisition.id, requisition.code)}>
@@ -131,7 +131,7 @@ function ApprovalsPage() {
                 <p className="text-sm font-semibold">{requisition.code} · {requisition.title}</p>
                 <p className="text-xs text-muted-foreground">{requisition.requesterArea} · {formatCurrency(requisition.estimatedAmount)}</p>
               </div>
-              <StatusBadge tone={requisition.status === "returned" ? "red" : requisition.status === "approved" ? "green" : "blue"}>
+              <StatusBadge tone={requisition.status === "returned" ? "attention" : requisition.status === "approved" ? "complete" : "neutral"}>
                 {REQUISITION_STATUS_LABELS[requisition.status]}
               </StatusBadge>
             </div>
