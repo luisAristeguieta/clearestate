@@ -25,15 +25,17 @@ function SidebarAmbient() {
     <svg aria-hidden="true" className="pointer-events-none absolute inset-0 h-full w-full">
       <defs>
         <pattern id="sidebar-ambient-grid" width="26" height="26" patternUnits="userSpaceOnUse">
-          <path d="M26 0H0V26" className="fill-none stroke-border" strokeWidth="1" />
+          <path d="M26 0H0V26" className="fill-none stroke-muted-foreground" strokeWidth="1" />
         </pattern>
       </defs>
       <rect width="100%" height="100%" className="fill-secondary" />
-      <rect width="100%" height="100%" fill="url(#sidebar-ambient-grid)" />
-      <rect x="-40" y="6%" width="180%" height="34%" className="fill-primary" opacity="0.07" />
-      <rect x="-30" y="52%" width="160%" height="26%" className="fill-foreground" opacity="0.04" />
-      <line x1="0" y1="44%" x2="100%" y2="30%" className="stroke-muted-foreground" strokeWidth="1.5" strokeDasharray="10 8" opacity="0.35" />
-      <circle cx="78%" cy="76%" r="70" className="fill-primary" opacity="0.06" />
+      <rect width="100%" height="100%" fill="url(#sidebar-ambient-grid)" opacity="0.16" />
+      <rect x="-60" y="-4%" width="220%" height="30%" className="fill-primary" opacity="0.13" />
+      <rect x="-40" y="26%" width="150%" height="22%" className="fill-primary" opacity="0.08" />
+      <rect x="-30" y="58%" width="170%" height="24%" className="fill-foreground" opacity="0.07" />
+      <line x1="0" y1="46%" x2="100%" y2="24%" className="stroke-primary" strokeWidth="46" opacity="0.09" />
+      <line x1="0" y1="88%" x2="100%" y2="70%" className="stroke-foreground" strokeWidth="34" opacity="0.05" />
+      <rect x="52%" y="80%" width="120" height="150" rx="18" className="fill-primary" opacity="0.10" />
     </svg>
   );
 }
