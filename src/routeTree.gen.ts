@@ -21,7 +21,10 @@ import { Route as ErpModuloAprobacionesRouteImport } from './routes/_erp.modulo.
 import { Route as ErpModuloComprobantesRouteImport } from './routes/_erp.modulo.comprobantes'
 import { Route as ErpModuloContratosRouteImport } from './routes/_erp.modulo.contratos'
 import { Route as ErpModuloLogisticaRouteImport } from './routes/_erp.modulo.logistica'
+import { Route as ErpModuloOracleRouteImport } from './routes/_erp.modulo.oracle'
+import { Route as ErpModuloPosventaRouteImport } from './routes/_erp.modulo.posventa'
 import { Route as ErpModuloRequerimientosRouteImport } from './routes/_erp.modulo.requerimientos'
+import { Route as ErpModuloPosventaCompradorSaleIdRouteImport } from './routes/_erp.modulo.posventa_.comprador.$saleId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -82,11 +85,27 @@ const ErpModuloLogisticaRoute = ErpModuloLogisticaRouteImport.update({
   path: '/modulo/logistica',
   getParentRoute: () => ErpRoute,
 } as any)
+const ErpModuloOracleRoute = ErpModuloOracleRouteImport.update({
+  id: '/modulo/oracle',
+  path: '/modulo/oracle',
+  getParentRoute: () => ErpRoute,
+} as any)
+const ErpModuloPosventaRoute = ErpModuloPosventaRouteImport.update({
+  id: '/modulo/posventa',
+  path: '/modulo/posventa',
+  getParentRoute: () => ErpRoute,
+} as any)
 const ErpModuloRequerimientosRoute = ErpModuloRequerimientosRouteImport.update({
   id: '/modulo/requerimientos',
   path: '/modulo/requerimientos',
   getParentRoute: () => ErpRoute,
 } as any)
+const ErpModuloPosventaCompradorSaleIdRoute =
+  ErpModuloPosventaCompradorSaleIdRouteImport.update({
+    id: '/modulo/posventa_/comprador/$saleId',
+    path: '/modulo/posventa/comprador/$saleId',
+    getParentRoute: () => ErpRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -100,7 +119,10 @@ export interface FileRoutesByFullPath {
   '/modulo/comprobantes': typeof ErpModuloComprobantesRoute
   '/modulo/contratos': typeof ErpModuloContratosRoute
   '/modulo/logistica': typeof ErpModuloLogisticaRoute
+  '/modulo/oracle': typeof ErpModuloOracleRoute
+  '/modulo/posventa': typeof ErpModuloPosventaRoute
   '/modulo/requerimientos': typeof ErpModuloRequerimientosRoute
+  '/modulo/posventa/comprador/$saleId': typeof ErpModuloPosventaCompradorSaleIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -114,7 +136,10 @@ export interface FileRoutesByTo {
   '/modulo/comprobantes': typeof ErpModuloComprobantesRoute
   '/modulo/contratos': typeof ErpModuloContratosRoute
   '/modulo/logistica': typeof ErpModuloLogisticaRoute
+  '/modulo/oracle': typeof ErpModuloOracleRoute
+  '/modulo/posventa': typeof ErpModuloPosventaRoute
   '/modulo/requerimientos': typeof ErpModuloRequerimientosRoute
+  '/modulo/posventa/comprador/$saleId': typeof ErpModuloPosventaCompradorSaleIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -130,7 +155,10 @@ export interface FileRoutesById {
   '/_erp/modulo/comprobantes': typeof ErpModuloComprobantesRoute
   '/_erp/modulo/contratos': typeof ErpModuloContratosRoute
   '/_erp/modulo/logistica': typeof ErpModuloLogisticaRoute
+  '/_erp/modulo/oracle': typeof ErpModuloOracleRoute
+  '/_erp/modulo/posventa': typeof ErpModuloPosventaRoute
   '/_erp/modulo/requerimientos': typeof ErpModuloRequerimientosRoute
+  '/_erp/modulo/posventa_/comprador/$saleId': typeof ErpModuloPosventaCompradorSaleIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -146,7 +174,10 @@ export interface FileRouteTypes {
     | '/modulo/comprobantes'
     | '/modulo/contratos'
     | '/modulo/logistica'
+    | '/modulo/oracle'
+    | '/modulo/posventa'
     | '/modulo/requerimientos'
+    | '/modulo/posventa/comprador/$saleId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -160,7 +191,10 @@ export interface FileRouteTypes {
     | '/modulo/comprobantes'
     | '/modulo/contratos'
     | '/modulo/logistica'
+    | '/modulo/oracle'
+    | '/modulo/posventa'
     | '/modulo/requerimientos'
+    | '/modulo/posventa/comprador/$saleId'
   id:
     | '__root__'
     | '/'
@@ -175,7 +209,10 @@ export interface FileRouteTypes {
     | '/_erp/modulo/comprobantes'
     | '/_erp/modulo/contratos'
     | '/_erp/modulo/logistica'
+    | '/_erp/modulo/oracle'
+    | '/_erp/modulo/posventa'
     | '/_erp/modulo/requerimientos'
+    | '/_erp/modulo/posventa_/comprador/$saleId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -271,11 +308,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ErpModuloLogisticaRouteImport
       parentRoute: typeof ErpRoute
     }
+    '/_erp/modulo/oracle': {
+      id: '/_erp/modulo/oracle'
+      path: '/modulo/oracle'
+      fullPath: '/modulo/oracle'
+      preLoaderRoute: typeof ErpModuloOracleRouteImport
+      parentRoute: typeof ErpRoute
+    }
+    '/_erp/modulo/posventa': {
+      id: '/_erp/modulo/posventa'
+      path: '/modulo/posventa'
+      fullPath: '/modulo/posventa'
+      preLoaderRoute: typeof ErpModuloPosventaRouteImport
+      parentRoute: typeof ErpRoute
+    }
     '/_erp/modulo/requerimientos': {
       id: '/_erp/modulo/requerimientos'
       path: '/modulo/requerimientos'
       fullPath: '/modulo/requerimientos'
       preLoaderRoute: typeof ErpModuloRequerimientosRouteImport
+      parentRoute: typeof ErpRoute
+    }
+    '/_erp/modulo/posventa_/comprador/$saleId': {
+      id: '/_erp/modulo/posventa_/comprador/$saleId'
+      path: '/modulo/posventa/comprador/$saleId'
+      fullPath: '/modulo/posventa/comprador/$saleId'
+      preLoaderRoute: typeof ErpModuloPosventaCompradorSaleIdRouteImport
       parentRoute: typeof ErpRoute
     }
   }
@@ -290,7 +348,10 @@ interface ErpRouteChildren {
   ErpModuloComprobantesRoute: typeof ErpModuloComprobantesRoute
   ErpModuloContratosRoute: typeof ErpModuloContratosRoute
   ErpModuloLogisticaRoute: typeof ErpModuloLogisticaRoute
+  ErpModuloOracleRoute: typeof ErpModuloOracleRoute
+  ErpModuloPosventaRoute: typeof ErpModuloPosventaRoute
   ErpModuloRequerimientosRoute: typeof ErpModuloRequerimientosRoute
+  ErpModuloPosventaCompradorSaleIdRoute: typeof ErpModuloPosventaCompradorSaleIdRoute
 }
 
 const ErpRouteChildren: ErpRouteChildren = {
@@ -302,7 +363,10 @@ const ErpRouteChildren: ErpRouteChildren = {
   ErpModuloComprobantesRoute: ErpModuloComprobantesRoute,
   ErpModuloContratosRoute: ErpModuloContratosRoute,
   ErpModuloLogisticaRoute: ErpModuloLogisticaRoute,
+  ErpModuloOracleRoute: ErpModuloOracleRoute,
+  ErpModuloPosventaRoute: ErpModuloPosventaRoute,
   ErpModuloRequerimientosRoute: ErpModuloRequerimientosRoute,
+  ErpModuloPosventaCompradorSaleIdRoute: ErpModuloPosventaCompradorSaleIdRoute,
 }
 
 const ErpRouteWithChildren = ErpRoute._addFileChildren(ErpRouteChildren)
