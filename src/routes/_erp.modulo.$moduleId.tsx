@@ -1,0 +1,43 @@
+import { Link, createFileRoute, notFound } from "@tanstack/react-router";
+import { ArrowLeft, Clock } from "lucide-react";
+
+import { PageHeader } from "@/components/PageHeader";
+import { Button } from "@/components/ui/button";
+import { findModuleItem } from "@/config/erpConfig";
+
+export const Route = createFileRoute("/_erp/modulo/$moduleId")({
+  loader: ({ params }) => {
+    const moduleItem = findModuleItem(params.moduleId);
+    if (!moduleItem) throw notFound();
+    return { label: moduleItem.label, code: moduleItem.code };
+  },
+  head: ({ loaderData }) => ({
+    meta: [
+      { title: `${loaderData?.label ?? "Módulo"} · Clear Minds ERP` },
+      { name: "description", content: "Módulo del ERP inmobiliario programado para próximas fases." },
+      { property: "og:title", content: `${loaderData?.label ?? "Módulo"} · Clear Minds ERP` },
+      { property: "og:description", content: "Módulo programado para próximas fases." },
+    ],
+  }),
+  component: ModulePage,
+});
+
+function ModulePage() {
+  const { moduleId } = Route.useParams();
+  const moduleItem = findModuleItem(moduleId);
+  if (!moduleItem) return null;
+  const ModuleIcon = moduleItem.icon;
+
+  return (
+    <div>
+      <PageHeader code={moduleItem.code} title={moduleItem.label} description="Este módulo forma parte de las siguientes fases del ERP." />
+      <div className="surface-card flex flex-col items-center py-16 text-center">
+        <span className="grid h-16 w-16 place-items-center rounded-full bg-secondary"><ModuleIcon className="h-7 w-7 text-primary" /></span>
+        <span className="pill-badge mt-6 bg-highlight text-highlight-foreground"><Clock className="h-3 w-3" /> PRÓXIMA FASE</span>
+        <h2 className="mt-4 text-2xl font-bold tracking-tight">{moduleItem.label} estará disponible pronto</h2>
+        <p className="mt-2 max-w-md text-muted-foreground">La Fase 1 cubre Tablero, Proyectos y Fases y Presupuestos.</p>
+        <Button asChild variant="ink" className="mt-6"><Link to="/dashboard"><ArrowLeft /> Ir al tablero</Link></Button>
+      </div>
+    </div>
+  );
+}
