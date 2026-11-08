@@ -21,5 +21,6 @@ const VIEW_TITLES: Record<string, string> = {
 
 export function getViewTitle(pathname: string): string {
   const normalizedPath = pathname.length > 1 ? pathname.replace(/\/+$/, "") : pathname;
+  if (normalizedPath.startsWith("/portal-proveedor")) return `Portal del Proveedor · ${BRAND_NAME}`;
   return `${VIEW_TITLES[normalizedPath] ?? "Página no encontrada"} · ${BRAND_NAME}`;
 }
