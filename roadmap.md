@@ -1,0 +1,2 @@
+- [x] Redesign the dashboard with a full-width available-balance tile, interactive project selector, and unified priority actions.
+- [x] Verify financial totals, priority ordering, project selection, and desktop/mobile presentation.

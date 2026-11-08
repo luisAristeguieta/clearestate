@@ -22,6 +22,8 @@ export const Route = createFileRoute("/login")({
       { name: "description", content: "Accede al ERP de gestión inmobiliaria integrada de Clear Minds Consultores." },
       { property: "og:title", content: "Iniciar sesión · Clear Minds ERP" },
       { property: "og:description", content: "Controla presupuestos, adquisiciones y posventa de tus proyectos de lotes." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: LoginPage,

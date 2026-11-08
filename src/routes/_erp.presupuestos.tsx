@@ -16,6 +16,8 @@ export const Route = createFileRoute("/_erp/presupuestos")({
       { name: "description", content: "Matriz presupuestaria con montos aprobados, comprometidos, ejecutados y disponibles." },
       { property: "og:title", content: "Presupuestos · Clear Minds ERP" },
       { property: "og:description", content: "Partidas, ajustes e historial presupuestario." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: BudgetsPage,

@@ -14,9 +14,11 @@ export const Route = createFileRoute("/_erp/modulo/$moduleId")({
   head: ({ loaderData }) => ({
     meta: [
       { title: `${loaderData?.label ?? "Módulo"} · Clear Minds ERP` },
-      { name: "description", content: "Módulo del ERP inmobiliario programado para próximas fases." },
+      { name: "description", content: `${loaderData?.label ?? "Módulo"} del ERP inmobiliario programado para próximas fases.` },
       { property: "og:title", content: `${loaderData?.label ?? "Módulo"} · Clear Minds ERP` },
-      { property: "og:description", content: "Módulo programado para próximas fases." },
+      { property: "og:description", content: `${loaderData?.label ?? "Módulo"} de Clear Minds programado para próximas fases.` },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: ModulePage,
