@@ -45,9 +45,17 @@ export function ModernSidebar({ isCollapsed, onToggleCollapse, onSignOut }: Mode
   const currentPath = useRouterState({ select: (routerState) => routerState.location.pathname });
 
   return (
-    <aside className={cn("sticky top-0 flex h-screen shrink-0 flex-col border-r border-border bg-sidebar transition-[width] duration-300", isCollapsed ? "w-20" : "w-64")}>
-      <div className={cn("flex h-[72px] items-center border-b border-border px-5", isCollapsed && "justify-center px-0")}>
-        <BrandLogo isCompact={isCollapsed} />
+    <aside className={cn("sticky top-0 flex h-screen shrink-0 flex-col border-r border-border/60 bg-sidebar/55 backdrop-blur-xl transition-[width] duration-300", isCollapsed ? "w-20" : "w-64")}>
+      <div className={cn("flex h-[72px] items-center gap-2 border-b border-border/60 px-5", isCollapsed && "justify-center px-0")}>
+        {!isCollapsed && <BrandLogo />}
+        <button
+          type="button"
+          onClick={onToggleCollapse}
+          aria-label={isCollapsed ? "Desplegar menú" : "Colapsar menú"}
+          className={cn("grid h-9 w-9 shrink-0 place-items-center rounded-full border border-border/60 bg-background/60 text-foreground transition-colors hover:bg-secondary", !isCollapsed && "ml-auto")}
+        >
+          {isCollapsed ? <ChevronsRight className="h-[18px] w-[18px]" /> : <ChevronsLeft className="h-[18px] w-[18px]" />}
+        </button>
       </div>
 
       <nav className="flex-1 space-y-5 overflow-y-auto px-3 py-5">
@@ -65,11 +73,7 @@ export function ModernSidebar({ isCollapsed, onToggleCollapse, onSignOut }: Mode
         ))}
       </nav>
 
-      <div className="space-y-1 border-t border-border px-3 py-4">
-        <button type="button" onClick={onToggleCollapse} className={cn("flex h-10 w-full items-center gap-3 rounded-full px-3 text-sm font-medium text-foreground hover:bg-secondary", isCollapsed && "justify-center px-0")}>
-          {isCollapsed ? <ChevronsRight className="h-[18px] w-[18px]" /> : <ChevronsLeft className="h-[18px] w-[18px]" />}
-          {!isCollapsed && "Colapsar menú"}
-        </button>
+      <div className="space-y-1 border-t border-border/60 px-3 py-4">
         <button type="button" onClick={onSignOut} className={cn("flex h-10 w-full items-center gap-3 rounded-full px-3 text-sm font-medium text-foreground hover:bg-secondary", isCollapsed && "justify-center px-0")}>
           <LogOut className="h-[18px] w-[18px]" />
           {!isCollapsed && "Cerrar sesión"}
