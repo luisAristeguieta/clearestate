@@ -9,7 +9,7 @@ export const Route = createFileRoute("/_erp/modulo/$moduleId")({
   loader: ({ params }) => {
     const moduleItem = findModuleItem(params.moduleId);
     if (!moduleItem) throw notFound();
-    return { label: moduleItem.label, code: moduleItem.code };
+    return { label: moduleItem.label };
   },
   head: ({ loaderData }) => ({
     meta: [
@@ -30,7 +30,7 @@ function ModulePage() {
 
   return (
     <div>
-      <PageHeader code={moduleItem.code} title={moduleItem.label} description="Este módulo forma parte de las siguientes fases del ERP." />
+      <PageHeader title={moduleItem.label} description="Este módulo forma parte de las siguientes fases del ERP." />
       <div className="surface-card flex flex-col items-center py-16 text-center">
         <span className="grid h-16 w-16 place-items-center rounded-full bg-secondary"><ModuleIcon className="h-7 w-7 text-primary" /></span>
         <span className="pill-badge mt-6 bg-highlight text-highlight-foreground"><Clock className="h-3 w-3" /> PRÓXIMA FASE</span>
