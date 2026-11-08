@@ -65,11 +65,6 @@ function LoginPage() {
         <div className="relative max-w-2xl">
           <h1 className="display-title text-4xl text-primary-foreground xl:text-5xl">Centraliza presupuestos, compras y posventa en un solo lugar.</h1>
           <p className="mt-5 text-base text-primary-foreground/85">Proyectos París y Sagaleta · Quito, Ecuador</p>
-          <div className="mt-8 flex items-center gap-2" aria-hidden="true">
-            <span className="h-1.5 w-8 rounded-full bg-primary-foreground" />
-            <span className="h-1.5 w-1.5 rounded-full bg-primary-foreground/50" />
-            <span className="h-1.5 w-1.5 rounded-full bg-primary-foreground/50" />
-          </div>
         </div>
       </section>
 
