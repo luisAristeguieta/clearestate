@@ -7,7 +7,7 @@ const VIEW_TITLES: Record<string, string> = {
   "/presupuestos": "Presupuestos y Proyectos",
   "/proyectos": "Presupuestos y Proyectos",
   "/modulo/requerimientos": "Requerimientos y Solicitudes",
-  "/modulo/aprobaciones": "Requerimientos y Solicitudes",
+  "/modulo/aprobaciones": "Aprobaciones Gerenciales",
   "/modulo/logistica": "Adquisiciones y Proveedores",
   "/modulo/contratos": "Adquisiciones y Proveedores",
   "/modulo/comprobantes": "Ejecución de Gastos",
@@ -21,5 +21,6 @@ const VIEW_TITLES: Record<string, string> = {
 
 export function getViewTitle(pathname: string): string {
   const normalizedPath = pathname.length > 1 ? pathname.replace(/\/+$/, "") : pathname;
+  if (normalizedPath.startsWith("/portal-proveedor")) return `Portal del Proveedor · ${BRAND_NAME}`;
   return `${VIEW_TITLES[normalizedPath] ?? "Página no encontrada"} · ${BRAND_NAME}`;
 }

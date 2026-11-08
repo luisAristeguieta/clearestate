@@ -15,7 +15,13 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as ErpDashboardRouteImport } from './routes/_erp.dashboard'
 import { Route as ErpPresupuestosRouteImport } from './routes/_erp.presupuestos'
 import { Route as ErpProyectosRouteImport } from './routes/_erp.proyectos'
+import { Route as PortalProveedorTokenRouteImport } from './routes/portal-proveedor.$token'
 import { Route as ErpModuloModuleIdRouteImport } from './routes/_erp.modulo.$moduleId'
+import { Route as ErpModuloAprobacionesRouteImport } from './routes/_erp.modulo.aprobaciones'
+import { Route as ErpModuloComprobantesRouteImport } from './routes/_erp.modulo.comprobantes'
+import { Route as ErpModuloContratosRouteImport } from './routes/_erp.modulo.contratos'
+import { Route as ErpModuloLogisticaRouteImport } from './routes/_erp.modulo.logistica'
+import { Route as ErpModuloRequerimientosRouteImport } from './routes/_erp.modulo.requerimientos'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -46,9 +52,39 @@ const ErpProyectosRoute = ErpProyectosRouteImport.update({
   path: '/proyectos',
   getParentRoute: () => ErpRoute,
 } as any)
+const PortalProveedorTokenRoute = PortalProveedorTokenRouteImport.update({
+  id: '/portal-proveedor/$token',
+  path: '/portal-proveedor/$token',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ErpModuloModuleIdRoute = ErpModuloModuleIdRouteImport.update({
   id: '/modulo/$moduleId',
   path: '/modulo/$moduleId',
+  getParentRoute: () => ErpRoute,
+} as any)
+const ErpModuloAprobacionesRoute = ErpModuloAprobacionesRouteImport.update({
+  id: '/modulo/aprobaciones',
+  path: '/modulo/aprobaciones',
+  getParentRoute: () => ErpRoute,
+} as any)
+const ErpModuloComprobantesRoute = ErpModuloComprobantesRouteImport.update({
+  id: '/modulo/comprobantes',
+  path: '/modulo/comprobantes',
+  getParentRoute: () => ErpRoute,
+} as any)
+const ErpModuloContratosRoute = ErpModuloContratosRouteImport.update({
+  id: '/modulo/contratos',
+  path: '/modulo/contratos',
+  getParentRoute: () => ErpRoute,
+} as any)
+const ErpModuloLogisticaRoute = ErpModuloLogisticaRouteImport.update({
+  id: '/modulo/logistica',
+  path: '/modulo/logistica',
+  getParentRoute: () => ErpRoute,
+} as any)
+const ErpModuloRequerimientosRoute = ErpModuloRequerimientosRouteImport.update({
+  id: '/modulo/requerimientos',
+  path: '/modulo/requerimientos',
   getParentRoute: () => ErpRoute,
 } as any)
 
@@ -58,7 +94,13 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof ErpDashboardRoute
   '/presupuestos': typeof ErpPresupuestosRoute
   '/proyectos': typeof ErpProyectosRoute
+  '/portal-proveedor/$token': typeof PortalProveedorTokenRoute
   '/modulo/$moduleId': typeof ErpModuloModuleIdRoute
+  '/modulo/aprobaciones': typeof ErpModuloAprobacionesRoute
+  '/modulo/comprobantes': typeof ErpModuloComprobantesRoute
+  '/modulo/contratos': typeof ErpModuloContratosRoute
+  '/modulo/logistica': typeof ErpModuloLogisticaRoute
+  '/modulo/requerimientos': typeof ErpModuloRequerimientosRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -66,7 +108,13 @@ export interface FileRoutesByTo {
   '/dashboard': typeof ErpDashboardRoute
   '/presupuestos': typeof ErpPresupuestosRoute
   '/proyectos': typeof ErpProyectosRoute
+  '/portal-proveedor/$token': typeof PortalProveedorTokenRoute
   '/modulo/$moduleId': typeof ErpModuloModuleIdRoute
+  '/modulo/aprobaciones': typeof ErpModuloAprobacionesRoute
+  '/modulo/comprobantes': typeof ErpModuloComprobantesRoute
+  '/modulo/contratos': typeof ErpModuloContratosRoute
+  '/modulo/logistica': typeof ErpModuloLogisticaRoute
+  '/modulo/requerimientos': typeof ErpModuloRequerimientosRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -76,7 +124,13 @@ export interface FileRoutesById {
   '/_erp/dashboard': typeof ErpDashboardRoute
   '/_erp/presupuestos': typeof ErpPresupuestosRoute
   '/_erp/proyectos': typeof ErpProyectosRoute
+  '/portal-proveedor/$token': typeof PortalProveedorTokenRoute
   '/_erp/modulo/$moduleId': typeof ErpModuloModuleIdRoute
+  '/_erp/modulo/aprobaciones': typeof ErpModuloAprobacionesRoute
+  '/_erp/modulo/comprobantes': typeof ErpModuloComprobantesRoute
+  '/_erp/modulo/contratos': typeof ErpModuloContratosRoute
+  '/_erp/modulo/logistica': typeof ErpModuloLogisticaRoute
+  '/_erp/modulo/requerimientos': typeof ErpModuloRequerimientosRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -86,7 +140,13 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/presupuestos'
     | '/proyectos'
+    | '/portal-proveedor/$token'
     | '/modulo/$moduleId'
+    | '/modulo/aprobaciones'
+    | '/modulo/comprobantes'
+    | '/modulo/contratos'
+    | '/modulo/logistica'
+    | '/modulo/requerimientos'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -94,7 +154,13 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/presupuestos'
     | '/proyectos'
+    | '/portal-proveedor/$token'
     | '/modulo/$moduleId'
+    | '/modulo/aprobaciones'
+    | '/modulo/comprobantes'
+    | '/modulo/contratos'
+    | '/modulo/logistica'
+    | '/modulo/requerimientos'
   id:
     | '__root__'
     | '/'
@@ -103,13 +169,20 @@ export interface FileRouteTypes {
     | '/_erp/dashboard'
     | '/_erp/presupuestos'
     | '/_erp/proyectos'
+    | '/portal-proveedor/$token'
     | '/_erp/modulo/$moduleId'
+    | '/_erp/modulo/aprobaciones'
+    | '/_erp/modulo/comprobantes'
+    | '/_erp/modulo/contratos'
+    | '/_erp/modulo/logistica'
+    | '/_erp/modulo/requerimientos'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ErpRoute: typeof ErpRouteWithChildren
   LoginRoute: typeof LoginRoute
+  PortalProveedorTokenRoute: typeof PortalProveedorTokenRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -156,11 +229,53 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ErpProyectosRouteImport
       parentRoute: typeof ErpRoute
     }
+    '/portal-proveedor/$token': {
+      id: '/portal-proveedor/$token'
+      path: '/portal-proveedor/$token'
+      fullPath: '/portal-proveedor/$token'
+      preLoaderRoute: typeof PortalProveedorTokenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_erp/modulo/$moduleId': {
       id: '/_erp/modulo/$moduleId'
       path: '/modulo/$moduleId'
       fullPath: '/modulo/$moduleId'
       preLoaderRoute: typeof ErpModuloModuleIdRouteImport
+      parentRoute: typeof ErpRoute
+    }
+    '/_erp/modulo/aprobaciones': {
+      id: '/_erp/modulo/aprobaciones'
+      path: '/modulo/aprobaciones'
+      fullPath: '/modulo/aprobaciones'
+      preLoaderRoute: typeof ErpModuloAprobacionesRouteImport
+      parentRoute: typeof ErpRoute
+    }
+    '/_erp/modulo/comprobantes': {
+      id: '/_erp/modulo/comprobantes'
+      path: '/modulo/comprobantes'
+      fullPath: '/modulo/comprobantes'
+      preLoaderRoute: typeof ErpModuloComprobantesRouteImport
+      parentRoute: typeof ErpRoute
+    }
+    '/_erp/modulo/contratos': {
+      id: '/_erp/modulo/contratos'
+      path: '/modulo/contratos'
+      fullPath: '/modulo/contratos'
+      preLoaderRoute: typeof ErpModuloContratosRouteImport
+      parentRoute: typeof ErpRoute
+    }
+    '/_erp/modulo/logistica': {
+      id: '/_erp/modulo/logistica'
+      path: '/modulo/logistica'
+      fullPath: '/modulo/logistica'
+      preLoaderRoute: typeof ErpModuloLogisticaRouteImport
+      parentRoute: typeof ErpRoute
+    }
+    '/_erp/modulo/requerimientos': {
+      id: '/_erp/modulo/requerimientos'
+      path: '/modulo/requerimientos'
+      fullPath: '/modulo/requerimientos'
+      preLoaderRoute: typeof ErpModuloRequerimientosRouteImport
       parentRoute: typeof ErpRoute
     }
   }
@@ -171,6 +286,11 @@ interface ErpRouteChildren {
   ErpPresupuestosRoute: typeof ErpPresupuestosRoute
   ErpProyectosRoute: typeof ErpProyectosRoute
   ErpModuloModuleIdRoute: typeof ErpModuloModuleIdRoute
+  ErpModuloAprobacionesRoute: typeof ErpModuloAprobacionesRoute
+  ErpModuloComprobantesRoute: typeof ErpModuloComprobantesRoute
+  ErpModuloContratosRoute: typeof ErpModuloContratosRoute
+  ErpModuloLogisticaRoute: typeof ErpModuloLogisticaRoute
+  ErpModuloRequerimientosRoute: typeof ErpModuloRequerimientosRoute
 }
 
 const ErpRouteChildren: ErpRouteChildren = {
@@ -178,6 +298,11 @@ const ErpRouteChildren: ErpRouteChildren = {
   ErpPresupuestosRoute: ErpPresupuestosRoute,
   ErpProyectosRoute: ErpProyectosRoute,
   ErpModuloModuleIdRoute: ErpModuloModuleIdRoute,
+  ErpModuloAprobacionesRoute: ErpModuloAprobacionesRoute,
+  ErpModuloComprobantesRoute: ErpModuloComprobantesRoute,
+  ErpModuloContratosRoute: ErpModuloContratosRoute,
+  ErpModuloLogisticaRoute: ErpModuloLogisticaRoute,
+  ErpModuloRequerimientosRoute: ErpModuloRequerimientosRoute,
 }
 
 const ErpRouteWithChildren = ErpRoute._addFileChildren(ErpRouteChildren)
@@ -186,6 +311,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ErpRoute: ErpRouteWithChildren,
   LoginRoute: LoginRoute,
+  PortalProveedorTokenRoute: PortalProveedorTokenRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
