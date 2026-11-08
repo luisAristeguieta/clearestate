@@ -6,9 +6,9 @@ export const Route = createFileRoute("/")({
   },
   head: () => ({
     meta: [
-      { title: "Clear Minds ERP Inmobiliario" },
+      { title: "Inicio · ClearEstate ERP" },
       { name: "description", content: "Backoffice inmobiliario para Proyecto París y Proyecto Sagaleta." },
-      { property: "og:title", content: "Clear Minds ERP Inmobiliario" },
+      { property: "og:title", content: "Inicio · ClearEstate ERP" },
       { property: "og:description", content: "Backoffice inmobiliario para Proyecto París y Proyecto Sagaleta." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

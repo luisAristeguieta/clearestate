@@ -11,9 +11,9 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/_erp/dashboard")({
   head: () => ({
     meta: [
-      { title: "Tablero Inmobiliario · Clear Minds ERP" },
+      { title: "Centro de Control · ClearEstate ERP" },
       { name: "description", content: "Saldo disponible, inversión de los proyectos París y Sagaleta y acciones prioritarias en Quito, Ecuador." },
-      { property: "og:title", content: "Tablero Inmobiliario · Clear Minds ERP" },
+      { property: "og:title", content: "Centro de Control · ClearEstate ERP" },
       { property: "og:description", content: "Control financiero y seguimiento inmobiliario de París y Sagaleta en Quito." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

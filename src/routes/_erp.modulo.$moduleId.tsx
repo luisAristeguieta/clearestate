@@ -4,6 +4,7 @@ import { ArrowLeft, Clock } from "lucide-react";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/button";
 import { findModuleItem } from "@/config/erpConfig";
+import { getViewTitle } from "@/config/brandConfig";
 
 export const Route = createFileRoute("/_erp/modulo/$moduleId")({
   loader: ({ params }) => {
@@ -11,12 +12,12 @@ export const Route = createFileRoute("/_erp/modulo/$moduleId")({
     if (!moduleItem) throw notFound();
     return { label: moduleItem.label };
   },
-  head: ({ loaderData }) => ({
+  head: ({ loaderData, params }) => ({
     meta: [
-      { title: `${loaderData?.label ?? "Módulo"} · Clear Minds ERP` },
+      { title: getViewTitle(`/modulo/${params.moduleId}`) },
       { name: "description", content: `${loaderData?.label ?? "Módulo"} del ERP inmobiliario programado para próximas fases.` },
-      { property: "og:title", content: `${loaderData?.label ?? "Módulo"} · Clear Minds ERP` },
-      { property: "og:description", content: `${loaderData?.label ?? "Módulo"} de Clear Minds programado para próximas fases.` },
+      { property: "og:title", content: getViewTitle(`/modulo/${params.moduleId}`) },
+      { property: "og:description", content: `${loaderData?.label ?? "Módulo"} de ClearEstate programado para próximas fases.` },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
