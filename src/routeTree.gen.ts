@@ -15,7 +15,9 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as ErpDashboardRouteImport } from './routes/_erp.dashboard'
 import { Route as ErpPresupuestosRouteImport } from './routes/_erp.presupuestos'
 import { Route as ErpProyectosRouteImport } from './routes/_erp.proyectos'
+import { Route as PortalProveedorTokenRouteImport } from './routes/portal-proveedor.$token'
 import { Route as ErpModuloModuleIdRouteImport } from './routes/_erp.modulo.$moduleId'
+import { Route as ErpModuloAprobacionesRouteImport } from './routes/_erp.modulo.aprobaciones'
 import { Route as ErpModuloRequerimientosRouteImport } from './routes/_erp.modulo.requerimientos'
 
 const IndexRoute = IndexRouteImport.update({
@@ -47,9 +49,19 @@ const ErpProyectosRoute = ErpProyectosRouteImport.update({
   path: '/proyectos',
   getParentRoute: () => ErpRoute,
 } as any)
+const PortalProveedorTokenRoute = PortalProveedorTokenRouteImport.update({
+  id: '/portal-proveedor/$token',
+  path: '/portal-proveedor/$token',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ErpModuloModuleIdRoute = ErpModuloModuleIdRouteImport.update({
   id: '/modulo/$moduleId',
   path: '/modulo/$moduleId',
+  getParentRoute: () => ErpRoute,
+} as any)
+const ErpModuloAprobacionesRoute = ErpModuloAprobacionesRouteImport.update({
+  id: '/modulo/aprobaciones',
+  path: '/modulo/aprobaciones',
   getParentRoute: () => ErpRoute,
 } as any)
 const ErpModuloRequerimientosRoute = ErpModuloRequerimientosRouteImport.update({
@@ -64,7 +76,9 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof ErpDashboardRoute
   '/presupuestos': typeof ErpPresupuestosRoute
   '/proyectos': typeof ErpProyectosRoute
+  '/portal-proveedor/$token': typeof PortalProveedorTokenRoute
   '/modulo/$moduleId': typeof ErpModuloModuleIdRoute
+  '/modulo/aprobaciones': typeof ErpModuloAprobacionesRoute
   '/modulo/requerimientos': typeof ErpModuloRequerimientosRoute
 }
 export interface FileRoutesByTo {
@@ -73,7 +87,9 @@ export interface FileRoutesByTo {
   '/dashboard': typeof ErpDashboardRoute
   '/presupuestos': typeof ErpPresupuestosRoute
   '/proyectos': typeof ErpProyectosRoute
+  '/portal-proveedor/$token': typeof PortalProveedorTokenRoute
   '/modulo/$moduleId': typeof ErpModuloModuleIdRoute
+  '/modulo/aprobaciones': typeof ErpModuloAprobacionesRoute
   '/modulo/requerimientos': typeof ErpModuloRequerimientosRoute
 }
 export interface FileRoutesById {
@@ -84,7 +100,9 @@ export interface FileRoutesById {
   '/_erp/dashboard': typeof ErpDashboardRoute
   '/_erp/presupuestos': typeof ErpPresupuestosRoute
   '/_erp/proyectos': typeof ErpProyectosRoute
+  '/portal-proveedor/$token': typeof PortalProveedorTokenRoute
   '/_erp/modulo/$moduleId': typeof ErpModuloModuleIdRoute
+  '/_erp/modulo/aprobaciones': typeof ErpModuloAprobacionesRoute
   '/_erp/modulo/requerimientos': typeof ErpModuloRequerimientosRoute
 }
 export interface FileRouteTypes {
@@ -95,7 +113,9 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/presupuestos'
     | '/proyectos'
+    | '/portal-proveedor/$token'
     | '/modulo/$moduleId'
+    | '/modulo/aprobaciones'
     | '/modulo/requerimientos'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -104,7 +124,9 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/presupuestos'
     | '/proyectos'
+    | '/portal-proveedor/$token'
     | '/modulo/$moduleId'
+    | '/modulo/aprobaciones'
     | '/modulo/requerimientos'
   id:
     | '__root__'
@@ -114,7 +136,9 @@ export interface FileRouteTypes {
     | '/_erp/dashboard'
     | '/_erp/presupuestos'
     | '/_erp/proyectos'
+    | '/portal-proveedor/$token'
     | '/_erp/modulo/$moduleId'
+    | '/_erp/modulo/aprobaciones'
     | '/_erp/modulo/requerimientos'
   fileRoutesById: FileRoutesById
 }
@@ -122,6 +146,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ErpRoute: typeof ErpRouteWithChildren
   LoginRoute: typeof LoginRoute
+  PortalProveedorTokenRoute: typeof PortalProveedorTokenRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -168,11 +193,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ErpProyectosRouteImport
       parentRoute: typeof ErpRoute
     }
+    '/portal-proveedor/$token': {
+      id: '/portal-proveedor/$token'
+      path: '/portal-proveedor/$token'
+      fullPath: '/portal-proveedor/$token'
+      preLoaderRoute: typeof PortalProveedorTokenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_erp/modulo/$moduleId': {
       id: '/_erp/modulo/$moduleId'
       path: '/modulo/$moduleId'
       fullPath: '/modulo/$moduleId'
       preLoaderRoute: typeof ErpModuloModuleIdRouteImport
+      parentRoute: typeof ErpRoute
+    }
+    '/_erp/modulo/aprobaciones': {
+      id: '/_erp/modulo/aprobaciones'
+      path: '/modulo/aprobaciones'
+      fullPath: '/modulo/aprobaciones'
+      preLoaderRoute: typeof ErpModuloAprobacionesRouteImport
       parentRoute: typeof ErpRoute
     }
     '/_erp/modulo/requerimientos': {
@@ -190,6 +229,7 @@ interface ErpRouteChildren {
   ErpPresupuestosRoute: typeof ErpPresupuestosRoute
   ErpProyectosRoute: typeof ErpProyectosRoute
   ErpModuloModuleIdRoute: typeof ErpModuloModuleIdRoute
+  ErpModuloAprobacionesRoute: typeof ErpModuloAprobacionesRoute
   ErpModuloRequerimientosRoute: typeof ErpModuloRequerimientosRoute
 }
 
@@ -198,6 +238,7 @@ const ErpRouteChildren: ErpRouteChildren = {
   ErpPresupuestosRoute: ErpPresupuestosRoute,
   ErpProyectosRoute: ErpProyectosRoute,
   ErpModuloModuleIdRoute: ErpModuloModuleIdRoute,
+  ErpModuloAprobacionesRoute: ErpModuloAprobacionesRoute,
   ErpModuloRequerimientosRoute: ErpModuloRequerimientosRoute,
 }
 
@@ -207,6 +248,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ErpRoute: ErpRouteWithChildren,
   LoginRoute: LoginRoute,
+  PortalProveedorTokenRoute: PortalProveedorTokenRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
