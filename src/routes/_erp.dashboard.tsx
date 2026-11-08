@@ -22,8 +22,15 @@ export const Route = createFileRoute("/_erp/dashboard")({
   component: DashboardPage,
 });
 
+export function getTimeGreeting(hour: number): string {
+  if (hour >= 5 && hour < 12) return "Buenos días";
+  if (hour >= 12 && hour < 19) return "Buenas tardes";
+  return "Buenas noches";
+}
+
 function DashboardPage() {
-  const { budgetLines, projectFilter } = useErp();
+  const { budgetLines, projectFilter, activeRole } = useErp();
+  const greeting = `${getTimeGreeting(new Date().getHours())}, ${activeRole?.personName ?? ""} · ${activeRole?.jobTitle ?? ""}`;
   const [selectedProjectId, setSelectedProjectId] = useState<ProjectId>("paris");
   const visibleLines = budgetLines.filter((line) => projectFilter === "all" || line.projectId === projectFilter);
   const visibleProjects = PROJECTS.filter((project) => projectFilter === "all" || project.id === projectFilter);
