@@ -1,5 +1,5 @@
 import { calculateAvailableBalance, type BudgetLine, type ProjectFilter, type ProjectId, type RoleId } from "@/config/erpConfig";
-import type { ExpenseInvoice, WorkContract } from "@/config/phase2Config";
+import type { ExpenseInvoice, PurchaseOrder, WorkContract } from "@/config/phase2Config";
 
 export interface OracleSale {
   id: string;
@@ -104,13 +104,14 @@ export function matchesReportDate(date: string, filters: Pick<ReportFilters, "fr
   const day = date.slice(0, 10);
   return (!filters.from || day >= filters.from) && (!filters.to || day <= filters.to);
 }
-export function buildManagementReport(lines: BudgetLine[], invoices: ExpenseInvoice[], contracts: WorkContract[], sales: OracleSale[], cases: AfterSalesCase[], filters: ReportFilters) {
+export function buildManagementReport(lines: BudgetLine[], invoices: ExpenseInvoice[], orders: PurchaseOrder[], contracts: WorkContract[], sales: OracleSale[], cases: AfterSalesCase[], filters: ReportFilters) {
   const selectedLines = lines.filter((line) => (filters.projectId === "all" || line.projectId === filters.projectId) && (filters.area === "all" || line.area === filters.area));
   const lineIds = new Set(selectedLines.map((line) => line.id));
   const selectedSales = sales.filter((sale) => filters.projectId === "all" || sale.projectId === filters.projectId);
   const saleIds = new Set(selectedSales.map((sale) => sale.id));
   const selectedCases = cases.filter((record) => saleIds.has(record.saleId) && matchesReportDate(record.createdAt, filters));
   const totals = selectedLines.reduce((summary, line) => ({ approved: summary.approved + line.approved, committed: summary.committed + line.committed, executed: summary.executed + line.executed, available: summary.available + calculateAvailableBalance(line) }), { approved: 0, committed: 0, executed: 0, available: 0 });
-  const contractExecution = contracts.filter((contract) => lineIds.has(contract.budgetLineId)).flatMap((contract) => contract.milestones).filter((milestone) => milestone.status === "validated" && milestone.validatedAt && matchesReportDate(milestone.validatedAt, filters)).reduce((sum, milestone) => sum + milestone.amount, 0);
-  return { ...totals, selectedLines, selectedSales, selectedCases, contractExecution, invoices: invoices.filter((invoice) => invoice.status === "validated" && matchesReportDate(invoice.reviewedAt ?? invoice.uploadedAt, filters)), delivered: selectedCases.filter((record) => record.status === "delivered").length };
+  const selectedOrders = new Set(orders.filter((order) => lineIds.has(order.budgetLineId)).map((order) => order.id));
+  const undatedContractExecution = contracts.filter((contract) => lineIds.has(contract.budgetLineId)).flatMap((contract) => contract.milestones).filter((milestone) => milestone.status === "validated").reduce((sum, milestone) => sum + milestone.amount, 0);
+  return { ...totals, selectedLines, selectedSales, selectedCases, undatedContractExecution, invoices: invoices.filter((invoice) => selectedOrders.has(invoice.purchaseOrderId) && invoice.status === "validated" && matchesReportDate(invoice.reviewedAt ?? invoice.uploadedAt, filters)), delivered: selectedCases.filter((record) => record.status === "delivered").length };
 }

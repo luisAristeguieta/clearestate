@@ -3,7 +3,9 @@ import { advanceCampaignDelivery, buildCampaignDeliveries, matchesReportDate, re
 
 describe("Oracle → Posventa", () => {
   it("creates cases only for balances exactly zero", () => {
-    const sales = [0, 0.01, -1, 18500].map((balance, index) => ({ ...SEED_ORACLE_SALES[0], id: `sale-${index}`, balance }));
+    const fixture = SEED_ORACLE_SALES[0];
+    if (!fixture) throw new Error("Missing fixture");
+    const sales = [0, 0.01, -1, 18500].map((balance, index) => ({ ...fixture, id: `sale-${index}`, balance }));
     expect(triggerAfterSalesSync(sales, [], "2026-11-08").map((record) => record.saleId)).toEqual(["sale-0"]);
   });
   it("does not duplicate a case on repeated sync or duplicated source rows", () => {
