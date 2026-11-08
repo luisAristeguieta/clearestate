@@ -7,7 +7,7 @@ const VIEW_TITLES: Record<string, string> = {
   "/presupuestos": "Presupuestos y Proyectos",
   "/proyectos": "Presupuestos y Proyectos",
   "/modulo/requerimientos": "Requerimientos y Solicitudes",
-  "/modulo/aprobaciones": "Requerimientos y Solicitudes",
+  "/modulo/aprobaciones": "Aprobaciones Gerenciales",
   "/modulo/logistica": "Adquisiciones y Proveedores",
   "/modulo/contratos": "Adquisiciones y Proveedores",
   "/modulo/comprobantes": "Ejecución de Gastos",
