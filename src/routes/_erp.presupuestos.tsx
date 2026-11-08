@@ -12,9 +12,9 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/_erp/presupuestos")({
   head: () => ({
     meta: [
-      { title: "Presupuestos · Clear Minds ERP" },
+      { title: "Presupuestos y Proyectos · ClearEstate ERP" },
       { name: "description", content: "Matriz presupuestaria con montos aprobados, comprometidos, ejecutados y disponibles." },
-      { property: "og:title", content: "Presupuestos · Clear Minds ERP" },
+      { property: "og:title", content: "Presupuestos y Proyectos · ClearEstate ERP" },
       { property: "og:description", content: "Partidas, ajustes e historial presupuestario." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

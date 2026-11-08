@@ -2,6 +2,7 @@ import { Link, useRouterState } from "@tanstack/react-router";
 import { ChevronsLeft, ChevronsRight, LogOut } from "lucide-react";
 
 import { BrandLogo } from "@/components/BrandLogo";
+import { Button } from "@/components/ui/button";
 import { NAVIGATION_GROUPS, type NavigationItem } from "@/config/erpConfig";
 import { cn } from "@/lib/utils";
 
@@ -48,14 +49,16 @@ export function ModernSidebar({ isCollapsed, onToggleCollapse, onSignOut }: Mode
     <aside className={cn("sticky top-0 flex h-screen shrink-0 flex-col border-r border-border/60 bg-sidebar/55 backdrop-blur-xl transition-[width] duration-300", isCollapsed ? "w-20" : "w-64")}>
       <div className={cn("flex h-[72px] items-center gap-2 border-b border-border/60 px-5", isCollapsed && "justify-center px-0")}>
         {!isCollapsed && <BrandLogo />}
-        <button
+        <Button
+          variant="outline"
+          size="icon"
           type="button"
           onClick={onToggleCollapse}
           aria-label={isCollapsed ? "Desplegar menú" : "Colapsar menú"}
-          className={cn("grid h-9 w-9 shrink-0 place-items-center rounded-full border border-border/60 bg-background/60 text-foreground transition-colors hover:bg-secondary", !isCollapsed && "ml-auto")}
+          className={cn("grid h-9 w-9 shrink-0 place-items-center rounded-full border border-border/60 bg-background/60 p-0 text-foreground transition-colors hover:bg-secondary", !isCollapsed && "ml-auto")}
         >
           {isCollapsed ? <ChevronsRight className="h-[18px] w-[18px]" /> : <ChevronsLeft className="h-[18px] w-[18px]" />}
-        </button>
+        </Button>
       </div>
 
       <nav className="flex-1 space-y-5 overflow-y-auto px-3 py-5">

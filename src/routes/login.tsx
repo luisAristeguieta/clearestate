@@ -18,9 +18,9 @@ import { useErp } from "@/context/ErpContext";
 export const Route = createFileRoute("/login")({
   head: () => ({
     meta: [
-      { title: "Iniciar sesión · Clear Minds ERP" },
-      { name: "description", content: "Accede al ERP de gestión inmobiliaria integrada de Clear Minds Consultores." },
-      { property: "og:title", content: "Iniciar sesión · Clear Minds ERP" },
+      { title: "Login · ClearEstate ERP" },
+      { name: "description", content: "Accede a ClearEstate, plataforma inmobiliaria ERP para los proyectos París y Sagaleta." },
+      { property: "og:title", content: "Login · ClearEstate ERP" },
       { property: "og:description", content: "Controla presupuestos, adquisiciones y posventa de tus proyectos de lotes." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
