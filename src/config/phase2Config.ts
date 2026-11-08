@@ -204,7 +204,7 @@ export const buildContasisCsv = (rows: ContasisRow[]): string => {
   const header = "TIPO_DOC;SERIE;NUMERO;FECHA_EMISION;RUC_EMISOR;RAZON_SOCIAL;SUBTOTAL;IVA;TOTAL;PROYECTO;PARTIDA;ORDEN";
   const escapeCell = (value: string): string => value.replace(/;/g, ",").trim();
   const lines = rows.map(({ invoice, orderCode, budgetLineCode, projectName }) => {
-    const [serie, ...numberParts] = invoice.invoiceNumber.split("-");
+    const [serie = "", ...numberParts] = invoice.invoiceNumber.split("-");
     const numero = numberParts.join("");
     return [
       "01",
