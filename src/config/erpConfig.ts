@@ -180,7 +180,7 @@ export const PROJECTS: RealEstateProject[] = [
 export const SEED_PHASES: ProjectPhase[] = [
   { id: "ph-par-1", projectId: "paris", name: "Habilitación Urbana", contractor: "Constructora Andes S.A.", status: "Completada", progressPercent: 100, startDate: "2026-01-12", endDate: "2026-05-30" },
   { id: "ph-par-2", projectId: "paris", name: "Agua y Desagüe", contractor: "Hidrosur Ingenieros EIRL", status: "En ejecución", progressPercent: 64, startDate: "2026-05-15", endDate: "2026-12-20" },
-  { id: "ph-par-3", projectId: "paris", name: "Pistas y Veredas", contractor: "Pavimentos del Norte SAC", status: "Licitación", progressPercent: 8, startDate: "2027-01-10", endDate: "2027-06-30" },
+  { id: "ph-par-3", projectId: "paris", name: "Pistas y Veredas", contractor: "Pavimentos del Norte S.A.", status: "Licitación", progressPercent: 8, startDate: "2027-01-10", endDate: "2027-06-30" },
   { id: "ph-sag-1", projectId: "sagaleta", name: "Habilitación Urbana", contractor: "Constructora Andes S.A.", status: "En ejecución", progressPercent: 72, startDate: "2026-03-01", endDate: "2026-11-30" },
   { id: "ph-sag-2", projectId: "sagaleta", name: "Agua y Desagüe", contractor: "Hidrosur Ingenieros EIRL", status: "Planificada", progressPercent: 0, startDate: "2026-12-01", endDate: "2027-05-15" },
   { id: "ph-sag-3", projectId: "sagaleta", name: "Pistas y Veredas", contractor: "Por adjudicar", status: "Planificada", progressPercent: 0, startDate: "2027-05-20", endDate: "2027-10-30" },
