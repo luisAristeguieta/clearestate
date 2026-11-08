@@ -105,7 +105,7 @@ export function ModernSidebar({ isCollapsed, onToggleCollapse, onSignOut }: Mode
               </p>
               <div className="space-y-1">
                 {group.items.map((item) => (
-                  <SidebarLink key={item.code} item={{ ...item, badgeCount: item.code === "P-14/15" ? cases.filter((record) => record.status !== "delivered").length : item.code === "P-05" ? requisitions.filter((record) => record.status === "pending_approval").length : item.badgeCount }} isCollapsed={isCollapsed} isActive={currentPath === resolveItemPath(item) || currentPath.startsWith(`${resolveItemPath(item)}/`)} />
+                  <SidebarLink key={item.code} item={{ ...item, badgeCount: item.code === "P-14/15" ? cases.filter((record) => record.status !== "delivered").length : item.code === "P-05" ? requisitions.filter((record) => record.status === "pending_approval").length : item.badgeCount ?? 0 }} isCollapsed={isCollapsed} isActive={currentPath === resolveItemPath(item) || currentPath.startsWith(`${resolveItemPath(item)}/`)} />
                 ))}
               </div>
             </div>
