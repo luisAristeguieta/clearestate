@@ -31,3 +31,4 @@ use the editor.
 
 - ERP state (active role, project filter, budget lines, adjustments) lives in `src/context/ErpContext.tsx` persisted to localStorage; seed data and financial rules live in `src/config/erpConfig.ts` — Phase 1 is a local synthetic-data prototype.
 - Signed-in screens are children of the pathless `src/routes/_erp.tsx` layout (ssr: false, redirects to /login without a role); unbuilt modules render via `/modulo/$moduleId` — one generic route until each module is built.
+- Dashboard priority actions are assembled in `src/config/dashboardConfig.ts` and tested independently of presentation so budget urgency stays consistent across layout changes.
