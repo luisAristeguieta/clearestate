@@ -24,7 +24,7 @@ const selectClass =
   "flex h-11 w-full rounded-[18px] border border-input bg-background px-4 text-sm focus:border-primary focus:outline-none";
 const dialogClass = "rounded-[28.8px] border-border p-7 shadow-soft sm:max-w-lg";
 
-function FieldError({ message }: { message?: string }) {
+function FieldError({ message }: { message: string | undefined }) {
   return message ? <p className="text-xs font-medium text-destructive">{message}</p> : null;
 }
 
