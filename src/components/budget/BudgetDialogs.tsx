@@ -81,7 +81,7 @@ export function CreateBudgetLineDialog() {
               <FieldError message={errors.code?.message} />
             </div>
             <div className="grid gap-1.5">
-              <Label htmlFor="line-approved">Monto aprobado (S/)</Label>
+              <Label htmlFor="line-approved">Monto aprobado (US$)</Label>
               <Input id="line-approved" type="number" step="100" className="h-11" {...form.register("approved")} />
               <FieldError message={errors.approved?.message} />
             </div>
@@ -177,7 +177,7 @@ export function RegisterAdjustmentDialog({ budgetLine }: { budgetLine: BudgetLin
               </select>
             </div>
             <div className="grid gap-1.5">
-              <Label htmlFor="adjustment-amount">Monto (S/)</Label>
+              <Label htmlFor="adjustment-amount">Monto (US$)</Label>
               <Input id="adjustment-amount" type="number" step="100" className="h-11" {...form.register("amount")} />
             </div>
           </div>
