@@ -10,6 +10,8 @@ export const Route = createFileRoute("/")({
       { name: "description", content: "Backoffice inmobiliario para Proyecto París y Proyecto Sagaleta." },
       { property: "og:title", content: "Clear Minds ERP Inmobiliario" },
       { property: "og:description", content: "Backoffice inmobiliario para Proyecto París y Proyecto Sagaleta." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
 });
