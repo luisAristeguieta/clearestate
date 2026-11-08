@@ -16,6 +16,7 @@ import { Route as ErpDashboardRouteImport } from './routes/_erp.dashboard'
 import { Route as ErpPresupuestosRouteImport } from './routes/_erp.presupuestos'
 import { Route as ErpProyectosRouteImport } from './routes/_erp.proyectos'
 import { Route as ErpModuloModuleIdRouteImport } from './routes/_erp.modulo.$moduleId'
+import { Route as ErpModuloRequerimientosRouteImport } from './routes/_erp.modulo.requerimientos'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -51,6 +52,11 @@ const ErpModuloModuleIdRoute = ErpModuloModuleIdRouteImport.update({
   path: '/modulo/$moduleId',
   getParentRoute: () => ErpRoute,
 } as any)
+const ErpModuloRequerimientosRoute = ErpModuloRequerimientosRouteImport.update({
+  id: '/modulo/requerimientos',
+  path: '/modulo/requerimientos',
+  getParentRoute: () => ErpRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -59,6 +65,7 @@ export interface FileRoutesByFullPath {
   '/presupuestos': typeof ErpPresupuestosRoute
   '/proyectos': typeof ErpProyectosRoute
   '/modulo/$moduleId': typeof ErpModuloModuleIdRoute
+  '/modulo/requerimientos': typeof ErpModuloRequerimientosRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -67,6 +74,7 @@ export interface FileRoutesByTo {
   '/presupuestos': typeof ErpPresupuestosRoute
   '/proyectos': typeof ErpProyectosRoute
   '/modulo/$moduleId': typeof ErpModuloModuleIdRoute
+  '/modulo/requerimientos': typeof ErpModuloRequerimientosRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -77,6 +85,7 @@ export interface FileRoutesById {
   '/_erp/presupuestos': typeof ErpPresupuestosRoute
   '/_erp/proyectos': typeof ErpProyectosRoute
   '/_erp/modulo/$moduleId': typeof ErpModuloModuleIdRoute
+  '/_erp/modulo/requerimientos': typeof ErpModuloRequerimientosRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -87,6 +96,7 @@ export interface FileRouteTypes {
     | '/presupuestos'
     | '/proyectos'
     | '/modulo/$moduleId'
+    | '/modulo/requerimientos'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -95,6 +105,7 @@ export interface FileRouteTypes {
     | '/presupuestos'
     | '/proyectos'
     | '/modulo/$moduleId'
+    | '/modulo/requerimientos'
   id:
     | '__root__'
     | '/'
@@ -104,6 +115,7 @@ export interface FileRouteTypes {
     | '/_erp/presupuestos'
     | '/_erp/proyectos'
     | '/_erp/modulo/$moduleId'
+    | '/_erp/modulo/requerimientos'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -163,6 +175,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ErpModuloModuleIdRouteImport
       parentRoute: typeof ErpRoute
     }
+    '/_erp/modulo/requerimientos': {
+      id: '/_erp/modulo/requerimientos'
+      path: '/modulo/requerimientos'
+      fullPath: '/modulo/requerimientos'
+      preLoaderRoute: typeof ErpModuloRequerimientosRouteImport
+      parentRoute: typeof ErpRoute
+    }
   }
 }
 
@@ -171,6 +190,7 @@ interface ErpRouteChildren {
   ErpPresupuestosRoute: typeof ErpPresupuestosRoute
   ErpProyectosRoute: typeof ErpProyectosRoute
   ErpModuloModuleIdRoute: typeof ErpModuloModuleIdRoute
+  ErpModuloRequerimientosRoute: typeof ErpModuloRequerimientosRoute
 }
 
 const ErpRouteChildren: ErpRouteChildren = {
@@ -178,6 +198,7 @@ const ErpRouteChildren: ErpRouteChildren = {
   ErpPresupuestosRoute: ErpPresupuestosRoute,
   ErpProyectosRoute: ErpProyectosRoute,
   ErpModuloModuleIdRoute: ErpModuloModuleIdRoute,
+  ErpModuloRequerimientosRoute: ErpModuloRequerimientosRoute,
 }
 
 const ErpRouteWithChildren = ErpRoute._addFileChildren(ErpRouteChildren)
