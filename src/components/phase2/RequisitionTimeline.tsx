@@ -14,13 +14,13 @@ export function RequisitionTimeline({ events }: { events: TimelineEvent[] }) {
       {orderedEvents.map((event) => (
         <li key={event.id} className="relative">
           <span className="absolute -left-[31px] top-0.5 grid h-5 w-5 place-items-center rounded-full bg-background">
-            <CircleDot className="h-4 w-4 text-primary" />
+            <CircleDot className="h-4 w-4 text-foreground" />
           </span>
           <p className="text-sm font-semibold text-foreground">{event.action}</p>
           <p className="text-xs text-muted-foreground">
             {event.actorName} · {formatEventDate(event.at)}
           </p>
-          {event.note && <p className="mt-1 rounded-2xl bg-secondary px-3 py-2 text-sm text-foreground">{event.note}</p>}
+          {event.note && <p className="mt-2 text-sm text-muted-foreground">{event.note}</p>}
         </li>
       ))}
     </ol>
