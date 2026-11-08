@@ -31,7 +31,7 @@ function ProjectsPage() {
 
   return (
     <div>
-      <PageHeader code="P-02" title="Proyectos y Fases" description="Habilitación urbana tercerizada por proyecto, con presupuesto vinculado a cada fase." />
+      <PageHeader title="Proyectos y Fases" description="Habilitación urbana tercerizada por proyecto, con presupuesto vinculado a cada fase." />
       <div className="space-y-8">
         {visibleProjects.map((project) => {
           const projectPhases = phases.filter((phase) => phase.projectId === project.id);

@@ -49,7 +49,7 @@ function DashboardPage() {
 
   return (
     <div>
-      <PageHeader code="P-01" title={`Hola, ${activeRole?.personName.split(" ")[0] ?? ""}`} description="Resumen consolidado de presupuestos, obras y pendientes." />
+      <PageHeader title={`Hola, ${activeRole?.personName.split(" ")[0] ?? ""}`} description="Resumen consolidado de presupuestos, obras y pendientes." />
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {kpiCards.map((kpi) => {

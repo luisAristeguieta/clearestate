@@ -25,9 +25,6 @@ function SidebarLink({ item, isCollapsed, isActive }: { item: NavigationItem; is
     <>
       <ItemIcon className="h-[18px] w-[18px] shrink-0" strokeWidth={1.8} />
       {!isCollapsed && <span className="min-w-0 flex-1 truncate">{item.label}</span>}
-      {!isCollapsed && !item.badgeCount && (
-        <span className={cn("text-[10px] font-semibold", isActive ? "text-primary-foreground/80" : "text-muted-foreground/70")}>{item.code}</span>
-      )}
       {item.badgeCount ? (
         <span className={cn("pill-badge bg-highlight px-1.5 text-[10px] text-highlight-foreground", isCollapsed && "absolute -right-1 -top-1")}>{item.badgeCount}</span>
       ) : null}

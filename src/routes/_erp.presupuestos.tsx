@@ -35,7 +35,7 @@ function BudgetsPage() {
 
   return (
     <div>
-      <PageHeader code="P-03" title="Presupuestos" description="Disponible = Aprobado − Comprometido − Ejecutado. Registra partidas y ajustes con trazabilidad." actions={<CreateBudgetLineDialog />} />
+      <PageHeader title="Presupuestos" description="Disponible = Aprobado − Comprometido − Ejecutado. Registra partidas y ajustes con trazabilidad." actions={<CreateBudgetLineDialog />} />
 
       <div className="mb-4 flex flex-wrap gap-2">
         {(["Todas", ...BUDGET_AREAS] as AreaFilter[]).map((area) => (
