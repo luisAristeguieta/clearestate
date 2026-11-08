@@ -15,6 +15,7 @@ import { NotFoundPage } from "@/components/NotFoundPage";
 import { Toaster } from "@/components/ui/sonner";
 import { ErpProvider } from "@/context/ErpContext";
 import { DocumentTitle } from "@/components/DocumentTitle";
+import { Phase3Provider } from "@/context/Phase3Context";
 
 function ErrorComponent({ error, reset }: ErrorComponentProps) {
   console.error(error);
@@ -110,9 +111,11 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <ErpProvider>
+        <Phase3Provider>
         <DocumentTitle />
         <Outlet />
         <Toaster position="top-right" />
+        </Phase3Provider>
       </ErpProvider>
     </QueryClientProvider>
   );

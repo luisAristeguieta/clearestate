@@ -5,6 +5,8 @@ import { BrandLogo } from "@/components/BrandLogo";
 import { Button } from "@/components/ui/button";
 import { NAVIGATION_GROUPS, type NavigationItem } from "@/config/erpConfig";
 import { cn } from "@/lib/utils";
+import { usePhase3 } from "@/context/Phase3Context";
+import { useErp } from "@/context/ErpContext";
 
 interface ModernSidebarProps {
   isCollapsed: boolean;
@@ -69,6 +71,8 @@ function SidebarLink({ item, isCollapsed, isActive }: { item: NavigationItem; is
 
 export function ModernSidebar({ isCollapsed, onToggleCollapse, onSignOut }: ModernSidebarProps) {
   const currentPath = useRouterState({ select: (routerState) => routerState.location.pathname });
+  const { cases } = usePhase3();
+  const { requisitions } = useErp();
 
   return (
     <>
@@ -101,7 +105,7 @@ export function ModernSidebar({ isCollapsed, onToggleCollapse, onSignOut }: Mode
               </p>
               <div className="space-y-1">
                 {group.items.map((item) => (
-                  <SidebarLink key={item.code} item={item} isCollapsed={isCollapsed} isActive={currentPath === resolveItemPath(item)} />
+                  <SidebarLink key={item.code} item={{ ...item, badgeCount: item.code === "P-14/15" ? cases.filter((record) => record.status !== "delivered").length : item.code === "P-05" ? requisitions.filter((record) => record.status === "pending_approval").length : item.badgeCount ?? 0 }} isCollapsed={isCollapsed} isActive={currentPath === resolveItemPath(item) || currentPath.startsWith(`${resolveItemPath(item)}/`)} />
                 ))}
               </div>
             </div>

@@ -12,5 +12,5 @@ const TONE_CLASSES: Record<BadgeTone, string> = {
 };
 
 export function StatusBadge({ tone, children }: { tone: BadgeTone; children: ReactNode }) {
-  return <span className={cn("pill-badge", TONE_CLASSES[tone])}>{children}</span>;
+  return <span className={cn("pill-badge h-fit self-start", TONE_CLASSES[tone])}>{children}</span>;
 }

@@ -18,10 +18,18 @@ import { Route as ErpProyectosRouteImport } from './routes/_erp.proyectos'
 import { Route as PortalProveedorTokenRouteImport } from './routes/portal-proveedor.$token'
 import { Route as ErpModuloModuleIdRouteImport } from './routes/_erp.modulo.$moduleId'
 import { Route as ErpModuloAprobacionesRouteImport } from './routes/_erp.modulo.aprobaciones'
+import { Route as ErpModuloAsistenteIaRouteImport } from './routes/_erp.modulo.asistente-ia'
+import { Route as ErpModuloCampanasRouteImport } from './routes/_erp.modulo.campanas'
 import { Route as ErpModuloComprobantesRouteImport } from './routes/_erp.modulo.comprobantes'
 import { Route as ErpModuloContratosRouteImport } from './routes/_erp.modulo.contratos'
+import { Route as ErpModuloInformesRouteImport } from './routes/_erp.modulo.informes'
 import { Route as ErpModuloLogisticaRouteImport } from './routes/_erp.modulo.logistica'
+import { Route as ErpModuloOracleRouteImport } from './routes/_erp.modulo.oracle'
+import { Route as ErpModuloPosventaRouteImport } from './routes/_erp.modulo.posventa'
 import { Route as ErpModuloRequerimientosRouteImport } from './routes/_erp.modulo.requerimientos'
+import { Route as ErpModuloRolesRouteImport } from './routes/_erp.modulo.roles'
+import { Route as ErpModuloCampanasSeguimientoRouteImport } from './routes/_erp.modulo.campanas_.seguimiento'
+import { Route as ErpModuloPosventaCompradorSaleIdRouteImport } from './routes/_erp.modulo.posventa_.comprador.$saleId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -67,6 +75,16 @@ const ErpModuloAprobacionesRoute = ErpModuloAprobacionesRouteImport.update({
   path: '/modulo/aprobaciones',
   getParentRoute: () => ErpRoute,
 } as any)
+const ErpModuloAsistenteIaRoute = ErpModuloAsistenteIaRouteImport.update({
+  id: '/modulo/asistente-ia',
+  path: '/modulo/asistente-ia',
+  getParentRoute: () => ErpRoute,
+} as any)
+const ErpModuloCampanasRoute = ErpModuloCampanasRouteImport.update({
+  id: '/modulo/campanas',
+  path: '/modulo/campanas',
+  getParentRoute: () => ErpRoute,
+} as any)
 const ErpModuloComprobantesRoute = ErpModuloComprobantesRouteImport.update({
   id: '/modulo/comprobantes',
   path: '/modulo/comprobantes',
@@ -77,9 +95,24 @@ const ErpModuloContratosRoute = ErpModuloContratosRouteImport.update({
   path: '/modulo/contratos',
   getParentRoute: () => ErpRoute,
 } as any)
+const ErpModuloInformesRoute = ErpModuloInformesRouteImport.update({
+  id: '/modulo/informes',
+  path: '/modulo/informes',
+  getParentRoute: () => ErpRoute,
+} as any)
 const ErpModuloLogisticaRoute = ErpModuloLogisticaRouteImport.update({
   id: '/modulo/logistica',
   path: '/modulo/logistica',
+  getParentRoute: () => ErpRoute,
+} as any)
+const ErpModuloOracleRoute = ErpModuloOracleRouteImport.update({
+  id: '/modulo/oracle',
+  path: '/modulo/oracle',
+  getParentRoute: () => ErpRoute,
+} as any)
+const ErpModuloPosventaRoute = ErpModuloPosventaRouteImport.update({
+  id: '/modulo/posventa',
+  path: '/modulo/posventa',
   getParentRoute: () => ErpRoute,
 } as any)
 const ErpModuloRequerimientosRoute = ErpModuloRequerimientosRouteImport.update({
@@ -87,6 +120,23 @@ const ErpModuloRequerimientosRoute = ErpModuloRequerimientosRouteImport.update({
   path: '/modulo/requerimientos',
   getParentRoute: () => ErpRoute,
 } as any)
+const ErpModuloRolesRoute = ErpModuloRolesRouteImport.update({
+  id: '/modulo/roles',
+  path: '/modulo/roles',
+  getParentRoute: () => ErpRoute,
+} as any)
+const ErpModuloCampanasSeguimientoRoute =
+  ErpModuloCampanasSeguimientoRouteImport.update({
+    id: '/modulo/campanas_/seguimiento',
+    path: '/modulo/campanas/seguimiento',
+    getParentRoute: () => ErpRoute,
+  } as any)
+const ErpModuloPosventaCompradorSaleIdRoute =
+  ErpModuloPosventaCompradorSaleIdRouteImport.update({
+    id: '/modulo/posventa_/comprador/$saleId',
+    path: '/modulo/posventa/comprador/$saleId',
+    getParentRoute: () => ErpRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -97,10 +147,18 @@ export interface FileRoutesByFullPath {
   '/portal-proveedor/$token': typeof PortalProveedorTokenRoute
   '/modulo/$moduleId': typeof ErpModuloModuleIdRoute
   '/modulo/aprobaciones': typeof ErpModuloAprobacionesRoute
+  '/modulo/asistente-ia': typeof ErpModuloAsistenteIaRoute
+  '/modulo/campanas': typeof ErpModuloCampanasRoute
   '/modulo/comprobantes': typeof ErpModuloComprobantesRoute
   '/modulo/contratos': typeof ErpModuloContratosRoute
+  '/modulo/informes': typeof ErpModuloInformesRoute
   '/modulo/logistica': typeof ErpModuloLogisticaRoute
+  '/modulo/oracle': typeof ErpModuloOracleRoute
+  '/modulo/posventa': typeof ErpModuloPosventaRoute
   '/modulo/requerimientos': typeof ErpModuloRequerimientosRoute
+  '/modulo/roles': typeof ErpModuloRolesRoute
+  '/modulo/campanas/seguimiento': typeof ErpModuloCampanasSeguimientoRoute
+  '/modulo/posventa/comprador/$saleId': typeof ErpModuloPosventaCompradorSaleIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -111,10 +169,18 @@ export interface FileRoutesByTo {
   '/portal-proveedor/$token': typeof PortalProveedorTokenRoute
   '/modulo/$moduleId': typeof ErpModuloModuleIdRoute
   '/modulo/aprobaciones': typeof ErpModuloAprobacionesRoute
+  '/modulo/asistente-ia': typeof ErpModuloAsistenteIaRoute
+  '/modulo/campanas': typeof ErpModuloCampanasRoute
   '/modulo/comprobantes': typeof ErpModuloComprobantesRoute
   '/modulo/contratos': typeof ErpModuloContratosRoute
+  '/modulo/informes': typeof ErpModuloInformesRoute
   '/modulo/logistica': typeof ErpModuloLogisticaRoute
+  '/modulo/oracle': typeof ErpModuloOracleRoute
+  '/modulo/posventa': typeof ErpModuloPosventaRoute
   '/modulo/requerimientos': typeof ErpModuloRequerimientosRoute
+  '/modulo/roles': typeof ErpModuloRolesRoute
+  '/modulo/campanas/seguimiento': typeof ErpModuloCampanasSeguimientoRoute
+  '/modulo/posventa/comprador/$saleId': typeof ErpModuloPosventaCompradorSaleIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -127,10 +193,18 @@ export interface FileRoutesById {
   '/portal-proveedor/$token': typeof PortalProveedorTokenRoute
   '/_erp/modulo/$moduleId': typeof ErpModuloModuleIdRoute
   '/_erp/modulo/aprobaciones': typeof ErpModuloAprobacionesRoute
+  '/_erp/modulo/asistente-ia': typeof ErpModuloAsistenteIaRoute
+  '/_erp/modulo/campanas': typeof ErpModuloCampanasRoute
   '/_erp/modulo/comprobantes': typeof ErpModuloComprobantesRoute
   '/_erp/modulo/contratos': typeof ErpModuloContratosRoute
+  '/_erp/modulo/informes': typeof ErpModuloInformesRoute
   '/_erp/modulo/logistica': typeof ErpModuloLogisticaRoute
+  '/_erp/modulo/oracle': typeof ErpModuloOracleRoute
+  '/_erp/modulo/posventa': typeof ErpModuloPosventaRoute
   '/_erp/modulo/requerimientos': typeof ErpModuloRequerimientosRoute
+  '/_erp/modulo/roles': typeof ErpModuloRolesRoute
+  '/_erp/modulo/campanas_/seguimiento': typeof ErpModuloCampanasSeguimientoRoute
+  '/_erp/modulo/posventa_/comprador/$saleId': typeof ErpModuloPosventaCompradorSaleIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -143,10 +217,18 @@ export interface FileRouteTypes {
     | '/portal-proveedor/$token'
     | '/modulo/$moduleId'
     | '/modulo/aprobaciones'
+    | '/modulo/asistente-ia'
+    | '/modulo/campanas'
     | '/modulo/comprobantes'
     | '/modulo/contratos'
+    | '/modulo/informes'
     | '/modulo/logistica'
+    | '/modulo/oracle'
+    | '/modulo/posventa'
     | '/modulo/requerimientos'
+    | '/modulo/roles'
+    | '/modulo/campanas/seguimiento'
+    | '/modulo/posventa/comprador/$saleId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -157,10 +239,18 @@ export interface FileRouteTypes {
     | '/portal-proveedor/$token'
     | '/modulo/$moduleId'
     | '/modulo/aprobaciones'
+    | '/modulo/asistente-ia'
+    | '/modulo/campanas'
     | '/modulo/comprobantes'
     | '/modulo/contratos'
+    | '/modulo/informes'
     | '/modulo/logistica'
+    | '/modulo/oracle'
+    | '/modulo/posventa'
     | '/modulo/requerimientos'
+    | '/modulo/roles'
+    | '/modulo/campanas/seguimiento'
+    | '/modulo/posventa/comprador/$saleId'
   id:
     | '__root__'
     | '/'
@@ -172,10 +262,18 @@ export interface FileRouteTypes {
     | '/portal-proveedor/$token'
     | '/_erp/modulo/$moduleId'
     | '/_erp/modulo/aprobaciones'
+    | '/_erp/modulo/asistente-ia'
+    | '/_erp/modulo/campanas'
     | '/_erp/modulo/comprobantes'
     | '/_erp/modulo/contratos'
+    | '/_erp/modulo/informes'
     | '/_erp/modulo/logistica'
+    | '/_erp/modulo/oracle'
+    | '/_erp/modulo/posventa'
     | '/_erp/modulo/requerimientos'
+    | '/_erp/modulo/roles'
+    | '/_erp/modulo/campanas_/seguimiento'
+    | '/_erp/modulo/posventa_/comprador/$saleId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -250,6 +348,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ErpModuloAprobacionesRouteImport
       parentRoute: typeof ErpRoute
     }
+    '/_erp/modulo/asistente-ia': {
+      id: '/_erp/modulo/asistente-ia'
+      path: '/modulo/asistente-ia'
+      fullPath: '/modulo/asistente-ia'
+      preLoaderRoute: typeof ErpModuloAsistenteIaRouteImport
+      parentRoute: typeof ErpRoute
+    }
+    '/_erp/modulo/campanas': {
+      id: '/_erp/modulo/campanas'
+      path: '/modulo/campanas'
+      fullPath: '/modulo/campanas'
+      preLoaderRoute: typeof ErpModuloCampanasRouteImport
+      parentRoute: typeof ErpRoute
+    }
     '/_erp/modulo/comprobantes': {
       id: '/_erp/modulo/comprobantes'
       path: '/modulo/comprobantes'
@@ -264,6 +376,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ErpModuloContratosRouteImport
       parentRoute: typeof ErpRoute
     }
+    '/_erp/modulo/informes': {
+      id: '/_erp/modulo/informes'
+      path: '/modulo/informes'
+      fullPath: '/modulo/informes'
+      preLoaderRoute: typeof ErpModuloInformesRouteImport
+      parentRoute: typeof ErpRoute
+    }
     '/_erp/modulo/logistica': {
       id: '/_erp/modulo/logistica'
       path: '/modulo/logistica'
@@ -271,11 +390,46 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ErpModuloLogisticaRouteImport
       parentRoute: typeof ErpRoute
     }
+    '/_erp/modulo/oracle': {
+      id: '/_erp/modulo/oracle'
+      path: '/modulo/oracle'
+      fullPath: '/modulo/oracle'
+      preLoaderRoute: typeof ErpModuloOracleRouteImport
+      parentRoute: typeof ErpRoute
+    }
+    '/_erp/modulo/posventa': {
+      id: '/_erp/modulo/posventa'
+      path: '/modulo/posventa'
+      fullPath: '/modulo/posventa'
+      preLoaderRoute: typeof ErpModuloPosventaRouteImport
+      parentRoute: typeof ErpRoute
+    }
     '/_erp/modulo/requerimientos': {
       id: '/_erp/modulo/requerimientos'
       path: '/modulo/requerimientos'
       fullPath: '/modulo/requerimientos'
       preLoaderRoute: typeof ErpModuloRequerimientosRouteImport
+      parentRoute: typeof ErpRoute
+    }
+    '/_erp/modulo/roles': {
+      id: '/_erp/modulo/roles'
+      path: '/modulo/roles'
+      fullPath: '/modulo/roles'
+      preLoaderRoute: typeof ErpModuloRolesRouteImport
+      parentRoute: typeof ErpRoute
+    }
+    '/_erp/modulo/campanas_/seguimiento': {
+      id: '/_erp/modulo/campanas_/seguimiento'
+      path: '/modulo/campanas/seguimiento'
+      fullPath: '/modulo/campanas/seguimiento'
+      preLoaderRoute: typeof ErpModuloCampanasSeguimientoRouteImport
+      parentRoute: typeof ErpRoute
+    }
+    '/_erp/modulo/posventa_/comprador/$saleId': {
+      id: '/_erp/modulo/posventa_/comprador/$saleId'
+      path: '/modulo/posventa/comprador/$saleId'
+      fullPath: '/modulo/posventa/comprador/$saleId'
+      preLoaderRoute: typeof ErpModuloPosventaCompradorSaleIdRouteImport
       parentRoute: typeof ErpRoute
     }
   }
@@ -287,10 +441,18 @@ interface ErpRouteChildren {
   ErpProyectosRoute: typeof ErpProyectosRoute
   ErpModuloModuleIdRoute: typeof ErpModuloModuleIdRoute
   ErpModuloAprobacionesRoute: typeof ErpModuloAprobacionesRoute
+  ErpModuloAsistenteIaRoute: typeof ErpModuloAsistenteIaRoute
+  ErpModuloCampanasRoute: typeof ErpModuloCampanasRoute
   ErpModuloComprobantesRoute: typeof ErpModuloComprobantesRoute
   ErpModuloContratosRoute: typeof ErpModuloContratosRoute
+  ErpModuloInformesRoute: typeof ErpModuloInformesRoute
   ErpModuloLogisticaRoute: typeof ErpModuloLogisticaRoute
+  ErpModuloOracleRoute: typeof ErpModuloOracleRoute
+  ErpModuloPosventaRoute: typeof ErpModuloPosventaRoute
   ErpModuloRequerimientosRoute: typeof ErpModuloRequerimientosRoute
+  ErpModuloRolesRoute: typeof ErpModuloRolesRoute
+  ErpModuloCampanasSeguimientoRoute: typeof ErpModuloCampanasSeguimientoRoute
+  ErpModuloPosventaCompradorSaleIdRoute: typeof ErpModuloPosventaCompradorSaleIdRoute
 }
 
 const ErpRouteChildren: ErpRouteChildren = {
@@ -299,10 +461,18 @@ const ErpRouteChildren: ErpRouteChildren = {
   ErpProyectosRoute: ErpProyectosRoute,
   ErpModuloModuleIdRoute: ErpModuloModuleIdRoute,
   ErpModuloAprobacionesRoute: ErpModuloAprobacionesRoute,
+  ErpModuloAsistenteIaRoute: ErpModuloAsistenteIaRoute,
+  ErpModuloCampanasRoute: ErpModuloCampanasRoute,
   ErpModuloComprobantesRoute: ErpModuloComprobantesRoute,
   ErpModuloContratosRoute: ErpModuloContratosRoute,
+  ErpModuloInformesRoute: ErpModuloInformesRoute,
   ErpModuloLogisticaRoute: ErpModuloLogisticaRoute,
+  ErpModuloOracleRoute: ErpModuloOracleRoute,
+  ErpModuloPosventaRoute: ErpModuloPosventaRoute,
   ErpModuloRequerimientosRoute: ErpModuloRequerimientosRoute,
+  ErpModuloRolesRoute: ErpModuloRolesRoute,
+  ErpModuloCampanasSeguimientoRoute: ErpModuloCampanasSeguimientoRoute,
+  ErpModuloPosventaCompradorSaleIdRoute: ErpModuloPosventaCompradorSaleIdRoute,
 }
 
 const ErpRouteWithChildren = ErpRoute._addFileChildren(ErpRouteChildren)

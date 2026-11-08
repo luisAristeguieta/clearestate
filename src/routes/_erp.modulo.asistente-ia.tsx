@@ -1,0 +1,23 @@
+import { createFileRoute } from "@tanstack/react-router";
+import { Send, Bot, UserRound } from "lucide-react";
+import { useState, type FormEvent } from "react";
+import { PageHeader } from "@/components/PageHeader";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { createPhase3Head, ProjectSelector } from "@/components/phase3/Phase3Shared";
+import { formatCurrency } from "@/config/erpConfig";
+import { buildManagementReport } from "@/config/phase3Config";
+import { useErp } from "@/context/ErpContext";
+import { usePhase3 } from "@/context/Phase3Context";
+export const Route = createFileRoute("/_erp/modulo/asistente-ia")({ head: () => createPhase3Head("/modulo/asistente-ia", "Asistente gerencial ilustrativo con respuestas basadas en los datos locales de presupuesto y posventa."), component: AssistantPage });
+interface ChatMessage { id: string; role: "user" | "assistant"; text: string }
+function AssistantPage() {
+  const { budgetLines, invoices, purchaseOrders, contracts, projectFilter, setProjectFilter } = useErp(); const { sales, cases } = usePhase3(); const [messages, setMessages] = useState<ChatMessage[]>([]); const [question, setQuestion] = useState("");
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => { event.preventDefault(); const text = question.trim(); if (!text) return; const normalized = text.toLowerCase(); const projectId = normalized.includes("sagaleta") ? "sagaleta" : normalized.includes("parís") || normalized.includes("paris") ? "paris" : projectFilter; const report = buildManagementReport(budgetLines, invoices, purchaseOrders, contracts, sales, cases, { projectId, area: "all", from: "", to: "" }); const scope = projectId === "all" ? "París y Sagaleta" : projectId === "paris" ? "Proyecto París" : "Proyecto Sagaleta";
+    let answer = `${scope}: aprobado ${formatCurrency(report.approved)}, comprometido ${formatCurrency(report.committed)}, ejecutado ${formatCurrency(report.executed)} y disponible ${formatCurrency(report.available)}. Disponible = Aprobado − Comprometido − Ejecutado.`;
+    if (/margen|rentabil|evoluci|hist[oó]ric|tendencia/.test(normalized)) answer = `${scope}: no hay costos de venta completos ni historial presupuestario por fecha para calcular márgenes o evolución con fiabilidad. El presupuesto actual disponible es ${formatCurrency(report.available)}; no se extrapolan márgenes ni tendencias.`;
+    else if (/entrega|posventa|lote|comprador/.test(normalized)) answer = `${scope}: ${report.selectedCases.length} expedientes elegibles, ${report.delivered} lotes entregados y ${report.selectedCases.length - report.delivered} en preparación o listos para entrega. Solo las ventas con saldo exactamente cero activan Posventa.`;
+    setMessages((previous) => [...previous, { id: crypto.randomUUID(), role: "user", text }, { id: crypto.randomUUID(), role: "assistant", text: answer }]); setQuestion("");
+  };
+  return <div className="phase2-view"><PageHeader title="Asistente Gerencial IA" description="Modo ilustrativo · Respuestas locales, sin servicio de IA conectado" /><div className="mb-8 max-w-sm"><ProjectSelector value={projectFilter} onChange={setProjectFilter} /></div><div className="flex min-h-[460px] flex-col"><div className="flex-1 space-y-6" role="log" aria-live="polite">{messages.length === 0 && <div className="py-10"><Bot className="mb-5 h-10 w-10" /><h2 className="font-bold">Consulta gerencial</h2><p className="mt-3 text-muted-foreground">Presupuesto disponible · Estado de entregas · Márgenes</p></div>}{messages.map((message) => <article key={message.id} className="flex items-start gap-4 border-b border-border pb-6">{message.role === "user" ? <UserRound className="mt-1 h-5 w-5 shrink-0" /> : <Bot className="mt-1 h-5 w-5 shrink-0" />}<div><p className="mb-2 text-sm font-semibold">{message.role === "user" ? "Tu consulta" : "Asistente ilustrativo"}</p><p className="leading-relaxed">{message.text}</p></div></article>)}</div><form onSubmit={handleSubmit} className="mt-8 flex items-end gap-3 border-t border-border pt-6"><Input aria-label="Consulta gerencial" placeholder="¿Cuál es el presupuesto disponible de París?" maxLength={500} value={question} onChange={(event) => setQuestion(event.target.value)} /><Button type="submit" size="icon" aria-label="Enviar consulta" title="Enviar consulta" disabled={!question.trim()}><Send /></Button></form></div></div>;
+}

@@ -1,5 +1,12 @@
 # Roadmap
 
+## Fase 3 — Oracle, posventa y gestión
+- [x] Modelo simulado de ventas, expedientes únicos y campañas por proyecto, con pruebas.
+- [x] Oracle y ficha de comprador con cuenta, fecha de entrega y acta adjunta.
+- [x] Campañas WhatsApp/correo, programación y seguimiento con corrección de contactos y reintentos.
+- [x] Informes con filtros, matriz ilustrativa de 8 roles y asistente gerencial ilustrativo.
+- [x] Verificación integral y diseño Planpoint en escritorio y móvil.
+
 ## Diseño Planpoint de Fase 2
 - [x] Unificar colores, acciones principales, formularios y estados según DESIGN-2.md, sin cambiar reglas de negocio.
 - [x] Verificar módulos en escritorio y móvil.
