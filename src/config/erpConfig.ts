@@ -58,14 +58,14 @@ export interface ErpRole {
 }
 
 export const ERP_ROLES: ErpRole[] = [
-  { id: "management", area: "Gerencia", personName: "Elena Vargas", jobTitle: "Directora General", email: "elena.vargas@clearminds.pe", avatarUrl: avatarGerencia, icon: ShieldCheck, isExternal: false },
-  { id: "systemAdmin", area: "Administración", personName: "Diego Paredes", jobTitle: "Administrador del Sistema", email: "diego.paredes@clearminds.pe", avatarUrl: avatarAdmin, icon: Settings2, isExternal: false },
-  { id: "marketing", area: "Marketing", personName: "Carlos Mendoza", jobTitle: "Jefe de Marketing", email: "carlos.mendoza@clearminds.pe", avatarUrl: avatarMarketing, icon: Megaphone, isExternal: false },
-  { id: "logistics", area: "Logística", personName: "Roberto Silva", jobTitle: "Jefe de Logística", email: "roberto.silva@clearminds.pe", avatarUrl: avatarLogistica, icon: PackageSearch, isExternal: false },
-  { id: "finance", area: "Finanzas", personName: "Lucía Castro", jobTitle: "Analista de Finanzas", email: "lucia.castro@clearminds.pe", avatarUrl: avatarFinanzas, icon: FileSpreadsheet, isExternal: false },
-  { id: "projects", area: "Proyectos", personName: "Ing. Marcos Ríos", jobTitle: "Residente de Obra", email: "marcos.rios@clearminds.pe", avatarUrl: avatarProyectos, icon: HardHat, isExternal: false },
-  { id: "postSales", area: "Posventa", personName: "Sofía Medina", jobTitle: "Coordinadora de Posventa", email: "sofia.medina@clearminds.pe", avatarUrl: avatarPosventa, icon: MessageSquareShare, isExternal: false },
-  { id: "externalSupplier", area: "Proveedor Externo", personName: "Constructora Andes SAC", jobTitle: "Portal de Proveedor", email: "contacto@andes-sac.pe", avatarUrl: avatarProveedor, icon: Building2, isExternal: true },
+  { id: "management", area: "Gerencia", personName: "Elena Vargas", jobTitle: "Directora General", email: "elena.vargas@clearminds.ec", avatarUrl: avatarGerencia, icon: ShieldCheck, isExternal: false },
+  { id: "systemAdmin", area: "Administración", personName: "Diego Paredes", jobTitle: "Administrador del Sistema", email: "diego.paredes@clearminds.ec", avatarUrl: avatarAdmin, icon: Settings2, isExternal: false },
+  { id: "marketing", area: "Marketing", personName: "Carlos Mendoza", jobTitle: "Jefe de Marketing", email: "carlos.mendoza@clearminds.ec", avatarUrl: avatarMarketing, icon: Megaphone, isExternal: false },
+  { id: "logistics", area: "Logística", personName: "Roberto Silva", jobTitle: "Jefe de Logística", email: "roberto.silva@clearminds.ec", avatarUrl: avatarLogistica, icon: PackageSearch, isExternal: false },
+  { id: "finance", area: "Finanzas", personName: "Lucía Castro", jobTitle: "Analista de Finanzas", email: "lucia.castro@clearminds.ec", avatarUrl: avatarFinanzas, icon: FileSpreadsheet, isExternal: false },
+  { id: "projects", area: "Proyectos", personName: "Ing. Marcos Ríos", jobTitle: "Residente de Obra", email: "marcos.rios@clearminds.ec", avatarUrl: avatarProyectos, icon: HardHat, isExternal: false },
+  { id: "postSales", area: "Posventa", personName: "Sofía Medina", jobTitle: "Coordinadora de Posventa", email: "sofia.medina@clearminds.ec", avatarUrl: avatarPosventa, icon: MessageSquareShare, isExternal: false },
+  { id: "externalSupplier", area: "Proveedor Externo", personName: "Constructora Andes S.A.", jobTitle: "Portal de Proveedor", email: "contacto@constructoraandes.ec", avatarUrl: avatarProveedor, icon: Building2, isExternal: true },
 ];
 
 export const findRoleById = (roleId: RoleId): ErpRole | undefined =>
@@ -173,15 +173,15 @@ export interface RealEstateProject {
 }
 
 export const PROJECTS: RealEstateProject[] = [
-  { id: "paris", name: "Proyecto París", location: "Piura, Castilla", totalLots: 420, soldLots: 268, areaHectares: 18.5, imageUrl: parisImage, description: "Lotización urbana con parque central, alamedas y habilitación completa de servicios." },
-  { id: "sagaleta", name: "Proyecto Sagaleta", location: "Chiclayo, Pimentel", totalLots: 310, soldLots: 142, areaHectares: 14.2, imageUrl: sagaletaImage, description: "Urbanización en ladera con lotes en terrazas, reservorio propio y vista al mar." },
+  { id: "paris", name: "Proyecto París", location: "Quito Centro Norte · Av. 10 de Agosto y Colón", totalLots: 420, soldLots: 268, areaHectares: 18.5, imageUrl: parisImage, description: "Lotización urbana con parque central, alamedas y habilitación completa de servicios." },
+  { id: "sagaleta", name: "Proyecto Sagaleta", location: "Valle de los Chillos · Sangolquí, Quito", totalLots: 310, soldLots: 142, areaHectares: 14.2, imageUrl: sagaletaImage, description: "Urbanización en ladera con lotes en terrazas, reservorio propio y vista a los volcanes." },
 ];
 
 export const SEED_PHASES: ProjectPhase[] = [
-  { id: "ph-par-1", projectId: "paris", name: "Habilitación Urbana", contractor: "Constructora Andes SAC", status: "Completada", progressPercent: 100, startDate: "2026-01-12", endDate: "2026-05-30" },
+  { id: "ph-par-1", projectId: "paris", name: "Habilitación Urbana", contractor: "Constructora Andes S.A.", status: "Completada", progressPercent: 100, startDate: "2026-01-12", endDate: "2026-05-30" },
   { id: "ph-par-2", projectId: "paris", name: "Agua y Desagüe", contractor: "Hidrosur Ingenieros EIRL", status: "En ejecución", progressPercent: 64, startDate: "2026-05-15", endDate: "2026-12-20" },
-  { id: "ph-par-3", projectId: "paris", name: "Pistas y Veredas", contractor: "Pavimentos del Norte SAC", status: "Licitación", progressPercent: 8, startDate: "2027-01-10", endDate: "2027-06-30" },
-  { id: "ph-sag-1", projectId: "sagaleta", name: "Habilitación Urbana", contractor: "Constructora Andes SAC", status: "En ejecución", progressPercent: 72, startDate: "2026-03-01", endDate: "2026-11-30" },
+  { id: "ph-par-3", projectId: "paris", name: "Pistas y Veredas", contractor: "Pavimentos del Norte S.A.", status: "Licitación", progressPercent: 8, startDate: "2027-01-10", endDate: "2027-06-30" },
+  { id: "ph-sag-1", projectId: "sagaleta", name: "Habilitación Urbana", contractor: "Constructora Andes S.A.", status: "En ejecución", progressPercent: 72, startDate: "2026-03-01", endDate: "2026-11-30" },
   { id: "ph-sag-2", projectId: "sagaleta", name: "Agua y Desagüe", contractor: "Hidrosur Ingenieros EIRL", status: "Planificada", progressPercent: 0, startDate: "2026-12-01", endDate: "2027-05-15" },
   { id: "ph-sag-3", projectId: "sagaleta", name: "Pistas y Veredas", contractor: "Por adjudicar", status: "Planificada", progressPercent: 0, startDate: "2027-05-20", endDate: "2027-10-30" },
 ];
@@ -264,4 +264,4 @@ export const validateAdjustment = (
 };
 
 export const formatCurrency = (amount: number): string =>
-  new Intl.NumberFormat("es-PE", { style: "currency", currency: "PEN", maximumFractionDigits: 0 }).format(amount);
+  new Intl.NumberFormat("es-EC", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(amount);

@@ -6,8 +6,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 
-import loginDevelopmentImage from "@/assets/login-development.jpg";
-import { BlueprintPlan } from "@/components/BlueprintPlan";
+import loginDuskImage from "@/assets/login-dusk-architecture.jpg";
 import { BrandLogo } from "@/components/BrandLogo";
 import { RoleAvatar } from "@/components/RoleAvatar";
 import { Button } from "@/components/ui/button";
@@ -59,21 +58,18 @@ function LoginPage() {
   return (
     <div className="grid min-h-screen bg-background lg:grid-cols-[3fr_2fr]">
       {/* Left canvas */}
-      <section className="relative hidden flex-col justify-between overflow-hidden border-r border-border bg-secondary p-10 lg:flex">
-        <BrandLogo />
-        <div className="grid grid-cols-[1.1fr_1fr] items-center gap-6 py-8">
-          <div className="overflow-hidden rounded-[28.8px] shadow-soft">
-            <img src={loginDevelopmentImage} alt="Desarrollo urbano de lotes con pistas nuevas" className="aspect-[4/5] w-full object-cover" width={1280} height={1600} />
+      <section className="relative hidden flex-col justify-between overflow-hidden p-10 lg:sticky lg:top-0 lg:flex lg:h-screen xl:p-14">
+        <img src={loginDuskImage} alt="Desarrollo residencial moderno al atardecer en Quito" className="absolute inset-0 h-full w-full object-cover" width={1280} height={1600} />
+        <div className="absolute inset-0 bg-foreground/35" aria-hidden="true" />
+        <div className="relative"><BrandLogo isInverse /></div>
+        <div className="relative max-w-2xl">
+          <h1 className="display-title text-4xl text-primary-foreground xl:text-5xl">Controla presupuestos, adquisiciones y posventa con trazabilidad total</h1>
+          <p className="mt-5 text-base text-primary-foreground/85">Proyectos París y Sagaleta · Quito, Ecuador</p>
+          <div className="mt-8 flex items-center gap-2" aria-hidden="true">
+            <span className="h-1.5 w-8 rounded-full bg-primary-foreground" />
+            <span className="h-1.5 w-1.5 rounded-full bg-primary-foreground/50" />
+            <span className="h-1.5 w-1.5 rounded-full bg-primary-foreground/50" />
           </div>
-          <div className="surface-card">
-            <p className="mb-3 text-xs font-semibold tracking-widest text-muted-foreground">PLANO DE LOTIZACIÓN</p>
-            <BlueprintPlan />
-          </div>
-        </div>
-        <div>
-          <span className="pill-badge bg-highlight text-highlight-foreground">GESTIÓN INMOBILIARIA INTEGRADA</span>
-          <h1 className="display-title mt-4 max-w-2xl text-5xl text-foreground xl:text-6xl">Controla presupuestos, adquisiciones y posventa</h1>
-          <p className="mt-6 text-sm font-medium text-muted-foreground">Prototipo navegable · datos sintéticos locales</p>
         </div>
       </section>
 
@@ -88,7 +84,7 @@ function LoginPage() {
             <div className="grid gap-1.5">
               <Label htmlFor="login-email">Correo electrónico</Label>
               <div className="relative">
-                <Input id="login-email" type="email" placeholder="nombre@clearminds.pe" className="h-12 pr-11" {...form.register("email")} />
+                <Input id="login-email" type="email" placeholder="nombre@clearminds.ec" className="h-12 pr-11" {...form.register("email")} />
                 <Mail className="absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               </div>
               {errors.email && <p className="text-xs font-medium text-destructive">{errors.email.message}</p>}

@@ -69,7 +69,7 @@ function BudgetsPage() {
                   </div>
                   <div className="text-right text-xs text-muted-foreground">
                     <p>{formatCurrency(adjustment.approvedBefore)} → <span className="font-semibold text-foreground">{formatCurrency(adjustment.approvedAfter)}</span></p>
-                    <p>{adjustment.authorName} · {new Date(adjustment.createdAt).toLocaleString("es-PE")}</p>
+                    <p>{adjustment.authorName} · {new Date(adjustment.createdAt).toLocaleString("es-EC")}</p>
                   </div>
                 </div>
               );
