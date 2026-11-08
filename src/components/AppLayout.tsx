@@ -35,7 +35,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
 
   return (
     <div className="flex min-h-screen w-full bg-secondary/40">
-      <div className={cn("md:block", isMobileMenuOpen ? "fixed inset-y-0 left-0 z-30" : "hidden")}>
+      <div className={cn("relative md:block", isMobileMenuOpen ? "fixed inset-y-0 left-0 z-30" : "hidden")}>
         <ModernSidebar isCollapsed={isSidebarCollapsed} onToggleCollapse={() => {
           if (isMobileMenuOpen) setIsMobileMenuOpen(false);
           else setIsSidebarCollapsed((previous) => !previous);
