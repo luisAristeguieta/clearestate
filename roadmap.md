@@ -1,4 +1,4 @@
 - [x] Redesign the dashboard with a full-width available-balance tile, interactive project selector, and unified priority actions.
 - [x] Verify financial totals, priority ordering, project selection, and desktop/mobile presentation.
-- [ ] Replace branding with ClearEstate and install an icon-only favicon.
-- [ ] Apply requested view titles and verify navigation, login and sidebar at desktop/mobile sizes.
+- [x] Replace branding with ClearEstate and install an icon-only favicon.
+- [x] Apply requested view titles and verify navigation, login and sidebar at desktop/mobile sizes.
