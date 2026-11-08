@@ -22,8 +22,15 @@ export const Route = createFileRoute("/_erp/dashboard")({
   component: DashboardPage,
 });
 
+export function getTimeGreeting(hour: number): string {
+  if (hour >= 5 && hour < 12) return "Buenos días";
+  if (hour >= 12 && hour < 19) return "Buenas tardes";
+  return "Buenas noches";
+}
+
 function DashboardPage() {
-  const { budgetLines, projectFilter } = useErp();
+  const { budgetLines, projectFilter, activeRole } = useErp();
+  const greeting = `${getTimeGreeting(new Date().getHours())}, ${activeRole?.personName ?? ""} · ${activeRole?.jobTitle ?? ""}`;
   const [selectedProjectId, setSelectedProjectId] = useState<ProjectId>("paris");
   const visibleLines = budgetLines.filter((line) => projectFilter === "all" || line.projectId === projectFilter);
   const visibleProjects = PROJECTS.filter((project) => projectFilter === "all" || project.id === projectFilter);
@@ -50,7 +57,8 @@ function DashboardPage() {
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <p className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground"><MapPin className="h-3.5 w-3.5" /> Quito, Ecuador · Portafolio inmobiliario</p>
-          <h1 className="display-title mt-2 text-3xl text-foreground">Centro de Control Financiero</h1>
+          <p className="mt-3 text-sm font-medium text-muted-foreground">{greeting}</p>
+          <h1 className="display-title mt-1 text-3xl text-foreground">Centro de Control Financiero</h1>
         </div>
         <span className="inline-flex items-center gap-2 rounded-full border border-border bg-background px-3 py-2 text-xs font-medium text-muted-foreground">
           <RefreshCw className="h-3.5 w-3.5 text-primary" /> Periodo fiscal 2026 · Q4
