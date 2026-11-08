@@ -69,7 +69,7 @@ function DashboardPage() {
       </div>
 
       <div className="mt-6 grid gap-6 xl:grid-cols-[2fr_1fr]">
-        <div className="grid gap-6 md:grid-cols-2">
+        <div className="grid content-start items-start gap-6 md:grid-cols-2">
           {visibleProjects.map((project) => {
             const projectPhases = phases.filter((phase) => phase.projectId === project.id);
             const averageProgress = Math.round(projectPhases.reduce((sum, phase) => sum + phase.progressPercent, 0) / projectPhases.length);

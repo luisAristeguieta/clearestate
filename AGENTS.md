@@ -28,3 +28,6 @@ use the editor.
   own key and store it in Secrets.
 - **Secrets.** Lovable manages them. Do not put secret values in the repo.
 <!-- LOVABLE:END -->
+
+- ERP state (active role, project filter, budget lines, adjustments) lives in `src/context/ErpContext.tsx` persisted to localStorage; seed data and financial rules live in `src/config/erpConfig.ts` — Phase 1 is a local synthetic-data prototype.
+- Signed-in screens are children of the pathless `src/routes/_erp.tsx` layout (ssr: false, redirects to /login without a role); unbuilt modules render via `/modulo/$moduleId` — one generic route until each module is built.
