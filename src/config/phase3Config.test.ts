@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { advanceCampaignDelivery, buildCampaignDeliveries, matchesReportDate, retryCampaignDelivery, SEED_ORACLE_SALES, selectCampaignRecipients, triggerAfterSalesSync } from "./phase3Config";
+import { advanceCampaignDelivery, buildCampaignDeliveries, buildManagementReport, matchesReportDate, retryCampaignDelivery, SEED_ORACLE_SALES, selectCampaignRecipients, triggerAfterSalesSync } from "./phase3Config";
+import { SEED_BUDGET_LINES } from "./erpConfig";
 
 describe("Oracle → Posventa", () => {
   it("creates cases only for balances exactly zero", () => {
@@ -40,3 +41,14 @@ describe("Project-segmented campaigns", () => {
   });
 });
 it("filters dates inclusively", () => { expect(matchesReportDate("2026-11-08T22:01:00Z", { from: "2026-11-08", to: "2026-11-08" })).toBe(true); expect(matchesReportDate("2026-11-07", { from: "2026-11-08", to: "2026-11-08" })).toBe(false); });
+it("filters financial reports by project and area without changing the balance formula", () => {
+  const report = buildManagementReport(SEED_BUDGET_LINES, [], [], [], SEED_ORACLE_SALES, [], { projectId: "paris", area: "Proyectos y Obras", from: "", to: "" });
+  expect(report.selectedLines.map((line) => line.id)).toEqual(["bl-01", "bl-02", "bl-03"]);
+  expect(report.approved).toBe(7350000);
+  expect(report.available).toBe(3728000);
+});
+it("counts only cases created within the requested period", () => {
+  const cases = triggerAfterSalesSync(SEED_ORACLE_SALES, [], "2026-11-08T22:01:00Z");
+  expect(buildManagementReport([], [], [], [], SEED_ORACLE_SALES, cases, { projectId: "all", area: "all", from: "2026-11-09", to: "2026-11-30" }).selectedCases).toHaveLength(0);
+  expect(buildManagementReport([], [], [], [], SEED_ORACLE_SALES, cases, { projectId: "sagaleta", area: "all", from: "2026-11-08", to: "2026-11-08" }).selectedCases).toHaveLength(2);
+});
