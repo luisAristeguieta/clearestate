@@ -10,33 +10,106 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ErpRouteImport } from './routes/_erp'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as ErpDashboardRouteImport } from './routes/_erp.dashboard'
+import { Route as ErpPresupuestosRouteImport } from './routes/_erp.presupuestos'
+import { Route as ErpProyectosRouteImport } from './routes/_erp.proyectos'
+import { Route as ErpModuloModuleIdRouteImport } from './routes/_erp.modulo.$moduleId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ErpRoute = ErpRouteImport.update({
+  id: '/_erp',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ErpDashboardRoute = ErpDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => ErpRoute,
+} as any)
+const ErpPresupuestosRoute = ErpPresupuestosRouteImport.update({
+  id: '/presupuestos',
+  path: '/presupuestos',
+  getParentRoute: () => ErpRoute,
+} as any)
+const ErpProyectosRoute = ErpProyectosRouteImport.update({
+  id: '/proyectos',
+  path: '/proyectos',
+  getParentRoute: () => ErpRoute,
+} as any)
+const ErpModuloModuleIdRoute = ErpModuloModuleIdRouteImport.update({
+  id: '/modulo/$moduleId',
+  path: '/modulo/$moduleId',
+  getParentRoute: () => ErpRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/login': typeof LoginRoute
+  '/dashboard': typeof ErpDashboardRoute
+  '/presupuestos': typeof ErpPresupuestosRoute
+  '/proyectos': typeof ErpProyectosRoute
+  '/modulo/$moduleId': typeof ErpModuloModuleIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/login': typeof LoginRoute
+  '/dashboard': typeof ErpDashboardRoute
+  '/presupuestos': typeof ErpPresupuestosRoute
+  '/proyectos': typeof ErpProyectosRoute
+  '/modulo/$moduleId': typeof ErpModuloModuleIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_erp': typeof ErpRouteWithChildren
+  '/login': typeof LoginRoute
+  '/_erp/dashboard': typeof ErpDashboardRoute
+  '/_erp/presupuestos': typeof ErpPresupuestosRoute
+  '/_erp/proyectos': typeof ErpProyectosRoute
+  '/_erp/modulo/$moduleId': typeof ErpModuloModuleIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/login'
+    | '/dashboard'
+    | '/presupuestos'
+    | '/proyectos'
+    | '/modulo/$moduleId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/login'
+    | '/dashboard'
+    | '/presupuestos'
+    | '/proyectos'
+    | '/modulo/$moduleId'
+  id:
+    | '__root__'
+    | '/'
+    | '/_erp'
+    | '/login'
+    | '/_erp/dashboard'
+    | '/_erp/presupuestos'
+    | '/_erp/proyectos'
+    | '/_erp/modulo/$moduleId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ErpRoute: typeof ErpRouteWithChildren
+  LoginRoute: typeof LoginRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +121,71 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_erp': {
+      id: '/_erp'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof ErpRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_erp/dashboard': {
+      id: '/_erp/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof ErpDashboardRouteImport
+      parentRoute: typeof ErpRoute
+    }
+    '/_erp/presupuestos': {
+      id: '/_erp/presupuestos'
+      path: '/presupuestos'
+      fullPath: '/presupuestos'
+      preLoaderRoute: typeof ErpPresupuestosRouteImport
+      parentRoute: typeof ErpRoute
+    }
+    '/_erp/proyectos': {
+      id: '/_erp/proyectos'
+      path: '/proyectos'
+      fullPath: '/proyectos'
+      preLoaderRoute: typeof ErpProyectosRouteImport
+      parentRoute: typeof ErpRoute
+    }
+    '/_erp/modulo/$moduleId': {
+      id: '/_erp/modulo/$moduleId'
+      path: '/modulo/$moduleId'
+      fullPath: '/modulo/$moduleId'
+      preLoaderRoute: typeof ErpModuloModuleIdRouteImport
+      parentRoute: typeof ErpRoute
+    }
   }
 }
 
+interface ErpRouteChildren {
+  ErpDashboardRoute: typeof ErpDashboardRoute
+  ErpPresupuestosRoute: typeof ErpPresupuestosRoute
+  ErpProyectosRoute: typeof ErpProyectosRoute
+  ErpModuloModuleIdRoute: typeof ErpModuloModuleIdRoute
+}
+
+const ErpRouteChildren: ErpRouteChildren = {
+  ErpDashboardRoute: ErpDashboardRoute,
+  ErpPresupuestosRoute: ErpPresupuestosRoute,
+  ErpProyectosRoute: ErpProyectosRoute,
+  ErpModuloModuleIdRoute: ErpModuloModuleIdRoute,
+}
+
+const ErpRouteWithChildren = ErpRoute._addFileChildren(ErpRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ErpRoute: ErpRouteWithChildren,
+  LoginRoute: LoginRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
