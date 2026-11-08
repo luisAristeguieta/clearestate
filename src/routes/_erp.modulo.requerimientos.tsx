@@ -34,12 +34,12 @@ export const Route = createFileRoute("/_erp/modulo/requerimientos")({
   component: RequisitionsPage,
 });
 
-const STATUS_TONES: Record<RequisitionStatus, "blue" | "yellow" | "green" | "red" | "neutral"> = {
+const STATUS_TONES: Record<RequisitionStatus, "complete" | "yellow" | "attention" | "neutral"> = {
   pending_approval: "yellow",
-  approved: "green",
-  returned: "red",
-  in_procurement: "blue",
-  ordered: "blue",
+  approved: "complete",
+  returned: "attention",
+  in_procurement: "neutral",
+  ordered: "neutral",
   invoiced: "neutral",
 };
 
@@ -95,7 +95,7 @@ function RequisitionsPage() {
   };
 
   return (
-    <div>
+    <div className="phase2-view">
       <PageHeader
         title="Requerimientos y Solicitudes"
         description="Las áreas registran necesidades de bienes y servicios con control del saldo disponible de cada partida."
@@ -105,7 +105,7 @@ function RequisitionsPage() {
         <form onSubmit={handleSubmit} className="surface-card space-y-5 p-6">
           <div className="flex items-center gap-3">
             <span className="grid h-10 w-10 place-items-center rounded-full bg-secondary">
-              <ClipboardList className="h-5 w-5 text-primary" />
+              <ClipboardList className="h-5 w-5 text-foreground" />
             </span>
             <div>
               <h2 className="text-lg font-bold tracking-tight">Nuevo requerimiento</h2>
@@ -179,11 +179,11 @@ function RequisitionsPage() {
           </div>
 
           {overdraftCheck?.isOverdrawn && (
-            <div className="rounded-[18px] border border-red-200 bg-red-50 p-4">
-              <p className="flex items-center gap-2 text-sm font-semibold text-red-700">
+            <div className="rounded-[18px] border border-border bg-secondary p-4">
+              <p className="flex items-center gap-2 text-sm font-semibold text-foreground">
                 <AlertTriangle className="h-4 w-4" /> Alerta de sobregiro
               </p>
-              <p className="mt-1 text-sm text-red-700">
+              <p className="mt-1 text-sm text-foreground">
                 El importe supera el saldo disponible por {formatCurrency(overdraftCheck.deficit)}. Debes registrar una justificación detallada para continuar.
               </p>
               <Textarea
@@ -198,7 +198,7 @@ function RequisitionsPage() {
             </div>
           )}
 
-          <Button type="submit" variant="ink" className="w-full rounded-full">
+          <Button type="submit" variant="default" className="w-full rounded-full">
             <Send /> Enviar a aprobación
           </Button>
         </form>
@@ -209,7 +209,7 @@ function RequisitionsPage() {
             <div className="surface-card p-8 text-center text-muted-foreground">Aún no hay requerimientos registrados.</div>
           )}
           {requisitions.map((requisition) => (
-            <article key={requisition.id} className="surface-card p-5">
+            <article key={requisition.id} className="surface-card">
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div className="min-w-0">
                   <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{requisition.code} · {requisition.requesterArea}</p>
@@ -222,7 +222,7 @@ function RequisitionsPage() {
                 </div>
               </div>
               {requisition.overdraftJustification && (
-                <p className="mt-3 flex items-start gap-2 rounded-2xl bg-red-50 px-3 py-2 text-sm text-red-700">
+                <p className="mt-3 flex items-start gap-2 rounded-2xl bg-secondary px-3 py-2 text-sm text-foreground">
                   <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" /> Excepción por sobregiro: {requisition.overdraftJustification}
                 </p>
               )}

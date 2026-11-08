@@ -121,12 +121,12 @@ function InvoicesPage() {
   };
 
   return (
-    <div>
+    <div className="phase2-view">
       <PageHeader
         title="Comprobantes y Ejecución de Gastos"
         description="Recepción de facturas con prellenado por IA, revisión humana obligatoria y conciliación Comprometido → Ejecutado."
         actions={
-          <Button variant="ink" className="rounded-full" onClick={handleExportContasis}>
+          <Button variant="default" className="rounded-full" onClick={handleExportContasis}>
             <FileDown /> Exportar a Contasis
           </Button>
         }
@@ -136,7 +136,7 @@ function InvoicesPage() {
         <section className="surface-card space-y-5 p-6">
           <div className="flex items-center gap-3">
             <span className="grid h-10 w-10 place-items-center rounded-full bg-secondary">
-              <ScanSearch className="h-5 w-5 text-primary" />
+              <ScanSearch className="h-5 w-5 text-foreground" />
             </span>
             <div>
               <h2 className="text-lg font-bold tracking-tight">Recepción con IA</h2>
@@ -172,7 +172,7 @@ function InvoicesPage() {
           </Button>
 
           {draft && (
-            <div className="space-y-4 rounded-[18px] border border-border bg-secondary/60 p-4">
+            <div className="space-y-4 border-t border-border pt-5">
               <p className="text-sm font-semibold">Datos extraídos por IA · {draft.pdfFileName}</p>
               <div className="grid gap-3 sm:grid-cols-2">
                 <div className="space-y-1">
@@ -196,11 +196,11 @@ function InvoicesPage() {
                 IVA 15%: <span className="font-semibold text-foreground">{formatCurrency(draft.taxAmount)}</span> · Total:{" "}
                 <span className="font-semibold text-foreground">{formatCurrency(draft.total)}</span>
               </p>
-              <label className="flex items-start gap-3 rounded-2xl bg-background p-3 text-sm">
+              <label className="flex items-start gap-3 py-3 text-sm">
                 <Checkbox checked={humanReviewed} onCheckedChange={(checked) => setHumanReviewed(checked === true)} className="mt-0.5" />
                 Confirmo que revisé los datos extraídos contra el PDF original (revisión humana obligatoria).
               </label>
-              <Button variant="ink" className="w-full rounded-full" onClick={handleRegister} disabled={!humanReviewed}>
+              <Button variant="default" className="w-full rounded-full" onClick={handleRegister} disabled={!humanReviewed}>
                 Registrar gasto
               </Button>
             </div>
@@ -215,7 +215,7 @@ function InvoicesPage() {
           {invoices.map((invoice) => {
             const order = purchaseOrders.find((item) => item.id === invoice.purchaseOrderId);
             return (
-              <article key={invoice.id} className="surface-card p-5">
+              <article key={invoice.id} className="surface-card">
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div className="min-w-0">
                     <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
@@ -231,7 +231,7 @@ function InvoicesPage() {
                     </p>
                   </div>
                   <div className="flex flex-col items-end gap-2">
-                    <StatusBadge tone={invoice.status === "validated" ? "green" : invoice.status === "rejected" ? "red" : "yellow"}>
+                    <StatusBadge tone={invoice.status === "validated" ? "complete" : invoice.status === "rejected" ? "attention" : "yellow"}>
                       {INVOICE_STATUS_LABELS[invoice.status]}
                     </StatusBadge>
                     <span className="text-lg font-bold tracking-tight">{formatCurrency(invoice.total)}</span>
@@ -239,7 +239,7 @@ function InvoicesPage() {
                 </div>
                 {invoice.status === "pending_review" && (
                   <div className="mt-4 flex flex-wrap gap-2 border-t border-border pt-4">
-                    <Button variant="ink" size="sm" className="rounded-full" onClick={() => handleReview(invoice.id, "validate")}>
+                    <Button variant="default" size="sm" className="rounded-full" onClick={() => handleReview(invoice.id, "validate")}>
                       <CheckCircle2 /> Validar y ejecutar gasto
                     </Button>
                     <Button variant="outline" size="sm" className="rounded-full" onClick={() => handleReview(invoice.id, "reject")}>

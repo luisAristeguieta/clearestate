@@ -2,13 +2,12 @@ import type { ReactNode } from "react";
 
 import { cn } from "@/lib/utils";
 
-type BadgeTone = "blue" | "yellow" | "green" | "red" | "neutral";
+type BadgeTone = "complete" | "yellow" | "attention" | "neutral";
 
 const TONE_CLASSES: Record<BadgeTone, string> = {
-  blue: "bg-primary text-primary-foreground",
+  complete: "bg-secondary text-foreground",
   yellow: "bg-highlight text-highlight-foreground",
-  green: "bg-emerald-100 text-emerald-800",
-  red: "bg-red-100 text-red-700",
+  attention: "bg-highlight text-highlight-foreground",
   neutral: "bg-secondary text-muted-foreground",
 };
 

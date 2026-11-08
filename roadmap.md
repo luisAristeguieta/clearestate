@@ -1,5 +1,9 @@
 # Roadmap
 
+## Diseño Planpoint de Fase 2
+- [x] Unificar colores, acciones principales, formularios y estados según DESIGN-2.md, sin cambiar reglas de negocio.
+- [x] Verificar módulos en escritorio y móvil.
+
 ## Fase 2 — Ciclo transaccional y documental
 - [x] Modelo de datos y reglas Fase 2 (requerimientos, invitaciones, OC, facturas, contratos) + pruebas.
 - [x] P-04 Requerimientos: formulario con alerta de sobregiro y listado con historial.

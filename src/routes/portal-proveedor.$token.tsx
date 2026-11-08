@@ -82,9 +82,9 @@ function SupplierPortalPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="phase2-view min-h-screen bg-background">
       <header className="border-b border-border bg-card/80 backdrop-blur-md">
-        <div className="mx-auto flex max-w-3xl items-center justify-between px-4 py-4">
+        <div className="mx-auto flex max-w-3xl flex-wrap items-center justify-between gap-4 px-4 py-4">
           <BrandLogo />
           <span className="pill-badge bg-secondary text-muted-foreground">
             <Lock className="h-3 w-3" /> Acceso seguro por invitación
@@ -97,7 +97,7 @@ function SupplierPortalPage() {
         <h1 className="display-title mt-1 text-3xl">{invitation.supplierName}</h1>
 
         {requisition && (
-          <section className="surface-card mt-6 p-6">
+          <section className="mt-6 border-b border-border pb-6">
             <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
               {requisition.code} · {project?.name}
             </p>
@@ -111,8 +111,8 @@ function SupplierPortalPage() {
 
         {invitation.status === "submitted" && invitation.offer ? (
           <section className="surface-card mt-6 flex flex-col items-center p-10 text-center">
-            <span className="grid h-14 w-14 place-items-center rounded-full bg-emerald-100">
-              <CheckCircle2 className="h-7 w-7 text-emerald-700" />
+            <span className="grid h-14 w-14 place-items-center rounded-full bg-secondary">
+              <CheckCircle2 className="h-7 w-7 text-foreground" />
             </span>
             <h2 className="mt-4 text-xl font-bold tracking-tight">Oferta presentada</h2>
             <p className="mt-2 max-w-md text-sm text-muted-foreground">
@@ -154,7 +154,7 @@ function SupplierPortalPage() {
               </Button>
             </div>
 
-            <Button type="submit" variant="ink" className="w-full rounded-full">
+            <Button type="submit" variant="default" className="w-full rounded-full">
               Enviar oferta
             </Button>
           </form>
