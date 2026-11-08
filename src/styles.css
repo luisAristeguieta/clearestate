@@ -196,3 +196,14 @@
   width: 100%;
   text-align: left;
 }
+
+.phase2-view [role="combobox"] {
+  min-width: 0;
+  width: 100%;
+  background-color: var(--background);
+  box-shadow: none;
+}
+
+.phase2-view > .grid > :first-child {
+  align-self: start;
+}

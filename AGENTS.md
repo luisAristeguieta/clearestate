@@ -34,3 +34,4 @@ use the editor.
 - Dashboard priority actions are assembled in `src/config/dashboardConfig.ts` and tested independently of presentation so budget urgency stays consistent across layout changes.
 - Browser view titles are centralized in `src/config/brandConfig.ts`, applied globally after navigation and mirrored in route head metadata; shared branding uses transparent light/inverse image assets and an icon-only SVG favicon.
 - Phase 2 transactional cycle (requisitions, supplier invitations, purchase orders, invoices, work contracts) keeps its types, seeds and pure budget rules in `src/config/phase2Config.ts` with tests beside it; each built module gets its own `_erp.modulo.<id>.tsx` route, and the public supplier portal lives outside `_erp` at `src/routes/portal-proveedor.$token.tsx`.
+- Phase 2 views use the shared `phase2-view` presentation scope and semantic StatusBadge tones so visual changes remain isolated from transactional rules.
