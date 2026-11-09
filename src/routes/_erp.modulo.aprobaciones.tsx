@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { CheckCheck, RotateCcw } from "lucide-react";
+import { AlertTriangle, CheckCheck, FileText, RotateCcw } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -7,11 +7,20 @@ import { PageHeader } from "@/components/PageHeader";
 import { RequisitionTimeline } from "@/components/phase2/RequisitionTimeline";
 import { StatusBadge } from "@/components/phase2/StatusBadge";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { getViewTitle } from "@/config/brandConfig";
 import { PROJECTS, formatCurrency } from "@/config/erpConfig";
 import { REQUISITION_STATUS_LABELS } from "@/config/phase2Config";
 import { useErp } from "@/context/ErpContext";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_erp/modulo/aprobaciones")({
   head: () => ({
@@ -37,7 +46,7 @@ export const Route = createFileRoute("/_erp/modulo/aprobaciones")({
 function ApprovalsPage() {
   const { budgetLines, requisitions, approveRequisition, returnRequisition } = useErp();
   const [observations, setObservations] = useState<Record<string, string>>({});
-  const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [selectedRequisitionId, setSelectedRequisitionId] = useState<string | null>(null);
 
   const pendingRequisitions = requisitions.filter(
     (requisition) => requisition.status === "pending_approval",
@@ -45,6 +54,9 @@ function ApprovalsPage() {
   const resolvedRequisitions = requisitions.filter(
     (requisition) => requisition.status !== "pending_approval",
   );
+
+  const selectedRequisition =
+    requisitions.find((requisition) => requisition.id === selectedRequisitionId) ?? null;
 
   const handleApproveRequisition = (requisitionId: string, code: string) => {
     try {
@@ -134,28 +146,23 @@ function ApprovalsPage() {
                     className="rounded-full"
                     onClick={() => handleApproveRequisition(requisition.id, requisition.code)}
                   >
-                    <CheckCheck /> Aprobar
+                    <CheckCheck className="h-4 w-4" /> Aprobar
                   </Button>
                   <Button
                     variant="outline"
                     className="rounded-full"
                     onClick={() => handleReturnRequisition(requisition.id, requisition.code)}
                   >
-                    <RotateCcw /> Devolver con observación
+                    <RotateCcw className="h-4 w-4" /> Devolver con observación
                   </Button>
                   <Button
-                    variant="ghost"
+                    variant="secondary"
                     className="rounded-full"
-                    onClick={() =>
-                      setExpandedId(expandedId === requisition.id ? null : requisition.id)
-                    }
+                    onClick={() => setSelectedRequisitionId(requisition.id)}
                   >
-                    {expandedId === requisition.id ? "Ocultar expediente" : "Ver expediente"}
+                    <FileText className="h-4 w-4" /> Ver expediente
                   </Button>
                 </div>
-                {expandedId === requisition.id && (
-                  <RequisitionTimeline events={requisition.timeline} />
-                )}
               </div>
             </article>
           );
@@ -178,21 +185,261 @@ function ApprovalsPage() {
                   {requisition.requesterArea} · {formatCurrency(requisition.estimatedAmount)}
                 </p>
               </div>
-              <StatusBadge
-                tone={
-                  requisition.status === "returned"
-                    ? "attention"
-                    : requisition.status === "approved"
-                      ? "complete"
-                      : "neutral"
-                }
-              >
-                {REQUISITION_STATUS_LABELS[requisition.status]}
-              </StatusBadge>
+              <div className="flex items-center gap-3">
+                <StatusBadge
+                  tone={
+                    requisition.status === "returned"
+                      ? "attention"
+                      : requisition.status === "approved"
+                        ? "complete"
+                        : "neutral"
+                  }
+                >
+                  {REQUISITION_STATUS_LABELS[requisition.status]}
+                </StatusBadge>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="rounded-full"
+                  onClick={() => setSelectedRequisitionId(requisition.id)}
+                >
+                  <FileText className="h-3.5 w-3.5" /> Ver expediente
+                </Button>
+              </div>
             </div>
           ))}
         </div>
       </section>
+
+      {/* Modal Frontal Centrado para la Ficha del Expediente */}
+      <Dialog
+        open={Boolean(selectedRequisition)}
+        onOpenChange={(open) => !open && setSelectedRequisitionId(null)}
+      >
+        <DialogContent
+          overlayClassName="bg-black/40 backdrop-blur-sm"
+          className="max-h-[90vh] max-w-3xl overflow-y-auto rounded-[28px] border border-border bg-background p-6 shadow-xl sm:p-8"
+        >
+          {selectedRequisition &&
+            (() => {
+              const line = budgetLines.find((item) => item.id === selectedRequisition.budgetLineId);
+              const project = PROJECTS.find((item) => item.id === selectedRequisition.projectId);
+              const lineAvailable = line ? line.approved - line.committed - line.executed : 0;
+              const isOverdrawn = line
+                ? selectedRequisition.estimatedAmount > lineAvailable
+                : false;
+              const isPending = selectedRequisition.status === "pending_approval";
+
+              return (
+                <div className="space-y-6">
+                  <DialogHeader className="space-y-2 border-b border-border pb-4 text-left">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <div className="flex items-center gap-2">
+                        <span className="pill-badge bg-secondary font-semibold text-primary">
+                          {selectedRequisition.code}
+                        </span>
+                        <span className="text-xs font-medium text-muted-foreground">
+                          {selectedRequisition.requesterArea} · {project?.name}
+                        </span>
+                      </div>
+                      <StatusBadge
+                        tone={
+                          selectedRequisition.status === "pending_approval"
+                            ? "yellow"
+                            : selectedRequisition.status === "approved"
+                              ? "complete"
+                              : selectedRequisition.status === "returned"
+                                ? "attention"
+                                : "neutral"
+                        }
+                      >
+                        {REQUISITION_STATUS_LABELS[selectedRequisition.status]}
+                      </StatusBadge>
+                    </div>
+
+                    <DialogTitle className="text-2xl font-bold tracking-tight text-foreground">
+                      {selectedRequisition.title}
+                    </DialogTitle>
+                    <DialogDescription className="text-sm text-muted-foreground">
+                      {selectedRequisition.description}
+                    </DialogDescription>
+
+                    <div className="pt-2">
+                      <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                        Monto Requerido
+                      </p>
+                      <p className="text-3xl font-bold tracking-tight text-foreground">
+                        {formatCurrency(selectedRequisition.estimatedAmount)}
+                      </p>
+                    </div>
+                  </DialogHeader>
+
+                  {/* Justificación del Requerimiento */}
+                  <div className="space-y-2 rounded-[20px] border border-border bg-secondary/40 p-5">
+                    <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                      Justificación Detallada
+                    </p>
+                    <p className="text-sm leading-relaxed text-foreground">
+                      {selectedRequisition.justification}
+                    </p>
+                  </div>
+
+                  {/* Alerta de excepción por sobregiro (RN-03) si existe */}
+                  {selectedRequisition.overdraftJustification && (
+                    <div className="space-y-1.5 rounded-[20px] border border-highlight/40 bg-highlight/10 p-4">
+                      <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-highlight-foreground">
+                        <AlertTriangle className="h-4 w-4" /> Excepción por sobregiro autorizada
+                      </div>
+                      <p className="text-sm text-foreground">
+                        {selectedRequisition.overdraftJustification}
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Partida presupuestaria asociada */}
+                  {line && (
+                    <div className="space-y-3 rounded-[20px] border border-border bg-card p-5">
+                      <div className="flex flex-wrap items-center justify-between gap-2">
+                        <div>
+                          <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                            Partida Presupuestaria Asociada
+                          </p>
+                          <p className="text-base font-semibold text-foreground">
+                            {line.code} · {line.name}
+                          </p>
+                        </div>
+                        <span
+                          className={cn(
+                            "pill-badge text-xs font-medium",
+                            isOverdrawn
+                              ? "bg-destructive/10 text-destructive"
+                              : "bg-primary/10 text-primary",
+                          )}
+                        >
+                          {isOverdrawn ? "Supera saldo disponible" : "Saldo suficiente"}
+                        </span>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-3 pt-2 text-xs sm:grid-cols-4">
+                        <div className="space-y-1 rounded-[14px] bg-secondary p-3">
+                          <p className="text-muted-foreground">Aprobado</p>
+                          <p className="font-semibold text-foreground">
+                            {formatCurrency(line.approved)}
+                          </p>
+                        </div>
+                        <div className="space-y-1 rounded-[14px] bg-secondary p-3">
+                          <p className="text-muted-foreground">Comprometido</p>
+                          <p className="font-semibold text-foreground">
+                            {formatCurrency(line.committed)}
+                          </p>
+                        </div>
+                        <div className="space-y-1 rounded-[14px] bg-secondary p-3">
+                          <p className="text-muted-foreground">Ejecutado</p>
+                          <p className="font-semibold text-foreground">
+                            {formatCurrency(line.executed)}
+                          </p>
+                        </div>
+                        <div className="space-y-1 rounded-[14px] bg-secondary p-3">
+                          <p className="text-muted-foreground">Disponible</p>
+                          <p
+                            className={cn(
+                              "font-bold",
+                              lineAvailable < 0 ? "text-destructive" : "text-primary",
+                            )}
+                          >
+                            {formatCurrency(lineAvailable)}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Línea de tiempo auditable */}
+                  <div className="space-y-3 border-t border-border pt-4">
+                    <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                      Trazabilidad y Línea de Tiempo del Expediente
+                    </p>
+                    <RequisitionTimeline events={selectedRequisition.timeline} />
+                  </div>
+
+                  {/* Observación y acciones de decisión gerencial */}
+                  {isPending && (
+                    <div className="space-y-3 border-t border-border pt-4">
+                      <label
+                        htmlFor="modal-observation"
+                        className="text-xs font-semibold uppercase tracking-wider text-muted-foreground"
+                      >
+                        Observación de Gerencia (obligatoria solo para devolver)
+                      </label>
+                      <Textarea
+                        id="modal-observation"
+                        value={observations[selectedRequisition.id] ?? ""}
+                        onChange={(event) =>
+                          setObservations((previous) => ({
+                            ...previous,
+                            [selectedRequisition.id]: event.target.value,
+                          }))
+                        }
+                        placeholder="Ingresa la observación o requerimiento de ajuste si vas a devolver el expediente..."
+                        rows={3}
+                        maxLength={300}
+                        className="rounded-[18px]"
+                      />
+                    </div>
+                  )}
+
+                  <DialogFooter className="flex flex-wrap items-center justify-end gap-2 border-t border-border pt-4">
+                    {isPending ? (
+                      <>
+                        <Button
+                          variant="ghost"
+                          className="rounded-full"
+                          onClick={() => setSelectedRequisitionId(null)}
+                        >
+                          Cerrar
+                        </Button>
+                        <Button
+                          variant="outline"
+                          className="rounded-full"
+                          onClick={() => {
+                            handleReturnRequisition(
+                              selectedRequisition.id,
+                              selectedRequisition.code,
+                            );
+                            setSelectedRequisitionId(null);
+                          }}
+                        >
+                          <RotateCcw className="h-4 w-4" /> Devolver con observación
+                        </Button>
+                        <Button
+                          variant="default"
+                          className="rounded-full"
+                          onClick={() => {
+                            handleApproveRequisition(
+                              selectedRequisition.id,
+                              selectedRequisition.code,
+                            );
+                            setSelectedRequisitionId(null);
+                          }}
+                        >
+                          <CheckCheck className="h-4 w-4" /> Aprobar requerimiento
+                        </Button>
+                      </>
+                    ) : (
+                      <Button
+                        variant="default"
+                        className="rounded-full"
+                        onClick={() => setSelectedRequisitionId(null)}
+                      >
+                        Cerrar expediente
+                      </Button>
+                    )}
+                  </DialogFooter>
+                </div>
+              );
+            })()}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
