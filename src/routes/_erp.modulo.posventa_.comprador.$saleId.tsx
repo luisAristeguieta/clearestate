@@ -1,7 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowLeft, Download, FileUp, CheckCheck } from "lucide-react";
+import { ArrowLeft, CheckCheck, Download, FileUp } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,6 +13,8 @@ import {
   formatMoney,
   performPrototypeAction,
 } from "@/components/phase3/Phase3Shared";
+import { BuyerCommunicationsCard } from "@/components/posventa/BuyerCommunicationsCard";
+import { BuyerPaymentBehaviorCard } from "@/components/posventa/BuyerPaymentBehaviorCard";
 import { PROJECTS } from "@/config/erpConfig";
 import { readPrototypeAttachment, usePhase3 } from "@/context/Phase3Context";
 export const Route = createFileRoute("/_erp/modulo/posventa_/comprador/$saleId")({
@@ -180,6 +183,16 @@ function BuyerPage() {
             </div>
           </div>
         </section>
+      </div>
+
+      {/* Historial y Comportamiento de Pago Oracle */}
+      <div className="mt-8">
+        <BuyerPaymentBehaviorCard sale={sale} />
+      </div>
+
+      {/* Historial de Comunicaciones y Recordatorios */}
+      <div className="mt-8">
+        <BuyerCommunicationsCard sale={sale} projectName={project?.name ?? "Proyecto"} />
       </div>
     </div>
   );

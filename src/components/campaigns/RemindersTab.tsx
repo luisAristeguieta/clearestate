@@ -122,7 +122,7 @@ export function RemindersTab({
         "Estimado/a {{nombre}}, le recordamos que la entrega física de su lote {{lote}} en Proyecto París está programada para el 28 de noviembre. Nuestro equipo técnico le espera para el recorrido de inspección.",
       );
       setStatus("active");
-      toast.info("Campos completados: Simulación de Entrega de Lote (Multicanal).");
+      toast.success("Campos completados: Simulación de Entrega de Lote (Multicanal).");
     } else {
       setTitle("Aviso de documentación pendiente para firma de escrituras");
       setType("documentacion");
@@ -133,7 +133,7 @@ export function RemindersTab({
         "Estimado/a {{nombre}}, solicitamos remitir su certificado de no adeudo y copia de documento de identidad para completar el expediente de entrega de su lote {{lote}} en Proyecto Sagaleta.",
       );
       setStatus("scheduled");
-      toast.info("Campos completados: Simulación de Documentación Pendiente (Multicanal).");
+      toast.success("Campos completados: Simulación de Documentación Pendiente (Multicanal).");
     }
   };
 

@@ -9,6 +9,7 @@ import {
   History,
   Bell,
   Sparkles,
+  FileText,
 } from "lucide-react";
 import { useState, type FormEvent } from "react";
 import { toast } from "sonner";
@@ -29,6 +30,7 @@ import {
 import { readPrototypeAttachment, usePhase3 } from "@/context/Phase3Context";
 import { CampaignHistoryTab } from "@/components/campaigns/CampaignHistoryTab";
 import { RemindersTab } from "@/components/campaigns/RemindersTab";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_erp/modulo/campanas")({
   head: () =>
@@ -58,7 +60,7 @@ function CampaignsPage() {
 
   // Composer states
   const [projectId, setProjectId] = useState<ProjectId>("paris");
-  const [channel, setChannel] = useState<CampaignChannel>("email");
+  const [channels, setChannels] = useState<CampaignChannel[]>(["email", "whatsapp"]);
   const [title, setTitle] = useState("");
   const [message, setMessage] = useState(
     "Hola {{nombre}}, compartimos el avance de {{proyecto}} para tu lote {{lote}}. Te mantendremos informado sobre la próxima entrega.",
@@ -70,13 +72,45 @@ function CampaignsPage() {
   const preview = recipients[0];
   const project = PROJECTS.find((item) => item.id === projectId);
 
+  const handleToggleChannel = (targetChannel: CampaignChannel) => {
+    if (channels.includes(targetChannel)) {
+      if (channels.length === 1) {
+        toast.info("Debes mantener seleccionado al menos un canal de comunicación.");
+        return;
+      }
+      setChannels(channels.filter((c) => c !== targetChannel));
+    } else {
+      setChannels([...channels, targetChannel]);
+    }
+  };
+
+  const handleLoadPreloadedExample = () => {
+    setProjectId("paris");
+    setTitle("Avance de habilitación urbana y redes hidrosanitarias - Etapa I");
+    setChannels(["email", "whatsapp"]);
+    setMessage(
+      "Hola {{nombre}}, compartimos con agrado el avance de obra de {{proyecto}} para tu lote {{lote}}. Las redes de agua potable, alcantarillado y pavimentación presentan un 92% de ejecución. Te notificaremos las fechas de inspección técnica previa a la entrega.",
+    );
+    const futureDate = new Date();
+    futureDate.setDate(futureDate.getDate() + 5);
+    futureDate.setHours(10, 0, 0, 0);
+    const pad = (n: number) => String(n).padStart(2, "0");
+    const formatted = `${futureDate.getFullYear()}-${pad(futureDate.getMonth() + 1)}-${pad(futureDate.getDate())}T${pad(futureDate.getHours())}:${pad(futureDate.getMinutes())}`;
+    setScheduledAt(formatted);
+    toast.success("Ejemplo precargado aplicado con éxito: Campaña multicanal para Proyecto París.");
+  };
+
   const handleCampaignSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     try {
+      if (channels.length === 0) {
+        throw new Error("Por favor selecciona al menos un canal de envío (Correo o WhatsApp).");
+      }
       createCampaign({
         title,
         projectId,
-        channel,
+        channel: channels[0] ?? "email",
+        channels,
         message,
         attachments,
         scheduledAt: scheduledAt ? new Date(scheduledAt).toISOString() : null,
@@ -177,7 +211,28 @@ function CampaignsPage() {
       {activeTab === "composer" && (
         <div className="grid gap-8 xl:grid-cols-2 items-start">
           <form onSubmit={handleCampaignSubmit} className="surface-card space-y-5 p-6">
-            <h2 className="text-lg font-bold tracking-tight text-[#1d1d1f]">Crear nueva campaña</h2>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#e5e6e8] pb-4">
+              <div>
+                <h2 className="text-lg font-bold tracking-tight text-[#1d1d1f]">
+                  Crear nueva campaña
+                </h2>
+                <p className="text-xs text-muted-foreground">
+                  Comunicaciones masivas segmentadas a compradores de lotes por proyecto.
+                </p>
+              </div>
+
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={handleLoadPreloadedExample}
+                className="h-8 rounded-xl border-[#0f68ea]/40 text-[#0f68ea] hover:bg-blue-50 text-xs font-semibold shadow-xs shrink-0 px-3"
+              >
+                <FileText className="h-3.5 w-3.5 mr-1.5 text-[#0f68ea]" />
+                Cargar ejemplo precargado
+              </Button>
+            </div>
+
             <ProjectSelector
               value={projectId}
               allowAll={false}
@@ -197,29 +252,59 @@ function CampaignsPage() {
                 className="rounded-xl text-xs"
               />
             </div>
+
+            {/* Selección múltiple de canales (Correo, WhatsApp o Ambos) */}
             <fieldset>
-              <legend className="mb-2 text-xs font-semibold text-[#1d1d1f]">Canal de envío</legend>
-              <div className="flex flex-wrap gap-2">
+              <legend className="mb-2 text-xs font-semibold text-[#1d1d1f]">
+                Canal de envío (selección múltiple: Correo, WhatsApp o Ambos)
+              </legend>
+              <div className="flex flex-wrap gap-2.5">
                 <Button
                   type="button"
-                  variant={channel === "email" ? "default" : "outline"}
-                  aria-pressed={channel === "email"}
-                  onClick={() => setChannel("email")}
-                  className="rounded-xl text-xs"
+                  variant={channels.includes("email") ? "default" : "outline"}
+                  aria-pressed={channels.includes("email")}
+                  onClick={() => handleToggleChannel("email")}
+                  className={cn(
+                    "rounded-xl text-xs font-semibold transition-all h-9 px-4",
+                    channels.includes("email")
+                      ? "bg-[#0f68ea] hover:bg-blue-700 text-white shadow-xs"
+                      : "border-[#e5e6e8] bg-white text-slate-700 hover:bg-slate-50",
+                  )}
                 >
                   <Mail className="h-4 w-4 mr-1.5" /> Correo electrónico
+                  {channels.includes("email") && (
+                    <span className="ml-1.5 rounded-full bg-white/20 px-1.5 py-0.5 text-[10px] font-medium">
+                      Activo
+                    </span>
+                  )}
                 </Button>
                 <Button
                   type="button"
-                  variant={channel === "whatsapp" ? "default" : "outline"}
-                  aria-pressed={channel === "whatsapp"}
-                  onClick={() => setChannel("whatsapp")}
-                  className="rounded-xl text-xs"
+                  variant={channels.includes("whatsapp") ? "default" : "outline"}
+                  aria-pressed={channels.includes("whatsapp")}
+                  onClick={() => handleToggleChannel("whatsapp")}
+                  className={cn(
+                    "rounded-xl text-xs font-semibold transition-all h-9 px-4",
+                    channels.includes("whatsapp")
+                      ? "bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs"
+                      : "border-[#e5e6e8] bg-white text-slate-700 hover:bg-slate-50",
+                  )}
                 >
                   <MessageSquare className="h-4 w-4 mr-1.5" /> WhatsApp
+                  {channels.includes("whatsapp") && (
+                    <span className="ml-1.5 rounded-full bg-white/20 px-1.5 py-0.5 text-[10px] font-medium">
+                      Activo
+                    </span>
+                  )}
                 </Button>
               </div>
+              {channels.length === 0 && (
+                <p className="mt-1 text-[11px] text-red-500 font-medium">
+                  Debes seleccionar al menos un canal de comunicación.
+                </p>
+              )}
             </fieldset>
+
             <div className="space-y-2">
               <Label htmlFor="campaign-message">Mensaje</Label>
               <Textarea
@@ -293,11 +378,33 @@ function CampaignsPage() {
               Previsualización en vivo
             </h2>
             <div className="rounded-[24px] border border-border bg-secondary/50 p-6 shadow-xs">
-              <div className="mb-4 flex items-center justify-between gap-3 border-b border-[#e5e6e8] pb-3">
+              <div className="mb-4 flex flex-wrap items-center justify-between gap-3 border-b border-[#e5e6e8] pb-3">
                 <span className="font-bold text-sm text-[#1d1d1f]">ClearEstate</span>
-                <StatusBadge tone="neutral">
-                  {channel === "email" ? "Correo electrónico" : "WhatsApp"}
-                </StatusBadge>
+                <div className="flex items-center gap-1.5">
+                  {channels.map((ch) => (
+                    <span
+                      key={ch}
+                      className={cn(
+                        "inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-[11px] font-semibold",
+                        ch === "whatsapp"
+                          ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                          : "bg-blue-50 text-[#0f68ea] border border-blue-200",
+                      )}
+                    >
+                      {ch === "whatsapp" ? (
+                        <MessageSquare className="h-3 w-3" />
+                      ) : (
+                        <Mail className="h-3 w-3" />
+                      )}
+                      {ch === "whatsapp" ? "WhatsApp" : "Correo electrónico"}
+                    </span>
+                  ))}
+                  {channels.length === 0 && (
+                    <span className="text-[11px] text-red-500 font-medium">
+                      Sin canal seleccionado
+                    </span>
+                  )}
+                </div>
               </div>
               <p className="mb-2 text-xs text-muted-foreground font-medium">
                 Destinatario demo: {preview?.buyerName} · {project?.name}

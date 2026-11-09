@@ -29,13 +29,16 @@ import {
   type CampaignChannel,
   type OracleSale,
 } from "@/config/phase3Config";
+import { cn } from "@/lib/utils";
 
 interface CampaignHistoryTabProps {
   campaigns: Campaign[];
   sales: OracleSale[];
   onUpdateCampaign: (
     id: string,
-    patch: Partial<Pick<Campaign, "title" | "message" | "scheduledAt" | "channel">>,
+    patch: Partial<Pick<Campaign, "title" | "message" | "scheduledAt" | "channel">> & {
+      channels?: CampaignChannel[] | undefined;
+    },
   ) => void;
   onDeleteCampaign: (id: string) => void;
 }
@@ -52,15 +55,29 @@ export function CampaignHistoryTab({
   // Edit form states
   const [editTitle, setEditTitle] = useState("");
   const [editMessage, setEditMessage] = useState("");
-  const [editChannel, setEditChannel] = useState<CampaignChannel>("email");
+  const [editChannels, setEditChannels] = useState<CampaignChannel[]>(["email"]);
   const [editScheduledAt, setEditScheduledAt] = useState("");
 
   const handleOpenEdit = (campaign: Campaign) => {
     setEditCampaign(campaign);
     setEditTitle(campaign.title);
     setEditMessage(campaign.message);
-    setEditChannel(campaign.channel);
+    const initialChannels =
+      campaign.channels && campaign.channels.length > 0 ? campaign.channels : [campaign.channel];
+    setEditChannels(initialChannels);
     setEditScheduledAt(campaign.scheduledAt ? campaign.scheduledAt.slice(0, 16) : "");
+  };
+
+  const handleToggleEditChannel = (targetChannel: CampaignChannel) => {
+    if (editChannels.includes(targetChannel)) {
+      if (editChannels.length === 1) {
+        toast.info("Debes mantener seleccionado al menos un canal.");
+        return;
+      }
+      setEditChannels(editChannels.filter((c) => c !== targetChannel));
+    } else {
+      setEditChannels([...editChannels, targetChannel]);
+    }
   };
 
   const handleSaveEdit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -70,10 +87,14 @@ export function CampaignHistoryTab({
       if (!editTitle.trim() || !editMessage.trim()) {
         throw new Error("El título y el mensaje no pueden estar vacíos.");
       }
+      if (editChannels.length === 0) {
+        throw new Error("Selecciona al menos un canal de comunicación.");
+      }
       onUpdateCampaign(editCampaign.id, {
         title: editTitle.trim(),
         message: editMessage.trim(),
-        channel: editChannel,
+        channel: editChannels[0] ?? "email",
+        channels: editChannels,
         scheduledAt: editScheduledAt ? new Date(editScheduledAt).toISOString() : null,
       });
       toast.success("Campaña actualizada exitosamente.");
@@ -110,7 +131,10 @@ export function CampaignHistoryTab({
         <div className="space-y-3">
           {campaigns.map((campaign) => {
             const project = PROJECTS.find((p) => p.id === campaign.projectId);
-            const isEmail = campaign.channel === "email";
+            const effectiveChannels =
+              campaign.channels && campaign.channels.length > 0
+                ? campaign.channels
+                : [campaign.channel];
 
             return (
               <div
@@ -119,16 +143,26 @@ export function CampaignHistoryTab({
               >
                 <div className="space-y-1.5 min-w-0">
                   <div className="flex flex-wrap items-center gap-2">
-                    <span className="flex items-center gap-1 rounded-full bg-slate-100 px-2.5 py-0.5 text-[11px] font-semibold text-[#1d1d1f]">
-                      {isEmail ? (
-                        <Mail className="h-3 w-3 text-[#0f68ea]" />
-                      ) : (
-                        <MessageSquare className="h-3 w-3 text-emerald-600" />
-                      )}
-                      {isEmail ? "Correo electrónico" : "WhatsApp"}
-                    </span>
+                    {effectiveChannels.map((ch) => (
+                      <span
+                        key={ch}
+                        className={cn(
+                          "flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[11px] font-semibold",
+                          ch === "whatsapp"
+                            ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                            : "bg-blue-50 text-[#0f68ea] border border-blue-200",
+                        )}
+                      >
+                        {ch === "email" ? (
+                          <Mail className="h-3 w-3 text-[#0f68ea]" />
+                        ) : (
+                          <MessageSquare className="h-3 w-3 text-emerald-600" />
+                        )}
+                        {ch === "email" ? "Correo electrónico" : "WhatsApp"}
+                      </span>
+                    ))}
 
-                    <span className="rounded-full bg-blue-50 px-2 py-0.5 text-[11px] font-semibold text-[#0f68ea]">
+                    <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-semibold text-[#1d1d1f]">
                       {project?.name}
                     </span>
 
@@ -205,10 +239,15 @@ export function CampaignHistoryTab({
           {detailCampaign && (
             <div className="space-y-4">
               <DialogHeader className="border-b border-[#e5e6e8] pb-4">
-                <div className="flex items-center gap-2">
-                  <StatusBadge tone="neutral">
-                    {detailCampaign.channel === "email" ? "Correo electrónico" : "WhatsApp"}
-                  </StatusBadge>
+                <div className="flex flex-wrap items-center gap-2">
+                  {(detailCampaign.channels && detailCampaign.channels.length > 0
+                    ? detailCampaign.channels
+                    : [detailCampaign.channel]
+                  ).map((ch) => (
+                    <StatusBadge key={ch} tone="neutral">
+                      {ch === "email" ? "Correo electrónico" : "WhatsApp"}
+                    </StatusBadge>
+                  ))}
                   <span className="text-xs text-muted-foreground">
                     {PROJECTS.find((p) => p.id === detailCampaign.projectId)?.name}
                   </span>
@@ -323,21 +362,41 @@ export function CampaignHistoryTab({
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="space-y-1.5">
-                  <Label className="text-xs font-semibold text-[#1d1d1f]">Canal</Label>
-                  <Select
-                    value={editChannel}
-                    onValueChange={(val) => setEditChannel(val as CampaignChannel)}
-                  >
-                    <SelectTrigger className="text-xs rounded-xl h-9">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="email">Correo electrónico</SelectItem>
-                      <SelectItem value="whatsapp">WhatsApp</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <Label className="text-xs font-semibold text-[#1d1d1f]">
+                    Canales de envío (selección múltiple)
+                  </Label>
+                  <div className="flex flex-wrap gap-2">
+                    <Button
+                      type="button"
+                      variant={editChannels.includes("email") ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => handleToggleEditChannel("email")}
+                      className={cn(
+                        "rounded-xl text-xs h-9 font-semibold",
+                        editChannels.includes("email")
+                          ? "bg-[#0f68ea] text-white shadow-xs"
+                          : "border-[#e5e6e8] bg-white text-slate-700 hover:bg-slate-50",
+                      )}
+                    >
+                      <Mail className="h-3.5 w-3.5 mr-1" /> Correo
+                    </Button>
+                    <Button
+                      type="button"
+                      variant={editChannels.includes("whatsapp") ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => handleToggleEditChannel("whatsapp")}
+                      className={cn(
+                        "rounded-xl text-xs h-9 font-semibold",
+                        editChannels.includes("whatsapp")
+                          ? "bg-emerald-600 text-white shadow-xs"
+                          : "border-[#e5e6e8] bg-white text-slate-700 hover:bg-slate-50",
+                      )}
+                    >
+                      <MessageSquare className="h-3.5 w-3.5 mr-1" /> WhatsApp
+                    </Button>
+                  </div>
                 </div>
 
                 <div className="space-y-1.5">
