@@ -1,8 +1,8 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { Database, RefreshCw } from "lucide-react";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { ArrowUpRight, Database, RefreshCw, Search, X } from "lucide-react";
 import { useState } from "react";
+
 import { PageHeader } from "@/components/PageHeader";
-import { Button } from "@/components/ui/button";
 import { StatusBadge } from "@/components/phase2/StatusBadge";
 import {
   createPhase3Head,
@@ -11,9 +11,11 @@ import {
   performPrototypeAction,
   ProjectSelector,
 } from "@/components/phase3/Phase3Shared";
+import { Button } from "@/components/ui/button";
 import { PROJECTS } from "@/config/erpConfig";
 import { useErp } from "@/context/ErpContext";
 import { usePhase3 } from "@/context/Phase3Context";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_erp/modulo/oracle")({
   head: () =>
@@ -23,15 +25,18 @@ export const Route = createFileRoute("/_erp/modulo/oracle")({
     ),
   component: OraclePage,
 });
+
 function OraclePage() {
   const { projectFilter, setProjectFilter } = useErp();
-  const { sales, cases, lastSyncedAt, syncOracle, settleSale } = usePhase3();
+  const { sales, lastSyncedAt, syncOracle, settleSale } = usePhase3();
   const [search, setSearch] = useState("");
+
   const selected = sales.filter(
     (sale) =>
       (projectFilter === "all" || sale.projectId === projectFilter) &&
       `${sale.buyerName} ${sale.lot}`.toLowerCase().includes(search.toLowerCase()),
   );
+
   return (
     <div className="phase2-view">
       <PageHeader
@@ -46,22 +51,39 @@ function OraclePage() {
               )
             }
           >
-            <RefreshCw /> Sincronizar Oracle
+            <RefreshCw className="mr-1.5 h-4 w-4" /> Sincronizar Oracle
           </Button>
         }
       />
+
+      {/* Filtros superiores: Selector de Proyecto y Buscador Rápido */}
       <div className="mb-8 flex flex-wrap items-end gap-5">
         <div className="w-64 max-w-full">
           <ProjectSelector value={projectFilter} onChange={setProjectFilter} />
         </div>
-        <input
-          className="h-10 rounded-[18px] border border-input bg-background px-4 text-sm"
-          aria-label="Buscar comprador o lote"
-          placeholder="Buscar comprador o lote"
-          value={search}
-          onChange={(event) => setSearch(event.target.value)}
-        />
+        <div className="relative min-w-[240px] sm:w-72">
+          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <input
+            className="h-10 w-full rounded-[18px] border border-input bg-background pl-9 pr-8 text-sm placeholder:text-muted-foreground transition-colors focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+            aria-label="Buscar comprador o lote"
+            placeholder="Buscar comprador o lote..."
+            value={search}
+            onChange={(event) => setSearch(event.target.value)}
+          />
+          {search && (
+            <button
+              type="button"
+              onClick={() => setSearch("")}
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+              aria-label="Limpiar búsqueda"
+            >
+              <X className="h-3.5 w-3.5" />
+            </button>
+          )}
+        </div>
       </div>
+
+      {/* KPIs Ejecutivos de Ventas Oracle */}
       <div className="mb-8 grid gap-6 border-y border-border py-4 sm:grid-cols-3">
         <Metric label="Ventas registradas">{selected.length}</Metric>
         <Metric label="Saldo pendiente">
@@ -71,75 +93,151 @@ function OraclePage() {
           {selected.filter((sale) => sale.balance === 0).length}
         </Metric>
       </div>
-      <div className="mb-6 flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
-        <Database className="h-5 w-5" />
-        <span>Oracle · Origen externo simulado</span>
+
+      {/* Subtítulo de Auditoría y Estado de Sincronización */}
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-3 text-xs text-muted-foreground">
+        <div className="flex items-center gap-2">
+          <Database className="h-4 w-4 text-primary" />
+          <span className="font-semibold text-foreground">Oracle · Origen externo simulado</span>
+          <span>·</span>
+          <span>
+            {lastSyncedAt
+              ? `Última sincronización: ${new Date(lastSyncedAt).toLocaleString("es-EC")}`
+              : "Carga inicial de ejemplo"}
+          </span>
+        </div>
         <span>
-          {lastSyncedAt
-            ? `Última sincronización: ${new Date(lastSyncedAt).toLocaleString("es-EC")}`
-            : "Carga inicial de ejemplo"}
+          Mostrando <strong className="text-foreground">{selected.length}</strong> de {sales.length}{" "}
+          clientes
         </span>
       </div>
-      <div className="space-y-4">
-        {selected.map((sale) => (
-          <article className="surface-card" key={sale.id}>
-            <div className="flex flex-wrap justify-between gap-4">
-              <div>
-                <h2 className="font-bold">{sale.buyerName}</h2>
-                <p className="mt-1 text-sm text-muted-foreground">
-                  {PROJECTS.find((project) => project.id === sale.projectId)?.name} · Lote{" "}
-                  {sale.lot}
-                </p>
-              </div>
-              <StatusBadge tone={sale.balance === 0 ? "complete" : "yellow"}>
-                {sale.balance === 0 ? "Elegible · Saldo cero" : "En cobranza - No elegibles"}
-              </StatusBadge>
-            </div>
-            <dl className="mt-5 grid gap-4 text-sm sm:grid-cols-4">
-              <div>
-                <dt className="text-muted-foreground">Precio de venta</dt>
-                <dd className="mt-1 font-semibold">{formatMoney(sale.price)}</dd>
-              </div>
-              <div>
-                <dt className="text-muted-foreground">Pagado</dt>
-                <dd className="mt-1 font-semibold">{formatMoney(sale.price - sale.balance)}</dd>
-              </div>
-              <div>
-                <dt className="text-muted-foreground">Cuotas pagadas</dt>
-                <dd className="mt-1 font-semibold">
-                  {sale.paidInstallments} / {sale.installments}
-                </dd>
-              </div>
-              <div>
-                <dt className="text-muted-foreground">Saldo pendiente</dt>
-                <dd className="mt-1 font-semibold">{formatMoney(sale.balance)}</dd>
-              </div>
-            </dl>
-            <div className="mt-5 border-t border-border pt-4">
-              {sale.balance > 0 ? (
-                <Button
-                  variant="outline"
-                  onClick={() =>
-                    performPrototypeAction(
-                      () => settleSale(sale.id),
-                      "Pago simulado registrado; expediente de posventa creado.",
-                    )
-                  }
-                >
-                  Simular cancelación del saldo
-                </Button>
-              ) : (
-                <p className="text-sm text-muted-foreground">
-                  {cases.some((record) => record.saleId === sale.id)
-                    ? "Expediente único activo en Posventa"
-                    : "Pendiente de sincronización"}
-                </p>
-              )}
-            </div>
-          </article>
-        ))}
+
+      {/* Listado Compacto y Resumido de Clientes (Tabla Corporativa de Alta Densidad) */}
+      <div className="surface-card overflow-hidden border border-border p-0 shadow-xs">
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[860px] text-left text-sm">
+            <thead className="border-b border-border bg-secondary/50 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+              <tr>
+                <th className="py-3.5 pl-6 pr-4">Cliente</th>
+                <th className="py-3.5 pr-4">Proyecto y Lote</th>
+                <th className="py-3.5 pr-4 text-right">Precio de Venta</th>
+                <th className="py-3.5 pr-4 text-center">Cuotas Pagadas</th>
+                <th className="py-3.5 pr-4 text-right">Saldo Pendiente</th>
+                <th className="py-3.5 pr-4 text-center">Elegibilidad</th>
+                <th className="py-3.5 pl-4 pr-6 text-right">Acciones</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-border">
+              {selected.map((sale) => {
+                const project = PROJECTS.find((p) => p.id === sale.projectId);
+                const isEligible = sale.balance === 0;
+                return (
+                  <tr key={sale.id} className="transition-colors hover:bg-secondary/30">
+                    {/* Cliente */}
+                    <td className="py-4 pl-6 pr-4">
+                      <div className="flex items-center gap-2.5">
+                        <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-secondary text-xs font-bold text-primary">
+                          {sale.buyerName.charAt(0)}
+                        </span>
+                        <div>
+                          <p className="font-semibold text-foreground">{sale.buyerName}</p>
+                          <p className="text-[11px] text-muted-foreground">
+                            {sale.id.toUpperCase()}
+                          </p>
+                        </div>
+                      </div>
+                    </td>
+
+                    {/* Proyecto y Lote */}
+                    <td className="py-4 pr-4">
+                      <p className="font-medium text-foreground">
+                        {project?.name || sale.projectId}
+                      </p>
+                      <p className="text-xs text-muted-foreground">Lote {sale.lot}</p>
+                    </td>
+
+                    {/* Precio de Venta */}
+                    <td className="py-4 pr-4 text-right font-medium tabular-nums text-foreground">
+                      {formatMoney(sale.price)}
+                    </td>
+
+                    {/* Cuotas Pagadas */}
+                    <td className="py-4 pr-4 text-center tabular-nums">
+                      <span
+                        className={cn(
+                          "inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold",
+                          sale.paidInstallments === sale.installments
+                            ? "border border-emerald-200/60 bg-emerald-50 text-emerald-700"
+                            : "bg-secondary text-foreground",
+                        )}
+                      >
+                        {sale.paidInstallments} / {sale.installments}
+                      </span>
+                    </td>
+
+                    {/* Saldo Pendiente */}
+                    <td className="py-4 pr-4 text-right font-bold tabular-nums">
+                      <span
+                        className={
+                          isEligible ? "font-extrabold text-emerald-600" : "text-foreground"
+                        }
+                      >
+                        {formatMoney(sale.balance)}
+                      </span>
+                    </td>
+
+                    {/* Elegibilidad */}
+                    <td className="py-4 pr-4 text-center">
+                      <StatusBadge tone={isEligible ? "complete" : "yellow"}>
+                        {isEligible ? "Elegible · Saldo cero" : "En cobranza"}
+                      </StatusBadge>
+                    </td>
+
+                    {/* Acciones */}
+                    <td className="py-4 pl-4 pr-6 text-right">
+                      <div className="flex items-center justify-end gap-2">
+                        {!isEligible && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-8 rounded-full px-2.5 text-xs text-muted-foreground hover:text-foreground"
+                            title="Simular cancelación del saldo"
+                            onClick={() =>
+                              performPrototypeAction(
+                                () => settleSale(sale.id),
+                                "Pago simulado registrado; expediente de posventa creado.",
+                              )
+                            }
+                          >
+                            Pagar saldo
+                          </Button>
+                        )}
+                        <Button
+                          asChild
+                          variant="outline"
+                          size="sm"
+                          className="h-8 rounded-full px-3 text-xs font-semibold text-primary hover:border-primary/40 hover:bg-primary/5"
+                        >
+                          <Link
+                            to="/modulo/posventa/comprador/$saleId"
+                            params={{ saleId: sale.id }}
+                          >
+                            <ArrowUpRight className="mr-1 h-3.5 w-3.5" />
+                            Ver en Posventa
+                          </Link>
+                        </Button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
         {selected.length === 0 && (
-          <p className="py-10 text-muted-foreground">No se encontraron ventas.</p>
+          <div className="py-12 text-center text-xs text-muted-foreground">
+            No se encontraron ventas para los criterios seleccionados.
+          </div>
         )}
       </div>
     </div>
