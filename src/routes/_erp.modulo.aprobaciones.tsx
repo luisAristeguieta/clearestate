@@ -1,5 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { AlertTriangle, CheckCheck, FileText, RotateCcw } from "lucide-react";
+import {
+  AlertTriangle,
+  CheckCheck,
+  FileText,
+  RotateCcw,
+  History,
+  CheckCircle2,
+  Clock,
+  XCircle,
+} from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -43,13 +52,40 @@ export const Route = createFileRoute("/_erp/modulo/aprobaciones")({
   component: ApprovalsPage,
 });
 
+type ApprovalFilterTab = "all" | "pending" | "approved" | "returned";
+
 function ApprovalsPage() {
-  const { budgetLines, requisitions, approveRequisition, returnRequisition } = useErp();
+  const {
+    budgetLines,
+    requisitions,
+    approveRequisition,
+    returnRequisition,
+    modifyRequisitionDecision,
+  } = useErp();
+
+  const [activeTab, setActiveTab] = useState<ApprovalFilterTab>("all");
   const [observations, setObservations] = useState<Record<string, string>>({});
   const [selectedRequisitionId, setSelectedRequisitionId] = useState<string | null>(null);
 
+  // States for reversibility inside modal
+  const [isModifyingDecision, setIsModifyingDecision] = useState(false);
+  const [targetStatus, setTargetStatus] = useState<"pending_approval" | "approved" | "returned">(
+    "pending_approval",
+  );
+  const [reversalReason, setReversalReason] = useState("");
+
   const pendingRequisitions = requisitions.filter(
     (requisition) => requisition.status === "pending_approval",
+  );
+  const approvedRequisitions = requisitions.filter(
+    (requisition) =>
+      requisition.status === "approved" ||
+      requisition.status === "in_procurement" ||
+      requisition.status === "ordered" ||
+      requisition.status === "invoiced",
+  );
+  const returnedRequisitions = requisitions.filter(
+    (requisition) => requisition.status === "returned",
   );
   const resolvedRequisitions = requisitions.filter(
     (requisition) => requisition.status !== "pending_approval",
@@ -77,144 +113,268 @@ function ApprovalsPage() {
     }
   };
 
+  const handleExecuteReversal = () => {
+    if (!selectedRequisition) return;
+    try {
+      if (reversalReason.trim().length < 5) {
+        throw new Error("El motivo u observación de reversión debe tener al menos 5 caracteres.");
+      }
+      modifyRequisitionDecision(selectedRequisition.id, targetStatus, reversalReason.trim());
+      toast.success("Decisión modificada exitosamente y registrada en la línea de tiempo.");
+      setReversalReason("");
+      setIsModifyingDecision(false);
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "No se pudo modificar la decisión.");
+    }
+  };
+
   return (
-    <div className="phase2-view">
+    <div className="phase2-view space-y-6">
       <PageHeader
         title="Bandeja de Aprobaciones"
         description="Gerencia aprueba o devuelve las solicitudes de las áreas. Cada decisión queda en la línea de tiempo del expediente."
       />
 
-      <section className="space-y-4">
-        <h2 className="text-lg font-bold tracking-tight">
-          Pendientes de decisión ({pendingRequisitions.length})
-        </h2>
-        {pendingRequisitions.length === 0 && (
-          <div className="surface-card p-8 text-center text-muted-foreground">
-            No hay solicitudes pendientes. Todo está al día.
-          </div>
-        )}
-        {pendingRequisitions.map((requisition) => {
-          const line = budgetLines.find((item) => item.id === requisition.budgetLineId);
-          const project = PROJECTS.find((item) => item.id === requisition.projectId);
-          return (
-            <article key={requisition.id} className="surface-card">
-              <div className="flex flex-wrap items-start justify-between gap-3">
-                <div className="min-w-0">
-                  <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                    {requisition.code} · {requisition.requesterArea} · {project?.name}
-                  </p>
-                  <h3 className="mt-1 text-base font-bold tracking-tight">{requisition.title}</h3>
-                  <p className="mt-1 text-sm text-muted-foreground">{requisition.description}</p>
-                  <p className="mt-2 text-sm">
-                    <span className="font-semibold">Justificación:</span>{" "}
-                    {requisition.justification}
-                  </p>
-                  {line && (
-                    <p className="mt-1 text-xs text-muted-foreground">
-                      Partida {line.code} · disponible{" "}
-                      {formatCurrency(line.approved - line.committed - line.executed)}
+      {/* Pestañas de filtrado superior */}
+      <div className="flex flex-wrap items-center gap-2 border-b border-[#e5e6e8] pb-4">
+        <button
+          type="button"
+          onClick={() => setActiveTab("all")}
+          className={`flex items-center gap-1.5 rounded-full px-4 py-2 text-xs font-semibold transition-all ${
+            activeTab === "all"
+              ? "bg-[#0f68ea] text-white shadow-xs"
+              : "bg-[#f0f2f4] text-[#1d1d1f] hover:bg-slate-200"
+          }`}
+        >
+          <span>Todas</span>
+          <span className="rounded-full bg-black/10 px-1.5 py-0.2 text-[11px]">
+            {requisitions.length}
+          </span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveTab("pending")}
+          className={`flex items-center gap-1.5 rounded-full px-4 py-2 text-xs font-semibold transition-all ${
+            activeTab === "pending"
+              ? "bg-[#0f68ea] text-white shadow-xs"
+              : "bg-[#f0f2f4] text-[#1d1d1f] hover:bg-slate-200"
+          }`}
+        >
+          <Clock className="h-3.5 w-3.5" />
+          <span>Pendientes</span>
+          <span className="rounded-full bg-black/10 px-1.5 py-0.2 text-[11px]">
+            {pendingRequisitions.length}
+          </span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveTab("approved")}
+          className={`flex items-center gap-1.5 rounded-full px-4 py-2 text-xs font-semibold transition-all ${
+            activeTab === "approved"
+              ? "bg-[#0f68ea] text-white shadow-xs"
+              : "bg-[#f0f2f4] text-[#1d1d1f] hover:bg-slate-200"
+          }`}
+        >
+          <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600" />
+          <span>Aprobadas</span>
+          <span className="rounded-full bg-black/10 px-1.5 py-0.2 text-[11px]">
+            {approvedRequisitions.length}
+          </span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveTab("returned")}
+          className={`flex items-center gap-1.5 rounded-full px-4 py-2 text-xs font-semibold transition-all ${
+            activeTab === "returned"
+              ? "bg-[#0f68ea] text-white shadow-xs"
+              : "bg-[#f0f2f4] text-[#1d1d1f] hover:bg-slate-200"
+          }`}
+        >
+          <XCircle className="h-3.5 w-3.5 text-amber-600" />
+          <span>Devueltas / Rechazadas</span>
+          <span className="rounded-full bg-black/10 px-1.5 py-0.2 text-[11px]">
+            {returnedRequisitions.length}
+          </span>
+        </button>
+      </div>
+
+      {/* Sección: Pendientes de decisión */}
+      {(activeTab === "all" || activeTab === "pending") && (
+        <section className="space-y-4">
+          <h2 className="text-lg font-bold tracking-tight text-[#1d1d1f]">
+            Pendientes de decisión ({pendingRequisitions.length})
+          </h2>
+          {pendingRequisitions.length === 0 && (
+            <div className="surface-card p-8 text-center text-muted-foreground">
+              No hay solicitudes pendientes en este momento.
+            </div>
+          )}
+          {pendingRequisitions.map((requisition) => {
+            const line = budgetLines.find((item) => item.id === requisition.budgetLineId);
+            const project = PROJECTS.find((item) => item.id === requisition.projectId);
+            return (
+              <article key={requisition.id} className="surface-card">
+                <div className="flex flex-wrap items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                      {requisition.code} · {requisition.requesterArea} · {project?.name}
                     </p>
-                  )}
+                    <h3 className="mt-1 text-base font-bold tracking-tight">{requisition.title}</h3>
+                    <p className="mt-1 text-sm text-muted-foreground">{requisition.description}</p>
+                    <p className="mt-2 text-sm">
+                      <span className="font-semibold">Justificación:</span>{" "}
+                      {requisition.justification}
+                    </p>
+                    {line && (
+                      <p className="mt-1 text-xs text-muted-foreground">
+                        Partida {line.code} · disponible{" "}
+                        {formatCurrency(line.approved - line.committed - line.executed)}
+                      </p>
+                    )}
+                  </div>
+                  <span className="text-xl font-bold tracking-tight">
+                    {formatCurrency(requisition.estimatedAmount)}
+                  </span>
                 </div>
-                <span className="text-xl font-bold tracking-tight">
-                  {formatCurrency(requisition.estimatedAmount)}
-                </span>
-              </div>
 
-              {requisition.overdraftJustification && (
-                <p className="mt-3 rounded-2xl bg-secondary px-3 py-2 text-sm text-foreground">
-                  Excepción por sobregiro declarada: {requisition.overdraftJustification}
-                </p>
-              )}
+                {requisition.overdraftJustification && (
+                  <p className="mt-3 rounded-2xl bg-secondary px-3 py-2 text-sm text-foreground">
+                    Excepción por sobregiro declarada: {requisition.overdraftJustification}
+                  </p>
+                )}
 
-              <div className="mt-4 space-y-3 border-t border-border pt-4">
-                <Textarea
-                  value={observations[requisition.id] ?? ""}
-                  onChange={(event) =>
-                    setObservations((previous) => ({
-                      ...previous,
-                      [requisition.id]: event.target.value,
-                    }))
-                  }
-                  placeholder="Observación para devolver (obligatoria solo si devuelves)"
-                  rows={2}
-                  maxLength={300}
-                />
-                <div className="flex flex-wrap gap-2">
-                  <Button
-                    variant="default"
-                    className="rounded-full"
-                    onClick={() => handleApproveRequisition(requisition.id, requisition.code)}
+                <div className="mt-4 space-y-3 border-t border-border pt-4">
+                  <Textarea
+                    value={observations[requisition.id] ?? ""}
+                    onChange={(event) =>
+                      setObservations((previous) => ({
+                        ...previous,
+                        [requisition.id]: event.target.value,
+                      }))
+                    }
+                    placeholder="Observación para devolver (obligatoria solo si devuelves)"
+                    rows={2}
+                    maxLength={300}
+                  />
+                  <div className="flex flex-wrap gap-2">
+                    <Button
+                      variant="default"
+                      className="rounded-full"
+                      onClick={() => handleApproveRequisition(requisition.id, requisition.code)}
+                    >
+                      <CheckCheck className="h-4 w-4" /> Aprobar
+                    </Button>
+                    <Button
+                      variant="outline"
+                      className="rounded-full"
+                      onClick={() => handleReturnRequisition(requisition.id, requisition.code)}
+                    >
+                      <RotateCcw className="h-4 w-4" /> Devolver con observación
+                    </Button>
+                    <Button
+                      variant="secondary"
+                      className="rounded-full"
+                      onClick={() => {
+                        setSelectedRequisitionId(requisition.id);
+                        setIsModifyingDecision(false);
+                      }}
+                    >
+                      <FileText className="h-4 w-4" /> Ver expediente
+                    </Button>
+                  </div>
+                </div>
+              </article>
+            );
+          })}
+        </section>
+      )}
+
+      {/* Sección: Expedientes Resueltos / Filtrados */}
+      {activeTab !== "pending" && (
+        <section className="space-y-4">
+          <h2 className="text-lg font-bold tracking-tight text-[#1d1d1f]">
+            {activeTab === "all"
+              ? `Expedientes resueltos (${resolvedRequisitions.length})`
+              : activeTab === "approved"
+                ? `Expedientes aprobados (${approvedRequisitions.length})`
+                : `Expedientes devueltos / rechazados (${returnedRequisitions.length})`}
+          </h2>
+          <div className="surface-card divide-y divide-border">
+            {(activeTab === "all"
+              ? resolvedRequisitions
+              : activeTab === "approved"
+                ? approvedRequisitions
+                : returnedRequisitions
+            ).map((requisition) => (
+              <div
+                key={requisition.id}
+                className="flex flex-wrap items-center justify-between gap-3 px-5 py-4"
+              >
+                <div className="min-w-0">
+                  <p className="text-sm font-semibold">
+                    {requisition.code} · {requisition.title}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {requisition.requesterArea} · {formatCurrency(requisition.estimatedAmount)}
+                  </p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <StatusBadge
+                    tone={
+                      requisition.status === "returned"
+                        ? "attention"
+                        : requisition.status === "approved"
+                          ? "complete"
+                          : "neutral"
+                    }
                   >
-                    <CheckCheck className="h-4 w-4" /> Aprobar
-                  </Button>
+                    {REQUISITION_STATUS_LABELS[requisition.status]}
+                  </StatusBadge>
                   <Button
                     variant="outline"
-                    className="rounded-full"
-                    onClick={() => handleReturnRequisition(requisition.id, requisition.code)}
+                    size="sm"
+                    className="rounded-full text-xs text-[#0f68ea] hover:bg-blue-50"
+                    onClick={() => {
+                      setSelectedRequisitionId(requisition.id);
+                      setIsModifyingDecision(true);
+                      setTargetStatus(
+                        requisition.status === "returned" ? "approved" : "pending_approval",
+                      );
+                    }}
                   >
-                    <RotateCcw className="h-4 w-4" /> Devolver con observación
+                    <History className="h-3.5 w-3.5 mr-1" /> Modificar decisión
                   </Button>
                   <Button
-                    variant="secondary"
+                    variant="ghost"
+                    size="sm"
                     className="rounded-full"
-                    onClick={() => setSelectedRequisitionId(requisition.id)}
+                    onClick={() => {
+                      setSelectedRequisitionId(requisition.id);
+                      setIsModifyingDecision(false);
+                    }}
                   >
-                    <FileText className="h-4 w-4" /> Ver expediente
+                    <FileText className="h-3.5 w-3.5" /> Ver expediente
                   </Button>
                 </div>
               </div>
-            </article>
-          );
-        })}
-      </section>
+            ))}
+          </div>
+        </section>
+      )}
 
-      <section className="mt-10 space-y-4">
-        <h2 className="text-lg font-bold tracking-tight">Expedientes resueltos</h2>
-        <div className="surface-card divide-y divide-border">
-          {resolvedRequisitions.map((requisition) => (
-            <div
-              key={requisition.id}
-              className="flex flex-wrap items-center justify-between gap-3 px-5 py-4"
-            >
-              <div className="min-w-0">
-                <p className="text-sm font-semibold">
-                  {requisition.code} · {requisition.title}
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  {requisition.requesterArea} · {formatCurrency(requisition.estimatedAmount)}
-                </p>
-              </div>
-              <div className="flex items-center gap-3">
-                <StatusBadge
-                  tone={
-                    requisition.status === "returned"
-                      ? "attention"
-                      : requisition.status === "approved"
-                        ? "complete"
-                        : "neutral"
-                  }
-                >
-                  {REQUISITION_STATUS_LABELS[requisition.status]}
-                </StatusBadge>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="rounded-full"
-                  onClick={() => setSelectedRequisitionId(requisition.id)}
-                >
-                  <FileText className="h-3.5 w-3.5" /> Ver expediente
-                </Button>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Modal Frontal Centrado para la Ficha del Expediente */}
+      {/* Modal Frontal Centrado para la Ficha del Expediente con Reversibilidad */}
       <Dialog
         open={Boolean(selectedRequisition)}
-        onOpenChange={(open) => !open && setSelectedRequisitionId(null)}
+        onOpenChange={(open) => {
+          if (!open) {
+            setSelectedRequisitionId(null);
+            setIsModifyingDecision(false);
+            setReversalReason("");
+          }
+        }}
       >
         <DialogContent
           overlayClassName="bg-black/40 backdrop-blur-sm"
@@ -284,7 +444,7 @@ function ApprovalsPage() {
                     </p>
                   </div>
 
-                  {/* Alerta de excepción por sobregiro (RN-03) si existe */}
+                  {/* Alerta de excepción por sobregiro si existe */}
                   {selectedRequisition.overdraftJustification && (
                     <div className="space-y-1.5 rounded-[20px] border border-highlight/40 bg-highlight/10 p-4">
                       <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-highlight-foreground">
@@ -362,7 +522,102 @@ function ApprovalsPage() {
                     <RequisitionTimeline events={selectedRequisition.timeline} />
                   </div>
 
-                  {/* Observación y acciones de decisión gerencial */}
+                  {/* Sección de Reversibilidad de Estados para Expedientes Resueltos */}
+                  {!isPending && isModifyingDecision && (
+                    <div className="space-y-4 rounded-[20px] border border-[#0f68ea]/40 bg-blue-50/40 p-5">
+                      <div className="flex items-center gap-2">
+                        <History className="h-5 w-5 text-[#0f68ea]" />
+                        <h4 className="text-sm font-bold text-[#1d1d1f]">
+                          Reversibilidad de Decisión (Auditable)
+                        </h4>
+                      </div>
+                      <p className="text-xs text-muted-foreground">
+                        Modifica la decisión tomada. El cambio quedará registrado de forma inmutable
+                        en la línea de tiempo.
+                      </p>
+
+                      <div className="space-y-2">
+                        <label className="text-xs font-semibold text-[#1d1d1f] block">
+                          Nuevo Estado Destino:
+                        </label>
+                        <div className="flex flex-wrap gap-2">
+                          <button
+                            type="button"
+                            onClick={() => setTargetStatus("pending_approval")}
+                            className={`rounded-xl px-3 py-1.5 text-xs font-medium border transition-colors ${
+                              targetStatus === "pending_approval"
+                                ? "bg-[#0f68ea] text-white border-[#0f68ea]"
+                                : "bg-white text-slate-700 border-[#e5e6e8] hover:bg-slate-100"
+                            }`}
+                          >
+                            Reabrir como Pendiente
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setTargetStatus("approved")}
+                            className={`rounded-xl px-3 py-1.5 text-xs font-medium border transition-colors ${
+                              targetStatus === "approved"
+                                ? "bg-emerald-600 text-white border-emerald-600"
+                                : "bg-white text-slate-700 border-[#e5e6e8] hover:bg-slate-100"
+                            }`}
+                          >
+                            Aprobar Expediente
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setTargetStatus("returned")}
+                            className={`rounded-xl px-3 py-1.5 text-xs font-medium border transition-colors ${
+                              targetStatus === "returned"
+                                ? "bg-amber-600 text-white border-amber-600"
+                                : "bg-white text-slate-700 border-[#e5e6e8] hover:bg-slate-100"
+                            }`}
+                          >
+                            Devolver con Observación
+                          </button>
+                        </div>
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <label
+                          htmlFor="reversal-reason"
+                          className="text-xs font-semibold text-[#1d1d1f] block"
+                        >
+                          Motivo del cambio de decisión (obligatorio para auditoría):
+                        </label>
+                        <Textarea
+                          id="reversal-reason"
+                          value={reversalReason}
+                          onChange={(e) => setReversalReason(e.target.value)}
+                          placeholder="Explica la justificación gerencial por la cual se revierte o modifica la decisión anterior..."
+                          rows={2}
+                          maxLength={300}
+                          className="rounded-[14px] bg-white text-xs"
+                        />
+                      </div>
+
+                      <div className="flex justify-end gap-2 pt-2">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="rounded-full text-xs"
+                          onClick={() => setIsModifyingDecision(false)}
+                        >
+                          Cancelar modificación
+                        </Button>
+                        <Button
+                          size="sm"
+                          className="rounded-full bg-[#0f68ea] hover:bg-blue-700 text-white text-xs"
+                          disabled={reversalReason.trim().length < 5}
+                          onClick={handleExecuteReversal}
+                        >
+                          <CheckCheck className="h-3.5 w-3.5 mr-1" />
+                          Confirmar y registrar en línea de tiempo
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Observación para pendientes */}
                   {isPending && (
                     <div className="space-y-3 border-t border-border pt-4">
                       <label
@@ -426,13 +681,31 @@ function ApprovalsPage() {
                         </Button>
                       </>
                     ) : (
-                      <Button
-                        variant="default"
-                        className="rounded-full"
-                        onClick={() => setSelectedRequisitionId(null)}
-                      >
-                        Cerrar expediente
-                      </Button>
+                      <>
+                        {!isModifyingDecision && (
+                          <Button
+                            variant="outline"
+                            className="rounded-full text-xs text-[#0f68ea] hover:bg-blue-50"
+                            onClick={() => {
+                              setIsModifyingDecision(true);
+                              setTargetStatus(
+                                selectedRequisition.status === "returned"
+                                  ? "approved"
+                                  : "pending_approval",
+                              );
+                            }}
+                          >
+                            <History className="h-3.5 w-3.5 mr-1" /> Modificar decisión
+                          </Button>
+                        )}
+                        <Button
+                          variant="default"
+                          className="rounded-full text-xs"
+                          onClick={() => setSelectedRequisitionId(null)}
+                        >
+                          Cerrar expediente
+                        </Button>
+                      </>
                     )}
                   </DialogFooter>
                 </div>
