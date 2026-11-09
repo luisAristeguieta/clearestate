@@ -65,6 +65,146 @@ export interface Campaign {
   createdAt: string;
   deliveries: CampaignDelivery[];
 }
+
+export type ReminderType = "entrega_lote" | "documentacion" | "hito_obra" | "general";
+export type ReminderStatus = "scheduled" | "active" | "sent";
+
+export const REMINDER_TYPE_LABELS: Record<ReminderType, string> = {
+  entrega_lote: "Entrega de Lote",
+  documentacion: "Documentación Pendiente",
+  hito_obra: "Hito de Obra",
+  general: "Notificación General",
+};
+
+export const REMINDER_STATUS_LABELS: Record<ReminderStatus, string> = {
+  scheduled: "Programado",
+  active: "Activo",
+  sent: "Enviado",
+};
+
+export interface AutomatedReminder {
+  id: string;
+  title: string;
+  type: ReminderType;
+  projectId: ProjectId;
+  targetDate: string;
+  channel?: CampaignChannel | undefined;
+  channels: CampaignChannel[];
+  message: string;
+  status: ReminderStatus;
+  createdAt: string;
+}
+
+export const SEED_REMINDERS: AutomatedReminder[] = [
+  {
+    id: "rem-01",
+    title: "Recordatorio: Fecha de entrega formal de lote",
+    type: "entrega_lote",
+    projectId: "paris",
+    targetDate: "2026-11-25",
+    channel: "whatsapp",
+    channels: ["whatsapp", "email"],
+    message:
+      "Estimado/a {{nombre}}, le recordamos que la entrega física de su lote {{lote}} en Proyecto París está programada para el 25 de noviembre.",
+    status: "active",
+    createdAt: "2026-11-01T10:00:00Z",
+  },
+  {
+    id: "rem-02",
+    title: "Aviso de documentación pendiente para firma de escrituras",
+    type: "documentacion",
+    projectId: "sagaleta",
+    targetDate: "2026-11-30",
+    channel: "email",
+    channels: ["email"],
+    message:
+      "Estimado/a cliente, solicitamos enviar copia de su documento de identidad y certificado de no adeudo para completar el expediente de su lote en Proyecto Sagaleta.",
+    status: "scheduled",
+    createdAt: "2026-11-03T11:30:00Z",
+  },
+  {
+    id: "rem-03",
+    title: "Notificación: Hito de pavimentación y veredas concluido",
+    type: "hito_obra",
+    projectId: "paris",
+    targetDate: "2026-11-05",
+    channel: "email",
+    channels: ["email", "whatsapp"],
+    message:
+      "Compartimos con agrado la culminación de la fase de pavimentación rígida y veredas en Proyecto París.",
+    status: "sent",
+    createdAt: "2026-10-20T09:00:00Z",
+  },
+  {
+    id: "rem-04",
+    title: "Inspección previa y checklist de entrega de lote",
+    type: "entrega_lote",
+    projectId: "sagaleta",
+    targetDate: "2026-12-10",
+    channel: "whatsapp",
+    channels: ["whatsapp"],
+    message:
+      "Hola {{nombre}}, le invitamos a coordinar su recorrido de inspección técnica previo a la entrega formal de su lote {{lote}}.",
+    status: "scheduled",
+    createdAt: "2026-11-05T15:00:00Z",
+  },
+];
+
+export const SEED_CAMPAIGNS: Campaign[] = [
+  {
+    id: "cmp-seed-01",
+    title: "Avance de habilitación urbana Etapa 1",
+    projectId: "paris",
+    channel: "email",
+    message:
+      "Hola {{nombre}}, compartimos el avance de {{proyecto}} para tu lote {{lote}}. Las redes de agua y desagüe presentan un 85% de ejecución.",
+    attachments: [],
+    scheduledAt: null,
+    createdAt: "2026-11-02T14:00:00Z",
+    deliveries: [
+      {
+        id: "del-01",
+        saleId: "sale-01",
+        contact: "maria.torres@example.com",
+        status: "delivered",
+        attempts: 1,
+        reason: null,
+        updatedAt: "2026-11-02T14:05:00Z",
+      },
+      {
+        id: "del-02",
+        saleId: "sale-02",
+        contact: "andres.cevallos@example.com",
+        status: "delivered",
+        attempts: 1,
+        reason: null,
+        updatedAt: "2026-11-02T14:05:00Z",
+      },
+    ],
+  },
+  {
+    id: "cmp-seed-02",
+    title: "Inicio de obras de alumbrado subterráneo",
+    projectId: "sagaleta",
+    channel: "whatsapp",
+    message:
+      "Hola {{nombre}}, te informamos que iniciaron las obras de canalización eléctrica para tu lote {{lote}} en {{proyecto}}.",
+    attachments: [],
+    scheduledAt: "2026-11-20T09:00:00Z",
+    createdAt: "2026-11-04T10:30:00Z",
+    deliveries: [
+      {
+        id: "del-03",
+        saleId: "sale-03",
+        contact: "+593991234503",
+        status: "scheduled",
+        attempts: 0,
+        reason: null,
+        updatedAt: "2026-11-04T10:30:00Z",
+      },
+    ],
+  },
+];
 export const SEED_ORACLE_SALES: OracleSale[] = [
   {
     id: "sale-01",

@@ -5,9 +5,13 @@ import {
   retryCampaignDelivery,
   SEED_ORACLE_SALES,
   SEED_PERMISSION_MATRIX,
+  SEED_CAMPAIGNS,
+  SEED_REMINDERS,
   triggerAfterSalesSync,
   type AfterSalesCase,
   type Campaign,
+  type CampaignChannel,
+  type AutomatedReminder,
   type OracleSale,
   type PrototypeAttachment,
   type PrototypePermissionMatrix,
@@ -17,13 +21,15 @@ interface Phase3State {
   sales: OracleSale[];
   cases: AfterSalesCase[];
   campaigns: Campaign[];
+  reminders: AutomatedReminder[];
   permissions: PrototypePermissionMatrix;
   lastSyncedAt: string | null;
 }
 const buildInitialState = (): Phase3State => ({
   sales: SEED_ORACLE_SALES,
   cases: triggerAfterSalesSync(SEED_ORACLE_SALES, [], "2026-11-08T22:01:00Z"),
-  campaigns: [],
+  campaigns: SEED_CAMPAIGNS,
+  reminders: SEED_REMINDERS,
   permissions: SEED_PERMISSION_MATRIX,
   lastSyncedAt: null,
 });
@@ -43,6 +49,14 @@ interface Phase3Value extends Phase3State {
       "title" | "projectId" | "channel" | "message" | "attachments" | "scheduledAt"
     >,
   ) => void;
+  updateCampaign: (
+    id: string,
+    patch: Partial<Pick<Campaign, "title" | "message" | "scheduledAt" | "channel">>,
+  ) => void;
+  deleteCampaign: (id: string) => void;
+  createReminder: (reminder: Omit<AutomatedReminder, "id" | "createdAt">) => void;
+  updateReminder: (id: string, patch: Partial<AutomatedReminder>) => void;
+  deleteReminder: (id: string) => void;
   advanceCampaign: (id: string) => void;
   retryDelivery: (campaignId: string, deliveryId: string) => void;
   markFollowup: (campaignId: string, deliveryId: string) => void;
@@ -61,6 +75,24 @@ export function Phase3Provider({ children }: { children: ReactNode }) {
           ...buildInitialState(),
           ...(JSON.parse(stored) as Partial<Phase3State>),
         };
+
+        // Merge seed campaigns if not present
+        const storedCampaigns = restored.campaigns ?? [];
+        const existingCmpIds = new Set(storedCampaigns.map((c) => c.id));
+        const missingSeedCmps = SEED_CAMPAIGNS.filter((c) => !existingCmpIds.has(c.id));
+        restored.campaigns = [...storedCampaigns, ...missingSeedCmps];
+
+        // Merge seed reminders if not present
+        const rawReminders = restored.reminders ?? [];
+        const normalizedReminders: AutomatedReminder[] = rawReminders.map((r) => ({
+          ...r,
+          channel: r.channel ?? (r.channels && r.channels[0]) ?? "whatsapp",
+          channels: r.channels && r.channels.length > 0 ? r.channels : [r.channel ?? "whatsapp"],
+        }));
+        const existingRemIds = new Set(normalizedReminders.map((r) => r.id));
+        const missingSeedRems = SEED_REMINDERS.filter((r) => !existingRemIds.has(r.id));
+        restored.reminders = [...normalizedReminders, ...missingSeedRems];
+
         restored.cases = triggerAfterSalesSync(
           restored.sales,
           restored.cases,
@@ -146,6 +178,56 @@ export function Phase3Provider({ children }: { children: ReactNode }) {
     };
     setState((previous) => ({ ...previous, campaigns: [campaign, ...previous.campaigns] }));
   };
+  const updateCampaign: Phase3Value["updateCampaign"] = (id, patch) => {
+    setState((previous) => ({
+      ...previous,
+      campaigns: previous.campaigns.map((c) => (c.id === id ? { ...c, ...patch } : c)),
+    }));
+  };
+  const deleteCampaign: Phase3Value["deleteCampaign"] = (id) => {
+    setState((previous) => ({
+      ...previous,
+      campaigns: previous.campaigns.filter((c) => c.id !== id),
+    }));
+  };
+  const createReminder: Phase3Value["createReminder"] = (reminder) => {
+    const primaryChannel: CampaignChannel =
+      reminder.channel ?? (reminder.channels && reminder.channels[0]) ?? "whatsapp";
+    const newRem: AutomatedReminder = {
+      ...reminder,
+      channel: primaryChannel,
+      channels:
+        reminder.channels && reminder.channels.length > 0 ? reminder.channels : [primaryChannel],
+      id: crypto.randomUUID(),
+      createdAt: new Date().toISOString(),
+    };
+    setState((previous) => ({
+      ...previous,
+      reminders: [newRem, ...previous.reminders],
+    }));
+  };
+  const updateReminder: Phase3Value["updateReminder"] = (id, patch) => {
+    setState((previous) => ({
+      ...previous,
+      reminders: previous.reminders.map((r) => {
+        if (r.id !== id) return r;
+        const updated: AutomatedReminder = { ...r, ...patch };
+        if (patch.channels && patch.channels.length > 0 && patch.channel === undefined) {
+          const firstChannel = patch.channels[0];
+          if (firstChannel !== undefined) {
+            updated.channel = firstChannel;
+          }
+        }
+        return updated;
+      }),
+    }));
+  };
+  const deleteReminder: Phase3Value["deleteReminder"] = (id) => {
+    setState((previous) => ({
+      ...previous,
+      reminders: previous.reminders.filter((r) => r.id !== id),
+    }));
+  };
   const advanceCampaign = (id: string) =>
     setState((previous) => ({
       ...previous,
@@ -205,6 +287,11 @@ export function Phase3Provider({ children }: { children: ReactNode }) {
         updateContact,
         updateCase,
         createCampaign,
+        updateCampaign,
+        deleteCampaign,
+        createReminder,
+        updateReminder,
+        deleteReminder,
         advanceCampaign,
         retryDelivery,
         markFollowup,

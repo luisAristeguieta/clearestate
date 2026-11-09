@@ -122,6 +122,11 @@ interface ErpContextValue {
   createRequisition: (input: NewRequisitionInput) => Requisition;
   approveRequisition: (requisitionId: string) => void;
   returnRequisition: (requisitionId: string, observation: string) => void;
+  modifyRequisitionDecision: (
+    requisitionId: string,
+    newStatus: "pending_approval" | "approved" | "returned",
+    observation: string,
+  ) => void;
   createInvitation: (input: NewInvitationInput) => SupplierInvitation;
   submitSupplierOffer: (token: string, offer: Omit<SupplierOffer, "submittedAt">) => void;
   adjudicateInvitation: (invitationId: string, awardCriterion: string) => PurchaseOrder;
@@ -194,11 +199,18 @@ export function ErpProvider({ children }: { children: ReactNode }) {
         const missingSeedReqs = SEED_REQUISITIONS.filter((seed) => !existingReqIds.has(seed.id));
         const mergedRequisitions = [...storedRequisitions, ...missingSeedReqs];
 
+        // Ensure all seed contracts exist
+        const storedContracts = parsed.contracts ?? [];
+        const existingCtrIds = new Set(storedContracts.map((item) => item.id));
+        const missingSeedContracts = SEED_CONTRACTS.filter((seed) => !existingCtrIds.has(seed.id));
+        const mergedContracts = [...storedContracts, ...missingSeedContracts];
+
         setState({
           ...initial,
           ...parsed,
           invitations: mergedInvitations,
           requisitions: mergedRequisitions,
+          contracts: mergedContracts,
         });
       }
     } catch (storageError) {
@@ -348,6 +360,39 @@ export function ErpProvider({ children }: { children: ReactNode }) {
                 timeline: [
                   ...requisition.timeline,
                   buildTimelineEvent(actorName, "Devuelto con observación", observation.trim()),
+                ],
+              }
+            : requisition,
+        ),
+      }));
+    },
+    [actorName],
+  );
+
+  const modifyRequisitionDecision = useCallback(
+    (
+      requisitionId: string,
+      newStatus: "pending_approval" | "approved" | "returned",
+      observation: string,
+    ) => {
+      if (observation.trim().length < 5) {
+        throw new Error("La observación o motivo del cambio debe tener al menos 5 caracteres.");
+      }
+      const labelMap: Record<"pending_approval" | "approved" | "returned", string> = {
+        pending_approval: "Expediente reabierto a Pendiente de aprobación",
+        approved: "Decisión modificada: Aprobado",
+        returned: "Decisión modificada: Devuelto con observación",
+      };
+      setState((previous) => ({
+        ...previous,
+        requisitions: previous.requisitions.map((requisition) =>
+          requisition.id === requisitionId
+            ? {
+                ...requisition,
+                status: newStatus,
+                timeline: [
+                  ...requisition.timeline,
+                  buildTimelineEvent(actorName, labelMap[newStatus], observation.trim()),
                 ],
               }
             : requisition,
@@ -671,6 +716,7 @@ export function ErpProvider({ children }: { children: ReactNode }) {
       createRequisition,
       approveRequisition,
       returnRequisition,
+      modifyRequisitionDecision,
       createInvitation,
       submitSupplierOffer,
       adjudicateInvitation,
@@ -691,6 +737,7 @@ export function ErpProvider({ children }: { children: ReactNode }) {
       createRequisition,
       approveRequisition,
       returnRequisition,
+      modifyRequisitionDecision,
       createInvitation,
       submitSupplierOffer,
       adjudicateInvitation,
