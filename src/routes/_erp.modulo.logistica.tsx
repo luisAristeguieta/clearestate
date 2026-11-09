@@ -207,7 +207,7 @@ function LogisticsPage() {
                         maxLength={255}
                         value={supplierEmail}
                         onChange={(event) => setSupplierEmail(event.target.value)}
-                        placeholder="contacto@proveedor.ec"
+                        placeholder="contacto@proveedor.com"
                       />
                     </div>
                     <div className="flex items-end">

@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 
-import loginDuskImage from "@/assets/login-dusk-architecture.jpg";
+import loginResidentialImage from "@/assets/login-residential-architecture.jpg";
 import { BrandLogo } from "@/components/BrandLogo";
 import { RoleAvatar } from "@/components/RoleAvatar";
 import { Button } from "@/components/ui/button";
@@ -73,8 +73,8 @@ function LoginPage() {
       {/* Left canvas */}
       <section className="relative hidden flex-col justify-between overflow-hidden p-10 lg:sticky lg:top-0 lg:flex lg:h-screen xl:p-14">
         <img
-          src={loginDuskImage}
-          alt="Desarrollo residencial moderno al atardecer en Quito"
+          src={loginResidentialImage}
+          alt="Desarrollo residencial moderno de arquitectura contemporánea"
           className="absolute inset-0 h-full w-full object-cover"
           width={1280}
           height={1600}
@@ -88,7 +88,7 @@ function LoginPage() {
             Centraliza presupuestos, compras y posventa en un solo lugar.
           </h1>
           <p className="mt-5 text-base text-primary-foreground/85">
-            Proyectos París y Sagaleta · Quito, Ecuador
+            Proyectos Inmobiliarios · Gestión Integral
           </p>
         </div>
       </section>
@@ -113,7 +113,7 @@ function LoginPage() {
                 <Input
                   id="login-email"
                   type="email"
-                  placeholder="nombre@clearminds.ec"
+                  placeholder="nombre@clearestate.com"
                   className="h-12 pr-11"
                   {...form.register("email")}
                 />
@@ -161,7 +161,6 @@ function LoginPage() {
 
           <div className="grid grid-cols-2 gap-2.5">
             {ERP_ROLES.map((role) => {
-              const RoleIcon = role.icon;
               return (
                 <button
                   key={role.id}
@@ -170,12 +169,10 @@ function LoginPage() {
                   className={`flex min-w-0 items-center gap-3 rounded-[18px] border p-2.5 text-left transition-colors hover:border-primary ${role.isExternal ? "col-span-2 border-dashed border-primary/40 bg-secondary" : "border-border bg-background"}`}
                 >
                   <RoleAvatar role={role} sizeClass="h-10 w-10" />
-                  <div className="min-w-0">
-                    <p className="flex items-center gap-1 text-[11px] font-semibold uppercase tracking-wide text-primary">
-                      <RoleIcon className="h-3 w-3 shrink-0" />{" "}
-                      <span className="truncate">{role.area}</span>
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-semibold text-foreground">
+                      {role.roleName}
                     </p>
-                    <p className="truncate text-sm font-semibold">{role.personName}</p>
                     <p className="truncate text-xs text-muted-foreground">
                       {role.isExternal ? "Ingresar al Portal Externo" : role.jobTitle}
                     </p>

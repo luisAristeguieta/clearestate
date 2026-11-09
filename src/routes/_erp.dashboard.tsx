@@ -29,12 +29,12 @@ export const Route = createFileRoute("/_erp/dashboard")({
       {
         name: "description",
         content:
-          "Saldo disponible, inversión de los proyectos París y Sagaleta y acciones prioritarias en Quito, Ecuador.",
+          "Saldo disponible, inversión de los proyectos París y Sagaleta y acciones prioritarias del portafolio inmobiliario.",
       },
       { property: "og:title", content: "Centro de Control · ClearEstate ERP" },
       {
         property: "og:description",
-        content: "Control financiero y seguimiento inmobiliario de París y Sagaleta en Quito.",
+        content: "Control financiero y seguimiento inmobiliario de los proyectos París y Sagaleta.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -92,7 +92,7 @@ function DashboardPage() {
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <p className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
-            <MapPin className="h-3.5 w-3.5" /> Quito, Ecuador · Portafolio inmobiliario
+            <MapPin className="h-3.5 w-3.5" /> Portafolio Inmobiliario · Proyectos Activos
           </p>
           <p className="mt-3 text-sm font-medium text-muted-foreground">{greeting}</p>
           <h1 className="display-title mt-1 text-3xl text-foreground">
@@ -192,7 +192,7 @@ function DashboardPage() {
             <>
               <img
                 src={selectedProject.imageUrl}
-                alt={`Masterplan panorámico de ${selectedProject.name} en Quito`}
+                alt={`Masterplan panorámico de ${selectedProject.name}`}
                 className="aspect-[2/1] w-full object-cover"
                 width={1280}
                 height={640}

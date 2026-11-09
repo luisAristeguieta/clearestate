@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Save, RotateCcw } from "lucide-react";
 import { useEffect, useState } from "react";
 import { PageHeader } from "@/components/PageHeader";
+import { RoleAvatar } from "@/components/RoleAvatar";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { createPhase3Head, performPrototypeAction } from "@/components/phase3/Phase3Shared";
@@ -47,13 +48,9 @@ function RolesPage() {
         {ERP_ROLES.map((role) => (
           <article key={role.id} className="surface-card">
             <div className="flex items-center gap-4">
-              <img
-                src={role.avatarUrl}
-                alt={role.personName}
-                className="h-12 w-12 rounded-full object-cover"
-              />
+              <RoleAvatar role={role} sizeClass="h-12 w-12" />
               <div>
-                <h2 className="font-bold">{role.area}</h2>
+                <h2 className="font-bold">{role.roleName}</h2>
                 <p className="text-sm text-muted-foreground">
                   {role.personName} · {role.jobTitle}
                 </p>

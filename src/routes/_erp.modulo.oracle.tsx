@@ -19,7 +19,7 @@ export const Route = createFileRoute("/_erp/modulo/oracle")({
   head: () =>
     createPhase3Head(
       "/modulo/oracle",
-      "Estado de cuenta Oracle simulado y activación de expedientes de posventa en Quito.",
+      "Estado de cuenta Oracle simulado y activación de expedientes de posventa por proyecto.",
     ),
   component: OraclePage,
 });

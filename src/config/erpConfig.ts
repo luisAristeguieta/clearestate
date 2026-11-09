@@ -49,6 +49,7 @@ export type RoleId =
 export interface ErpRole {
   id: RoleId;
   area: string;
+  roleName: string;
   personName: string;
   jobTitle: string;
   email: string;
@@ -61,9 +62,10 @@ export const ERP_ROLES: ErpRole[] = [
   {
     id: "management",
     area: "Gerencia",
+    roleName: "Gerencia General",
     personName: "Elena Vargas",
     jobTitle: "Directora General",
-    email: "elena.vargas@clearminds.ec",
+    email: "elena.vargas@clearestate.com",
     avatarUrl: avatarGerencia,
     icon: ShieldCheck,
     isExternal: false,
@@ -71,9 +73,10 @@ export const ERP_ROLES: ErpRole[] = [
   {
     id: "systemAdmin",
     area: "Administración",
+    roleName: "Administración",
     personName: "Diego Paredes",
     jobTitle: "Administrador del Sistema",
-    email: "diego.paredes@clearminds.ec",
+    email: "diego.paredes@clearestate.com",
     avatarUrl: avatarAdmin,
     icon: Settings2,
     isExternal: false,
@@ -81,9 +84,10 @@ export const ERP_ROLES: ErpRole[] = [
   {
     id: "marketing",
     area: "Marketing",
+    roleName: "Marketing",
     personName: "Carlos Mendoza",
     jobTitle: "Jefe de Marketing",
-    email: "carlos.mendoza@clearminds.ec",
+    email: "carlos.mendoza@clearestate.com",
     avatarUrl: avatarMarketing,
     icon: Megaphone,
     isExternal: false,
@@ -91,9 +95,10 @@ export const ERP_ROLES: ErpRole[] = [
   {
     id: "logistics",
     area: "Logística",
+    roleName: "Logística y Adquisiciones",
     personName: "Roberto Silva",
     jobTitle: "Jefe de Logística",
-    email: "roberto.silva@clearminds.ec",
+    email: "roberto.silva@clearestate.com",
     avatarUrl: avatarLogistica,
     icon: PackageSearch,
     isExternal: false,
@@ -101,9 +106,10 @@ export const ERP_ROLES: ErpRole[] = [
   {
     id: "finance",
     area: "Finanzas",
+    roleName: "Finanzas y Contabilidad",
     personName: "Lucía Castro",
     jobTitle: "Analista de Finanzas",
-    email: "lucia.castro@clearminds.ec",
+    email: "lucia.castro@clearestate.com",
     avatarUrl: avatarFinanzas,
     icon: FileSpreadsheet,
     isExternal: false,
@@ -111,9 +117,10 @@ export const ERP_ROLES: ErpRole[] = [
   {
     id: "projects",
     area: "Proyectos",
+    roleName: "Proyectos y Obras",
     personName: "Ing. Marcos Ríos",
     jobTitle: "Residente de Obra",
-    email: "marcos.rios@clearminds.ec",
+    email: "marcos.rios@clearestate.com",
     avatarUrl: avatarProyectos,
     icon: HardHat,
     isExternal: false,
@@ -121,9 +128,10 @@ export const ERP_ROLES: ErpRole[] = [
   {
     id: "postSales",
     area: "Posventa",
+    roleName: "Posventa",
     personName: "Sofía Medina",
     jobTitle: "Coordinadora de Posventa",
-    email: "sofia.medina@clearminds.ec",
+    email: "sofia.medina@clearestate.com",
     avatarUrl: avatarPosventa,
     icon: MessageSquareShare,
     isExternal: false,
@@ -131,9 +139,10 @@ export const ERP_ROLES: ErpRole[] = [
   {
     id: "externalSupplier",
     area: "Proveedor Externo",
+    roleName: "Proveedor Externo",
     personName: "Constructora Andes S.A.",
     jobTitle: "Portal de Proveedor",
-    email: "contacto@constructoraandes.ec",
+    email: "contacto@constructoraandes.com",
     avatarUrl: avatarProveedor,
     icon: Building2,
     isExternal: true,
@@ -322,7 +331,7 @@ export const PROJECTS: RealEstateProject[] = [
   {
     id: "paris",
     name: "Proyecto París",
-    location: "Quito Centro Norte · Av. 10 de Agosto y Colón",
+    location: "Zona Norte · Sector Residencial Exclusivo",
     totalLots: 420,
     soldLots: 268,
     areaHectares: 18.5,
@@ -333,13 +342,13 @@ export const PROJECTS: RealEstateProject[] = [
   {
     id: "sagaleta",
     name: "Proyecto Sagaleta",
-    location: "Valle de los Chillos · Sangolquí, Quito",
+    location: "Valle Principal · Sector de Alta Valorización",
     totalLots: 310,
     soldLots: 142,
     areaHectares: 14.2,
     imageUrl: sagaletaImage,
     description:
-      "Urbanización en ladera con lotes en terrazas, reservorio propio y vista a los volcanes.",
+      "Urbanización en ladera con lotes en terrazas, reservorio propio y entorno natural.",
   },
 ];
 

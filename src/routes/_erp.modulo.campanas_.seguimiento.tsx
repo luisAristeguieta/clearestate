@@ -118,7 +118,7 @@ function CampaignTrackingPage() {
                             aria-label={`Contacto de ${sale.buyerName}`}
                             value={contacts[editKey] ?? contact}
                             placeholder={
-                              campaign.channel === "email" ? "correo@ejemplo.ec" : "+593991234567"
+                              campaign.channel === "email" ? "correo@ejemplo.com" : "+51991234567"
                             }
                             onChange={(event) =>
                               setContacts((previous) => ({
