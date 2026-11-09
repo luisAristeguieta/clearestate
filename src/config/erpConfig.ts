@@ -305,15 +305,25 @@ export type BudgetArea = (typeof BUDGET_AREAS)[number];
 
 export type PhaseStatus = "Completada" | "En ejecución" | "Licitación" | "Planificada";
 
+export interface PhaseMilestone {
+  id: string;
+  name: string;
+  completed: boolean;
+}
+
 export interface ProjectPhase {
   id: string;
   projectId: ProjectId;
-  name: "Habilitación Urbana" | "Agua y Desagüe" | "Pistas y Veredas";
+  name: string;
   contractor: string;
   status: PhaseStatus;
   progressPercent: number;
   startDate: string;
   endDate: string;
+  budgetAllocated?: number;
+  description?: string;
+  milestones?: PhaseMilestone[];
+  supervisor?: string;
 }
 
 export interface RealEstateProject {
@@ -356,62 +366,262 @@ export const SEED_PHASES: ProjectPhase[] = [
   {
     id: "ph-par-1",
     projectId: "paris",
-    name: "Habilitación Urbana",
+    name: "Movimiento de Tierras y Rasantes",
     contractor: "Constructora Andes S.A.",
     status: "Completada",
     progressPercent: 100,
     startDate: "2026-01-12",
     endDate: "2026-05-30",
+    budgetAllocated: 1850000,
+    description:
+      "Desbroce, nivelación topográfica masiva y conformación de plataformas para los 420 lotes del proyecto.",
+    supervisor: "Ing. Marcos Ríos",
+    milestones: [
+      {
+        id: "m-par-1-1",
+        name: "Levantamiento topográfico GNSS y replanteo de manzanas",
+        completed: true,
+      },
+      {
+        id: "m-par-1-2",
+        name: "Cortes y terraplenes masivos con maquinaria pesada",
+        completed: true,
+      },
+      {
+        id: "m-par-1-3",
+        name: "Compactación de subrasante al 95% Proctor modificado",
+        completed: true,
+      },
+      {
+        id: "m-par-1-4",
+        name: "Acta de conformidad y recepción técnica municipal",
+        completed: true,
+      },
+    ],
   },
   {
     id: "ph-par-2",
     projectId: "paris",
-    name: "Agua y Desagüe",
+    name: "Redes Hidrosanitarias y Agua Potable",
     contractor: "Hidrosur Ingenieros EIRL",
     status: "En ejecución",
     progressPercent: 64,
     startDate: "2026-05-15",
     endDate: "2026-12-20",
+    budgetAllocated: 2920000,
+    description:
+      "Tendido de matrices de agua potable HDPE, colectores sanitarios y cámaras de inspección domiciliarias.",
+    supervisor: "Ing. Carlos Mendoza",
+    milestones: [
+      {
+        id: "m-par-2-1",
+        name: "Zanjeo e instalación de matrices primarias de 200mm",
+        completed: true,
+      },
+      {
+        id: "m-par-2-2",
+        name: "Conexiones domiciliarias de agua potable (64% ejecutado)",
+        completed: true,
+      },
+      {
+        id: "m-par-2-3",
+        name: "Pruebas hidrostáticas de estanqueidad y presión",
+        completed: false,
+      },
+      {
+        id: "m-par-2-4",
+        name: "Empalme final a la red matriz de la empresa prestadora",
+        completed: false,
+      },
+    ],
   },
   {
     id: "ph-par-3",
     projectId: "paris",
-    name: "Pistas y Veredas",
+    name: "Vías, Pavimentación y Veredas",
     contractor: "Pavimentos del Norte S.A.",
     status: "Licitación",
     progressPercent: 8,
     startDate: "2027-01-10",
     endDate: "2027-06-30",
+    budgetAllocated: 3100000,
+    description:
+      'Subbase granular estabilizada, carpeta asfáltica en caliente de 3", sardineles y veredas de concreto estampado.',
+    supervisor: "Ing. Marcos Ríos",
+    milestones: [
+      {
+        id: "m-par-3-1",
+        name: "Aprobación de expediente técnico de pavimentación",
+        completed: true,
+      },
+      {
+        id: "m-par-3-2",
+        name: "Licitación de planta asfáltica y control de calidad",
+        completed: false,
+      },
+      {
+        id: "m-par-3-3",
+        name: "Colocación de base granular y riego de imprimación",
+        completed: false,
+      },
+      { id: "m-par-3-4", name: "Asfaltado y señalización horizontal y vertical", completed: false },
+    ],
+  },
+  {
+    id: "ph-par-4",
+    projectId: "paris",
+    name: "Áreas Comunales y Paisajismo",
+    contractor: "Paisajismo & Parques del Sur S.A.C.",
+    status: "Licitación",
+    progressPercent: 0,
+    startDate: "2027-03-01",
+    endDate: "2027-08-30",
+    budgetAllocated: 420000,
+    description:
+      "Arborización con especies nativas, ciclo-vías perimetrales, parque central con equipamiento infantil y alumbrado solar LED.",
+    supervisor: "Arq. Lucía Fernández",
+    milestones: [
+      {
+        id: "m-par-4-1",
+        name: "Diseño botánico y selección de especies de bajo consumo hídrico",
+        completed: true,
+      },
+      {
+        id: "m-par-4-2",
+        name: "Instalación de red automatizada de riego tecnificado",
+        completed: false,
+      },
+      {
+        id: "m-par-4-3",
+        name: "Mobiliario urbano, pérgolas y circuito de juegos",
+        completed: false,
+      },
+      { id: "m-par-4-4", name: "Luminarias LED solares y entrega comunal", completed: false },
+    ],
   },
   {
     id: "ph-sag-1",
     projectId: "sagaleta",
-    name: "Habilitación Urbana",
+    name: "Movimiento de Tierras y Terrazas",
     contractor: "Constructora Andes S.A.",
     status: "En ejecución",
     progressPercent: 72,
     startDate: "2026-03-01",
     endDate: "2026-11-30",
+    budgetAllocated: 3360000,
+    description:
+      "Conformación de terrazas en ladera, muros de contención de gaviones y estabilización de taludes perimetrales.",
+    supervisor: "Ing. Marcos Ríos",
+    milestones: [
+      {
+        id: "m-sag-1-1",
+        name: "Estudio geotécnico de taludes y estabilidad geológica",
+        completed: true,
+      },
+      {
+        id: "m-sag-1-2",
+        name: "Construcción de muros gavión en ladera sur (80%)",
+        completed: true,
+      },
+      { id: "m-sag-1-3", name: "Perfilado y rasanteo de terrazas para lotes", completed: true },
+      {
+        id: "m-sag-1-4",
+        name: "Pruebas de densitometría nuclear y control de asentamiento",
+        completed: false,
+      },
+    ],
   },
   {
     id: "ph-sag-2",
     projectId: "sagaleta",
-    name: "Agua y Desagüe",
+    name: "Redes Hidrosanitarias y Reservorio",
     contractor: "Hidrosur Ingenieros EIRL",
     status: "Planificada",
     progressPercent: 0,
     startDate: "2026-12-01",
     endDate: "2027-05-15",
+    budgetAllocated: 1900000,
+    description:
+      "Construcción de reservorio elevado de 150 m³, estación de bombeo y matriz troncal para urbanización en ladera.",
+    supervisor: "Ing. Carlos Mendoza",
+    milestones: [
+      {
+        id: "m-sag-2-1",
+        name: "Estudio hidrológico y cálculo de caudales de diseño",
+        completed: true,
+      },
+      {
+        id: "m-sag-2-2",
+        name: "Cimentación y vaciado de cuba de concreto armado para reservorio",
+        completed: false,
+      },
+      {
+        id: "m-sag-2-3",
+        name: "Equipamiento electromecánico y sistema de presurización",
+        completed: false,
+      },
+      { id: "m-sag-2-4", name: "Pruebas de desinfección y puesta en marcha", completed: false },
+    ],
   },
   {
     id: "ph-sag-3",
     projectId: "sagaleta",
-    name: "Pistas y Veredas",
-    contractor: "Por adjudicar",
-    status: "Planificada",
+    name: "Vías, Pavimentación y Accesos",
+    contractor: "Por adjudicar (Licitación pública)",
+    status: "Licitación",
     progressPercent: 0,
     startDate: "2027-05-20",
     endDate: "2027-10-30",
+    budgetAllocated: 1250000,
+    description:
+      "Pavimentación rígida con losas de concreto armado en pendientes pronunciadas, cunetas de coronación y disipadores.",
+    supervisor: "Ing. Marcos Ríos",
+    milestones: [
+      {
+        id: "m-sag-3-1",
+        name: "Elaboración de bases y especificaciones técnicas",
+        completed: true,
+      },
+      {
+        id: "m-sag-3-2",
+        name: "Publicación de licitación y apertura de sobres técnicos",
+        completed: false,
+      },
+      {
+        id: "m-sag-3-3",
+        name: "Vaciado de losas de concreto y juntas de dilatación",
+        completed: false,
+      },
+      { id: "m-sag-3-4", name: "Canalización de aguas de escorrentía pluvial", completed: false },
+    ],
+  },
+  {
+    id: "ph-sag-4",
+    projectId: "sagaleta",
+    name: "Áreas Comunales y Miradores",
+    contractor: "Por adjudicar",
+    status: "Planificada",
+    progressPercent: 0,
+    startDate: "2027-07-01",
+    endDate: "2027-12-15",
+    budgetAllocated: 380000,
+    description:
+      "Miradores panorámicos de alta montaña con estructuras de madera tratada, senderos ecológicos y zonas de picnic.",
+    supervisor: "Arq. Lucía Fernández",
+    milestones: [
+      {
+        id: "m-sag-4-1",
+        name: "Plan de integración paisajística y bajo impacto ambiental",
+        completed: true,
+      },
+      { id: "m-sag-4-2", name: "Trazado y conformación de senderos de montaña", completed: false },
+      {
+        id: "m-sag-4-3",
+        name: "Construcción de miradores y plataformas de contemplación",
+        completed: false,
+      },
+      { id: "m-sag-4-4", name: "Reforestación con especies nativas del valle", completed: false },
+    ],
   },
 ];
 
