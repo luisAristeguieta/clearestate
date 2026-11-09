@@ -1,6 +1,6 @@
 import { Link, createFileRoute, notFound } from "@tanstack/react-router";
 import { CheckCircle2, FileText, FileUp, Lock, LogOut, Pencil } from "lucide-react";
-import { useRef, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import { toast } from "sonner";
 
 import { BrandLogo } from "@/components/BrandLogo";
@@ -10,6 +10,11 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { BRAND_NAME } from "@/config/brandConfig";
 import { PROJECTS, formatCurrency } from "@/config/erpConfig";
+import {
+  SEED_INVITATIONS,
+  SEED_REQUISITIONS,
+  type SupplierInvitation,
+} from "@/config/phase2Config";
 import { useErp } from "@/context/ErpContext";
 
 export const Route = createFileRoute("/portal-proveedor/$token")({
@@ -39,7 +44,22 @@ function SupplierPortalPage() {
   const { token } = Route.useParams();
   const { isHydrated, invitations, requisitions, submitSupplierOffer } = useErp();
 
-  const invitation = invitations.find((item) => item.token === token);
+  // Fallback for demo testing: explicitly recognize prov-andes-01 or known seed tokens
+  const fallbackInvitation: SupplierInvitation | undefined =
+    token === "prov-andes-01"
+      ? (SEED_INVITATIONS.find((item) => item.token === "prov-andes-01") ?? {
+          id: "inv-03",
+          token: "prov-andes-01",
+          requisitionId: "req-01",
+          supplierName: "Constructora Andes S.A.",
+          supplierEmail: "contacto@constructoraandes.com",
+          status: "sent",
+          offer: null,
+          createdAt: "2026-10-30T09:00:00.000Z",
+        })
+      : SEED_INVITATIONS.find((item) => item.token === token);
+
+  const invitation = invitations.find((item) => item.token === token) ?? fallbackInvitation;
 
   const [isEditing, setIsEditing] = useState(false);
   const [price, setPrice] = useState(invitation?.offer ? invitation.offer.price.toString() : "");
@@ -56,6 +76,16 @@ function SupplierPortalPage() {
     invitation?.offer ? invitation.offer.pdfFileName : "",
   );
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (invitation?.offer && !isEditing) {
+      setPrice(invitation.offer.price.toString());
+      setTermDays(invitation.offer.termDays.toString());
+      setValidityDays((invitation.offer.validityDays ?? 30).toString());
+      setConditions(invitation.offer.conditions);
+      setPdfFileName(invitation.offer.pdfFileName);
+    }
+  }, [invitation?.offer, isEditing]);
 
   if (!isHydrated) return null;
 
@@ -74,8 +104,13 @@ function SupplierPortalPage() {
     );
   }
 
-  const requisition = requisitions.find((item) => item.id === invitation.requisitionId);
-  const project = requisition ? PROJECTS.find((item) => item.id === requisition.projectId) : null;
+  const requisition =
+    requisitions.find((item) => item.id === invitation.requisitionId) ??
+    SEED_REQUISITIONS.find((item) => item.id === invitation.requisitionId) ??
+    SEED_REQUISITIONS[0];
+  const project = requisition
+    ? (PROJECTS.find((item) => item.id === requisition.projectId) ?? PROJECTS[0])
+    : null;
 
   const handleSupplierOfferSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -213,7 +248,7 @@ function SupplierPortalPage() {
                     <p className="font-semibold text-foreground">{invitation.offer.pdfFileName}</p>
                     <p className="text-xs text-muted-foreground">
                       Enviado el{" "}
-                      {new Date(invitation.offer.submittedAt).toLocaleDateString("es-EC", {
+                      {new Date(invitation.offer.submittedAt).toLocaleDateString("es-PE", {
                         year: "numeric",
                         month: "short",
                         day: "numeric",

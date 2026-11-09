@@ -111,3 +111,15 @@ describe("buildContasisCsv", () => {
     );
   });
 });
+
+describe("SEED_INVITATIONS & Portal del Proveedor", () => {
+  it("contiene la invitación activa para prov-andes-01 vinculada a Constructora Andes S.A.", async () => {
+    const { SEED_INVITATIONS } = await import("@/config/phase2Config");
+    const andesInvitation = SEED_INVITATIONS.find(
+      (invitation) => invitation.token === "prov-andes-01",
+    );
+    expect(andesInvitation).toBeDefined();
+    expect(andesInvitation?.supplierName).toBe("Constructora Andes S.A.");
+    expect(andesInvitation?.status).toBe("sent");
+  });
+});

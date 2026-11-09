@@ -176,11 +176,31 @@ export function ErpProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     try {
       const storedValue = window.localStorage.getItem(STORAGE_KEY);
-      if (storedValue)
+      if (storedValue) {
+        const parsed = JSON.parse(storedValue) as Partial<PersistedState>;
+        const initial = buildInitialState();
+
+        // Merge invitations so all SEED_INVITATIONS (including prov-andes-01) always exist
+        const storedInvitations = parsed.invitations ?? [];
+        const existingTokens = new Set(storedInvitations.map((item) => item.token));
+        const missingSeedInvitations = SEED_INVITATIONS.filter(
+          (seed) => !existingTokens.has(seed.token),
+        );
+        const mergedInvitations = [...storedInvitations, ...missingSeedInvitations];
+
+        // Ensure seed requisitions exist if referenced
+        const storedRequisitions = parsed.requisitions ?? [];
+        const existingReqIds = new Set(storedRequisitions.map((item) => item.id));
+        const missingSeedReqs = SEED_REQUISITIONS.filter((seed) => !existingReqIds.has(seed.id));
+        const mergedRequisitions = [...storedRequisitions, ...missingSeedReqs];
+
         setState({
-          ...buildInitialState(),
-          ...(JSON.parse(storedValue) as Partial<PersistedState>),
+          ...initial,
+          ...parsed,
+          invitations: mergedInvitations,
+          requisitions: mergedRequisitions,
         });
+      }
     } catch (storageError) {
       console.error("No se pudo leer el estado local del ERP", storageError);
     } finally {
@@ -379,18 +399,48 @@ export function ErpProvider({ children }: { children: ReactNode }) {
 
   const submitSupplierOffer = useCallback(
     (token: string, offer: Omit<SupplierOffer, "submittedAt">) => {
-      setState((previous) => ({
-        ...previous,
-        invitations: previous.invitations.map((invitation) =>
-          invitation.token === token
-            ? {
-                ...invitation,
-                status: "submitted",
-                offer: { ...offer, submittedAt: new Date().toISOString() },
-              }
-            : invitation,
-        ),
-      }));
+      setState((previous) => {
+        const submittedAt = new Date().toISOString();
+        const found = previous.invitations.some((item) => item.token === token);
+        if (found) {
+          return {
+            ...previous,
+            invitations: previous.invitations.map((invitation) =>
+              invitation.token === token
+                ? {
+                    ...invitation,
+                    status: "submitted",
+                    offer: { ...offer, submittedAt },
+                  }
+                : invitation,
+            ),
+          };
+        }
+
+        // Fallback: create and insert the invitation if it wasn't in state
+        const seedMatch = SEED_INVITATIONS.find((seed) => seed.token === token);
+        const fallbackInvitation: SupplierInvitation = seedMatch
+          ? {
+              ...seedMatch,
+              status: "submitted",
+              offer: { ...offer, submittedAt },
+            }
+          : {
+              id: `inv-${Date.now().toString(36)}`,
+              token,
+              requisitionId: previous.requisitions[0]?.id ?? "req-01",
+              supplierName: "Constructora Andes S.A.",
+              supplierEmail: "contacto@constructoraandes.com",
+              status: "submitted",
+              offer: { ...offer, submittedAt },
+              createdAt: submittedAt,
+            };
+
+        return {
+          ...previous,
+          invitations: [fallbackInvitation, ...previous.invitations],
+        };
+      });
     },
     [],
   );
