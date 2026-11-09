@@ -22,6 +22,7 @@ import {
   type RoleId,
 } from "@/config/erpConfig";
 import {
+  REQUISITION_STATUS_LABELS,
   SEED_CONTRACTS,
   SEED_INVITATIONS,
   SEED_INVOICES,
@@ -35,6 +36,7 @@ import {
   type ExpenseInvoice,
   type PurchaseOrder,
   type Requisition,
+  type RequisitionStatus,
   type SupplierInvitation,
   type SupplierOffer,
   type TimelineEvent,
@@ -127,6 +129,11 @@ interface ErpContextValue {
     newStatus: "pending_approval" | "approved" | "returned",
     observation: string,
   ) => void;
+  updateRequisitionStatus: (
+    requisitionId: string,
+    newStatus: RequisitionStatus,
+    note?: string,
+  ) => void;
   createInvitation: (input: NewInvitationInput) => SupplierInvitation;
   submitSupplierOffer: (token: string, offer: Omit<SupplierOffer, "submittedAt">) => void;
   adjudicateInvitation: (invitationId: string, awardCriterion: string) => PurchaseOrder;
@@ -205,12 +212,30 @@ export function ErpProvider({ children }: { children: ReactNode }) {
         const missingSeedContracts = SEED_CONTRACTS.filter((seed) => !existingCtrIds.has(seed.id));
         const mergedContracts = [...storedContracts, ...missingSeedContracts];
 
+        // Ensure all seed purchase orders exist
+        const storedOrders = parsed.purchaseOrders ?? [];
+        const existingOrderIds = new Set(storedOrders.map((item) => item.id));
+        const missingSeedOrders = SEED_PURCHASE_ORDERS.filter(
+          (seed) => !existingOrderIds.has(seed.id),
+        );
+        const mergedPurchaseOrders = [...storedOrders, ...missingSeedOrders];
+
+        // Ensure all seed invoices exist
+        const storedInvoices = parsed.invoices ?? [];
+        const existingInvoiceIds = new Set(storedInvoices.map((item) => item.id));
+        const missingSeedInvoices = SEED_INVOICES.filter(
+          (seed) => !existingInvoiceIds.has(seed.id),
+        );
+        const mergedInvoices = [...storedInvoices, ...missingSeedInvoices];
+
         setState({
           ...initial,
           ...parsed,
           invitations: mergedInvitations,
           requisitions: mergedRequisitions,
           contracts: mergedContracts,
+          purchaseOrders: mergedPurchaseOrders,
+          invoices: mergedInvoices,
         });
       }
     } catch (storageError) {
@@ -393,6 +418,31 @@ export function ErpProvider({ children }: { children: ReactNode }) {
                 timeline: [
                   ...requisition.timeline,
                   buildTimelineEvent(actorName, labelMap[newStatus], observation.trim()),
+                ],
+              }
+            : requisition,
+        ),
+      }));
+    },
+    [actorName],
+  );
+
+  const updateRequisitionStatus = useCallback(
+    (requisitionId: string, newStatus: RequisitionStatus, note?: string) => {
+      setState((previous) => ({
+        ...previous,
+        requisitions: previous.requisitions.map((requisition) =>
+          requisition.id === requisitionId
+            ? {
+                ...requisition,
+                status: newStatus,
+                timeline: [
+                  ...requisition.timeline,
+                  buildTimelineEvent(
+                    actorName,
+                    `Estado actualizado a: ${REQUISITION_STATUS_LABELS[newStatus]}`,
+                    note?.trim() || null,
+                  ),
                 ],
               }
             : requisition,
@@ -717,6 +767,7 @@ export function ErpProvider({ children }: { children: ReactNode }) {
       approveRequisition,
       returnRequisition,
       modifyRequisitionDecision,
+      updateRequisitionStatus,
       createInvitation,
       submitSupplierOffer,
       adjudicateInvitation,
@@ -738,6 +789,7 @@ export function ErpProvider({ children }: { children: ReactNode }) {
       approveRequisition,
       returnRequisition,
       modifyRequisitionDecision,
+      updateRequisitionStatus,
       createInvitation,
       submitSupplierOffer,
       adjudicateInvitation,
