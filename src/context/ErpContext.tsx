@@ -1,4 +1,12 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+  type ReactNode,
+} from "react";
 
 import {
   SEED_BUDGET_LINES,
@@ -137,9 +145,14 @@ const buildInitialState = (): PersistedState => ({
   contracts: SEED_CONTRACTS,
 });
 
-const generateId = (prefix: string): string => `${prefix}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`;
+const generateId = (prefix: string): string =>
+  `${prefix}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`;
 
-const buildTimelineEvent = (actorName: string, action: string, note: string | null = null): TimelineEvent => ({
+const buildTimelineEvent = (
+  actorName: string,
+  action: string,
+  note: string | null = null,
+): TimelineEvent => ({
   id: generateId("ev"),
   at: new Date().toISOString(),
   actorName,
@@ -163,7 +176,11 @@ export function ErpProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     try {
       const storedValue = window.localStorage.getItem(STORAGE_KEY);
-      if (storedValue) setState({ ...buildInitialState(), ...(JSON.parse(storedValue) as Partial<PersistedState>) });
+      if (storedValue)
+        setState({
+          ...buildInitialState(),
+          ...(JSON.parse(storedValue) as Partial<PersistedState>),
+        });
     } catch (storageError) {
       console.error("No se pudo leer el estado local del ERP", storageError);
     } finally {
@@ -180,11 +197,20 @@ export function ErpProvider({ children }: { children: ReactNode }) {
     }
   }, [state, isHydrated]);
 
-  const signInAsRole = useCallback((roleId: RoleId) => setState((previous) => ({ ...previous, activeRoleId: roleId })), []);
-  const signOut = useCallback(() => setState((previous) => ({ ...previous, activeRoleId: null })), []);
-  const setProjectFilter = useCallback((filter: ProjectFilter) => setState((previous) => ({ ...previous, projectFilter: filter })), []);
+  const signInAsRole = useCallback(
+    (roleId: RoleId) => setState((previous) => ({ ...previous, activeRoleId: roleId })),
+    [],
+  );
+  const signOut = useCallback(
+    () => setState((previous) => ({ ...previous, activeRoleId: null })),
+    [],
+  );
+  const setProjectFilter = useCallback(
+    (filter: ProjectFilter) => setState((previous) => ({ ...previous, projectFilter: filter })),
+    [],
+  );
 
-  const activeRole = state.activeRoleId ? findRoleById(state.activeRoleId) ?? null : null;
+  const activeRole = state.activeRoleId ? (findRoleById(state.activeRoleId) ?? null) : null;
   const actorName = activeRole?.personName ?? "Sistema";
 
   const createBudgetLine = useCallback((input: NewBudgetLineInput): BudgetLine => {
@@ -212,7 +238,9 @@ export function ErpProvider({ children }: { children: ReactNode }) {
       setState((previous) => ({
         ...previous,
         budgetLines: previous.budgetLines.map((line) =>
-          line.id === input.budgetLineId ? { ...line, approved: line.approved + signedAmount } : line,
+          line.id === input.budgetLineId
+            ? { ...line, approved: line.approved + signedAmount }
+            : line,
         ),
         adjustments: [adjustment, ...previous.adjustments],
       }));
@@ -227,12 +255,19 @@ export function ErpProvider({ children }: { children: ReactNode }) {
     (input: NewRequisitionInput): Requisition => {
       const targetLine = state.budgetLines.find((line) => line.id === input.budgetLineId);
       if (!targetLine) throw new Error("La partida seleccionada no existe.");
-      const validationError = validateRequisition(targetLine, input.estimatedAmount, input.overdraftJustification);
+      const validationError = validateRequisition(
+        targetLine,
+        input.estimatedAmount,
+        input.overdraftJustification,
+      );
       if (validationError) throw new Error(validationError);
 
       const requisition: Requisition = {
         id: generateId("req"),
-        code: nextCode("REQ", state.requisitions.map((item) => item.code)),
+        code: nextCode(
+          "REQ",
+          state.requisitions.map((item) => item.code),
+        ),
         title: input.title,
         description: input.description,
         justification: input.justification,
@@ -242,12 +277,17 @@ export function ErpProvider({ children }: { children: ReactNode }) {
         budgetLineId: input.budgetLineId,
         requesterArea: input.requesterArea,
         status: "pending_approval",
-        overdraftJustification: input.overdraftJustification.trim() ? input.overdraftJustification.trim() : null,
+        overdraftJustification: input.overdraftJustification.trim()
+          ? input.overdraftJustification.trim()
+          : null,
         createdBy: actorName,
         createdAt: new Date().toISOString(),
         timeline: [buildTimelineEvent(actorName, "Requerimiento creado")],
       };
-      setState((previous) => ({ ...previous, requisitions: [requisition, ...previous.requisitions] }));
+      setState((previous) => ({
+        ...previous,
+        requisitions: [requisition, ...previous.requisitions],
+      }));
       return requisition;
     },
     [state.budgetLines, state.requisitions, actorName],
@@ -262,7 +302,10 @@ export function ErpProvider({ children }: { children: ReactNode }) {
             ? {
                 ...requisition,
                 status: "approved",
-                timeline: [...requisition.timeline, buildTimelineEvent(actorName, "Requerimiento aprobado")],
+                timeline: [
+                  ...requisition.timeline,
+                  buildTimelineEvent(actorName, "Requerimiento aprobado"),
+                ],
               }
             : requisition,
         ),
@@ -273,7 +316,8 @@ export function ErpProvider({ children }: { children: ReactNode }) {
 
   const returnRequisition = useCallback(
     (requisitionId: string, observation: string) => {
-      if (observation.trim().length < 5) throw new Error("La observación debe tener al menos 5 caracteres.");
+      if (observation.trim().length < 5)
+        throw new Error("La observación debe tener al menos 5 caracteres.");
       setState((previous) => ({
         ...previous,
         requisitions: previous.requisitions.map((requisition) =>
@@ -281,7 +325,10 @@ export function ErpProvider({ children }: { children: ReactNode }) {
             ? {
                 ...requisition,
                 status: "returned",
-                timeline: [...requisition.timeline, buildTimelineEvent(actorName, "Devuelto con observación", observation.trim())],
+                timeline: [
+                  ...requisition.timeline,
+                  buildTimelineEvent(actorName, "Devuelto con observación", observation.trim()),
+                ],
               }
             : requisition,
         ),
@@ -317,7 +364,10 @@ export function ErpProvider({ children }: { children: ReactNode }) {
             ? {
                 ...item,
                 status: "in_procurement",
-                timeline: [...item.timeline, buildTimelineEvent(actorName, `Invitación enviada a ${input.supplierName}`)],
+                timeline: [
+                  ...item.timeline,
+                  buildTimelineEvent(actorName, `Invitación enviada a ${input.supplierName}`),
+                ],
               }
             : item,
         ),
@@ -327,28 +377,40 @@ export function ErpProvider({ children }: { children: ReactNode }) {
     [state.requisitions, actorName],
   );
 
-  const submitSupplierOffer = useCallback((token: string, offer: Omit<SupplierOffer, "submittedAt">) => {
-    setState((previous) => ({
-      ...previous,
-      invitations: previous.invitations.map((invitation) =>
-        invitation.token === token
-          ? { ...invitation, status: "submitted", offer: { ...offer, submittedAt: new Date().toISOString() } }
-          : invitation,
-      ),
-    }));
-  }, []);
+  const submitSupplierOffer = useCallback(
+    (token: string, offer: Omit<SupplierOffer, "submittedAt">) => {
+      setState((previous) => ({
+        ...previous,
+        invitations: previous.invitations.map((invitation) =>
+          invitation.token === token
+            ? {
+                ...invitation,
+                status: "submitted",
+                offer: { ...offer, submittedAt: new Date().toISOString() },
+              }
+            : invitation,
+        ),
+      }));
+    },
+    [],
+  );
 
   const adjudicateInvitation = useCallback(
     (invitationId: string, awardCriterion: string): PurchaseOrder => {
       const invitation = state.invitations.find((item) => item.id === invitationId);
-      if (!invitation || !invitation.offer) throw new Error("La invitación no tiene una oferta presentada.");
-      if (awardCriterion.trim().length < 10) throw new Error("Registra el criterio de adjudicación (mínimo 10 caracteres).");
+      if (!invitation || !invitation.offer)
+        throw new Error("La invitación no tiene una oferta presentada.");
+      if (awardCriterion.trim().length < 10)
+        throw new Error("Registra el criterio de adjudicación (mínimo 10 caracteres).");
       const requisition = state.requisitions.find((item) => item.id === invitation.requisitionId);
       if (!requisition) throw new Error("El requerimiento asociado no existe.");
 
       const order: PurchaseOrder = {
         id: generateId("oc"),
-        code: nextCode("OC", state.purchaseOrders.map((item) => item.code)),
+        code: nextCode(
+          "OC",
+          state.purchaseOrders.map((item) => item.code),
+        ),
         requisitionId: invitation.requisitionId,
         invitationId: invitation.id,
         supplierName: invitation.supplierName,
@@ -364,14 +426,23 @@ export function ErpProvider({ children }: { children: ReactNode }) {
         ...previous,
         purchaseOrders: [order, ...previous.purchaseOrders],
         budgetLines: previous.budgetLines.map((line) =>
-          line.id === requisition.budgetLineId ? applyCommitment(line, invitation.offer?.price ?? 0) : line,
+          line.id === requisition.budgetLineId
+            ? applyCommitment(line, invitation.offer?.price ?? 0)
+            : line,
         ),
         requisitions: previous.requisitions.map((item) =>
           item.id === invitation.requisitionId
             ? {
                 ...item,
                 status: "ordered",
-                timeline: [...item.timeline, buildTimelineEvent(actorName, `Orden ${order.code} emitida a ${invitation.supplierName}`, awardCriterion.trim())],
+                timeline: [
+                  ...item.timeline,
+                  buildTimelineEvent(
+                    actorName,
+                    `Orden ${order.code} emitida a ${invitation.supplierName}`,
+                    awardCriterion.trim(),
+                  ),
+                ],
               }
             : item,
         ),
@@ -432,17 +503,28 @@ export function ErpProvider({ children }: { children: ReactNode }) {
         ),
         budgetLines:
           decision === "validate" && order
-            ? previous.budgetLines.map((line) => (line.id === order.budgetLineId ? applyExecution(line, invoice.total) : line))
+            ? previous.budgetLines.map((line) =>
+                line.id === order.budgetLineId ? applyExecution(line, invoice.total) : line,
+              )
             : previous.budgetLines,
         purchaseOrders:
           decision === "validate"
-            ? previous.purchaseOrders.map((item) => (item.id === invoice.purchaseOrderId ? { ...item, status: "invoiced" } : item))
+            ? previous.purchaseOrders.map((item) =>
+                item.id === invoice.purchaseOrderId ? { ...item, status: "invoiced" } : item,
+              )
             : previous.purchaseOrders,
         requisitions:
           decision === "validate"
             ? previous.requisitions.map((item) =>
                 item.id === order?.requisitionId
-                  ? { ...item, status: "invoiced", timeline: [...item.timeline, buildTimelineEvent(actorName, `Factura ${invoice.invoiceNumber} validada`)] }
+                  ? {
+                      ...item,
+                      status: "invoiced",
+                      timeline: [
+                        ...item.timeline,
+                        buildTimelineEvent(actorName, `Factura ${invoice.invoiceNumber} validada`),
+                      ],
+                    }
                   : item,
               )
             : previous.requisitions,
@@ -459,7 +541,10 @@ export function ErpProvider({ children }: { children: ReactNode }) {
       if (!targetLine) throw new Error("La partida seleccionada no existe.");
       const contract: WorkContract = {
         id: generateId("ctr"),
-        code: nextCode("CTR", state.contracts.map((item) => item.code)),
+        code: nextCode(
+          "CTR",
+          state.contracts.map((item) => item.code),
+        ),
         contractorName: input.contractorName,
         projectId: input.projectId,
         phaseId: input.phaseId,
@@ -467,7 +552,11 @@ export function ErpProvider({ children }: { children: ReactNode }) {
         amount: input.amount,
         startDate: input.startDate,
         endDate: input.endDate,
-        milestones: input.milestones.map((milestone) => ({ ...milestone, id: generateId("hit"), status: "pending" })),
+        milestones: input.milestones.map((milestone) => ({
+          ...milestone,
+          id: generateId("hit"),
+          status: "pending",
+        })),
         createdBy: actorName,
         createdAt: new Date().toISOString(),
       };

@@ -40,7 +40,9 @@ describe("evaluateRequisitionOverdraft", () => {
 describe("validateRequisition", () => {
   it("exige justificación detallada cuando hay sobregiro", () => {
     expect(validateRequisition(baseLine, 60000, "corto")).toContain("justificación detallada");
-    expect(validateRequisition(baseLine, 60000, "Justificación amplia y detallada del gasto")).toBeNull();
+    expect(
+      validateRequisition(baseLine, 60000, "Justificación amplia y detallada del gasto"),
+    ).toBeNull();
   });
 });
 
@@ -92,9 +94,20 @@ describe("buildContasisCsv", () => {
       reviewedBy: "Lucía Castro",
       reviewedAt: "2026-11-07T09:00:00.000Z",
     };
-    const csv = buildContasisCsv([{ invoice, orderCode: "OC-2026-001", budgetLineCode: "PAR-OBR-002", projectName: "Proyecto París" }]);
+    const csv = buildContasisCsv([
+      {
+        invoice,
+        orderCode: "OC-2026-001",
+        budgetLineCode: "PAR-OBR-002",
+        projectName: "Proyecto París",
+      },
+    ]);
     const [header, row] = csv.split("\n");
-    expect(header).toBe("TIPO_DOC;SERIE;NUMERO;FECHA_EMISION;RUC_EMISOR;RAZON_SOCIAL;SUBTOTAL;IVA;TOTAL;PROYECTO;PARTIDA;ORDEN");
-    expect(row).toBe("01;001;002000481;2026-11-06;1790012345001;Labotest Ingeniería S.A.;1000.00;150.00;1150.00;Proyecto París;PAR-OBR-002;OC-2026-001");
+    expect(header).toBe(
+      "TIPO_DOC;SERIE;NUMERO;FECHA_EMISION;RUC_EMISOR;RAZON_SOCIAL;SUBTOTAL;IVA;TOTAL;PROYECTO;PARTIDA;ORDEN",
+    );
+    expect(row).toBe(
+      "01;001;002000481;2026-11-06;1790012345001;Labotest Ingeniería S.A.;1000.00;150.00;1150.00;Proyecto París;PAR-OBR-002;OC-2026-001",
+    );
   });
 });

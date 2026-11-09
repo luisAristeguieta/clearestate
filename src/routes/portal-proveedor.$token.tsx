@@ -21,7 +21,10 @@ export const Route = createFileRoute("/portal-proveedor/$token")({
   head: () => ({
     meta: [
       { title: `Portal del Proveedor · ${BRAND_NAME}` },
-      { name: "description", content: "Portal externo seguro para presentar ofertas económicas a ClearEstate." },
+      {
+        name: "description",
+        content: "Portal externo seguro para presentar ofertas económicas a ClearEstate.",
+      },
       { property: "og:title", content: `Portal del Proveedor · ${BRAND_NAME}` },
       { property: "og:description", content: "Presenta tu propuesta económica de forma segura." },
       { property: "og:type", content: "website" },
@@ -52,7 +55,8 @@ function SupplierPortalPage() {
         <BrandLogo />
         <h1 className="mt-8 text-2xl font-bold tracking-tight">Enlace no válido o expirado</h1>
         <p className="mt-2 max-w-md text-muted-foreground">
-          Este enlace de invitación no existe o ya no está disponible. Solicita a Logística un nuevo enlace de participación.
+          Este enlace de invitación no existe o ya no está disponible. Solicita a Logística un nuevo
+          enlace de participación.
         </p>
       </div>
     );
@@ -61,7 +65,7 @@ function SupplierPortalPage() {
   const requisition = requisitions.find((item) => item.id === invitation.requisitionId);
   const project = requisition ? PROJECTS.find((item) => item.id === requisition.projectId) : null;
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSupplierOfferSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     try {
       const parsedPrice = Number(price);
@@ -77,7 +81,9 @@ function SupplierPortalPage() {
       });
       toast.success("Oferta presentada correctamente.");
     } catch (submitError) {
-      toast.error(submitError instanceof Error ? submitError.message : "No se pudo presentar la oferta.");
+      toast.error(
+        submitError instanceof Error ? submitError.message : "No se pudo presentar la oferta.",
+      );
     }
   };
 
@@ -93,7 +99,9 @@ function SupplierPortalPage() {
       </header>
 
       <main className="mx-auto max-w-3xl px-4 py-10">
-        <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Invitación para</p>
+        <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+          Invitación para
+        </p>
         <h1 className="display-title mt-1 text-3xl">{invitation.supplierName}</h1>
 
         {requisition && (
@@ -104,7 +112,8 @@ function SupplierPortalPage() {
             <h2 className="mt-1 text-lg font-bold tracking-tight">{requisition.title}</h2>
             <p className="mt-2 text-sm text-muted-foreground">{requisition.description}</p>
             <p className="mt-3 text-sm">
-              Monto de referencia: <span className="font-semibold">{formatCurrency(requisition.estimatedAmount)}</span>
+              Monto de referencia:{" "}
+              <span className="font-semibold">{formatCurrency(requisition.estimatedAmount)}</span>
             </p>
           </section>
         )}
@@ -116,28 +125,57 @@ function SupplierPortalPage() {
             </span>
             <h2 className="mt-4 text-xl font-bold tracking-tight">Oferta presentada</h2>
             <p className="mt-2 max-w-md text-sm text-muted-foreground">
-              Recibimos tu propuesta por {formatCurrency(invitation.offer.price)} a {invitation.offer.termDays} días. Logística te contactará con el resultado de la adjudicación.
+              Recibimos tu propuesta por {formatCurrency(invitation.offer.price)} a{" "}
+              {invitation.offer.termDays} días. Logística te contactará con el resultado de la
+              adjudicación.
             </p>
-            <p className="mt-3 text-xs text-muted-foreground">Archivo recibido: {invitation.offer.pdfFileName}</p>
+            <p className="mt-3 text-xs text-muted-foreground">
+              Archivo recibido: {invitation.offer.pdfFileName}
+            </p>
           </section>
         ) : (
-          <form onSubmit={handleSubmit} className="surface-card mt-6 space-y-5 p-6">
+          <form onSubmit={handleSupplierOfferSubmit} className="surface-card mt-6 space-y-5 p-6">
             <h2 className="text-lg font-bold tracking-tight">Presentar oferta económica</h2>
 
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-2">
                 <Label htmlFor="offer-price">Precio total (USD)</Label>
-                <Input id="offer-price" required type="number" min={1} step="0.01" value={price} onChange={(event) => setPrice(event.target.value)} placeholder="0.00" />
+                <Input
+                  id="offer-price"
+                  required
+                  type="number"
+                  min={1}
+                  step="0.01"
+                  value={price}
+                  onChange={(event) => setPrice(event.target.value)}
+                  placeholder="0.00"
+                />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="offer-term">Plazo de entrega (días)</Label>
-                <Input id="offer-term" required type="number" min={1} value={termDays} onChange={(event) => setTermDays(event.target.value)} placeholder="30" />
+                <Input
+                  id="offer-term"
+                  required
+                  type="number"
+                  min={1}
+                  value={termDays}
+                  onChange={(event) => setTermDays(event.target.value)}
+                  placeholder="30"
+                />
               </div>
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="offer-conditions">Condiciones comerciales</Label>
-              <Textarea id="offer-conditions" required maxLength={500} rows={3} value={conditions} onChange={(event) => setConditions(event.target.value)} placeholder="Forma de pago, garantías, validez de la oferta…" />
+              <Textarea
+                id="offer-conditions"
+                required
+                maxLength={500}
+                rows={3}
+                value={conditions}
+                onChange={(event) => setConditions(event.target.value)}
+                placeholder="Forma de pago, garantías, validez de la oferta…"
+              />
             </div>
 
             <div className="space-y-2">
@@ -149,7 +187,12 @@ function SupplierPortalPage() {
                 className="hidden"
                 onChange={(event) => setPdfFileName(event.target.files?.[0]?.name ?? "")}
               />
-              <Button type="button" variant="outline" className="w-full rounded-full" onClick={() => fileInputRef.current?.click()}>
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full rounded-full"
+                onClick={() => fileInputRef.current?.click()}
+              >
                 <FileUp /> {pdfFileName || "Adjuntar propuesta PDF"}
               </Button>
             </div>

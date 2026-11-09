@@ -6,15 +6,181 @@ import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ContactField, createPhase3Head, formatMoney, performPrototypeAction } from "@/components/phase3/Phase3Shared";
+import {
+  ContactField,
+  createPhase3Head,
+  formatMoney,
+  performPrototypeAction,
+} from "@/components/phase3/Phase3Shared";
 import { PROJECTS } from "@/config/erpConfig";
 import { readPrototypeAttachment, usePhase3 } from "@/context/Phase3Context";
-export const Route = createFileRoute("/_erp/modulo/posventa_/comprador/$saleId")({ head: () => createPhase3Head("/modulo/posventa/comprador", "Ficha del comprador: cuenta Oracle, lote, contactos y acta final de entrega."), component: BuyerPage });
+export const Route = createFileRoute("/_erp/modulo/posventa_/comprador/$saleId")({
+  head: () =>
+    createPhase3Head(
+      "/modulo/posventa/comprador",
+      "Ficha del comprador: cuenta Oracle, lote, contactos y acta final de entrega.",
+    ),
+  component: BuyerPage,
+});
 function BuyerPage() {
-  const { saleId } = Route.useParams(); const { sales, cases, updateContact, updateCase } = usePhase3(); const sale = sales.find((item) => item.id === saleId); const record = cases.find((item) => item.saleId === saleId);
-  const [email, setEmail] = useState(""); const [phone, setPhone] = useState(""); const [date, setDate] = useState("");
-  useEffect(() => { if (sale) { setEmail(sale.email); setPhone(sale.phone); } if (record) setDate(record.estimatedDelivery); }, [sale, record]);
-  if (!sale || !record) return <div className="phase2-view"><PageHeader title="Expediente no disponible" description="El comprador no tiene un expediente elegible de posventa." /><Button asChild variant="outline"><Link to="/modulo/posventa">Volver a Posventa</Link></Button></div>;
+  const { saleId } = Route.useParams();
+  const { sales, cases, updateContact, updateCase } = usePhase3();
+  const sale = sales.find((item) => item.id === saleId);
+  const record = cases.find((item) => item.saleId === saleId);
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [date, setDate] = useState("");
+  useEffect(() => {
+    if (sale) {
+      setEmail(sale.email);
+      setPhone(sale.phone);
+    }
+    if (record) setDate(record.estimatedDelivery);
+  }, [sale, record]);
+  if (!sale || !record)
+    return (
+      <div className="phase2-view">
+        <PageHeader
+          title="Expediente no disponible"
+          description="El comprador no tiene un expediente elegible de posventa."
+        />
+        <Button asChild variant="outline">
+          <Link to="/modulo/posventa">Volver a Posventa</Link>
+        </Button>
+      </div>
+    );
+  const handleDeliveryRecordUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = event.target.files?.[0];
+    if (!selectedFile) return;
+    try {
+      const attachment = await readPrototypeAttachment(selectedFile);
+      updateCase(record.id, { deliveryRecord: attachment });
+      toast.success("Acta adjuntada.");
+    } catch (attachmentError) {
+      toast.error(
+        attachmentError instanceof Error ? attachmentError.message : "No se pudo adjuntar.",
+      );
+    }
+  };
+
   const project = PROJECTS.find((item) => item.id === sale.projectId);
-  return <div className="phase2-view"><Button asChild variant="ghost" className="mb-5"><Link to="/modulo/posventa"><ArrowLeft /> Bandeja Posventa</Link></Button><PageHeader title={sale.buyerName} description={`${project?.name} · Lote ${sale.lot} · Expediente ${record.id}`} /><div className="grid gap-8 lg:grid-cols-2"><section className="space-y-6">{project && <img src={project.imageUrl} alt={project.name} className="aspect-[16/7] w-full rounded-card object-cover" />}<h2 className="font-bold">Estado de cuenta Oracle</h2><dl className="divide-y divide-border">{[["Precio de venta", formatMoney(sale.price)], ["Pagado", formatMoney(sale.price - sale.balance)], ["Saldo pendiente", formatMoney(sale.balance)], ["Cuotas", `${sale.paidInstallments} / ${sale.installments}`], ["Fecha de venta", sale.soldAt]].map(([label, value]) => <div key={label} className="flex flex-wrap justify-between gap-3 py-4 text-sm"><dt className="text-muted-foreground">{label}</dt><dd className="font-semibold">{value}</dd></div>)}</dl><p className="text-sm text-muted-foreground">{project?.location}</p></section><section className="space-y-8"><div className="space-y-4"><h2 className="font-bold">Contactos</h2><ContactField label="Correo del comprador" value={email} onChange={setEmail} /><ContactField label="Número WhatsApp" value={phone} onChange={setPhone} /><Button variant="outline" onClick={() => performPrototypeAction(() => updateContact(sale.id, email, phone), "Contacto actualizado.")}>Guardar contacto</Button></div><div className="space-y-4 border-t border-border pt-8"><h2 className="font-bold">Entrega del lote</h2><Label htmlFor="delivery-date">Fecha estimada de entrega</Label><Input id="delivery-date" type="date" value={date} onChange={(event) => setDate(event.target.value)} /><Button variant="outline" onClick={() => performPrototypeAction(() => { if (!date) throw new Error("Selecciona una fecha."); updateCase(record.id, { estimatedDelivery: date, status: record.status === "delivered" ? "delivered" : "ready" }); }, "Fecha de entrega actualizada.")}>Guardar fecha</Button><div><Label htmlFor="delivery-record" className="flex items-center gap-2"><FileUp className="h-4 w-4" /> Acta final · PDF o imagen</Label><Input id="delivery-record" type="file" accept="application/pdf,image/*" className="mt-3" onChange={async (event) => { const file = event.target.files?.[0]; if (!file) return; try { const attachment = await readPrototypeAttachment(file); updateCase(record.id, { deliveryRecord: attachment }); toast.success("Acta adjuntada."); } catch (error) { toast.error(error instanceof Error ? error.message : "No se pudo adjuntar."); } }} /></div>{record.deliveryRecord && <Button asChild variant="outline"><a href={record.deliveryRecord.dataUrl} download={record.deliveryRecord.name}><Download /> {record.deliveryRecord.name}</a></Button>}<div><Button disabled={!record.deliveryRecord || record.status === "delivered"} onClick={() => performPrototypeAction(() => updateCase(record.id, { status: "delivered", deliveredAt: new Date().toISOString() }), "Entrega final registrada.")}><CheckCheck /> {record.status === "delivered" ? "Lote entregado" : "Confirmar entrega final"}</Button></div></div></section></div></div>;
+  return (
+    <div className="phase2-view">
+      <Button asChild variant="ghost" className="mb-5">
+        <Link to="/modulo/posventa">
+          <ArrowLeft /> Bandeja Posventa
+        </Link>
+      </Button>
+      <PageHeader
+        title={sale.buyerName}
+        description={`${project?.name} · Lote ${sale.lot} · Expediente ${record.id}`}
+      />
+      <div className="grid gap-8 lg:grid-cols-2">
+        <section className="space-y-6">
+          {project && (
+            <img
+              src={project.imageUrl}
+              alt={project.name}
+              className="aspect-[16/7] w-full rounded-card object-cover"
+            />
+          )}
+          <h2 className="font-bold">Estado de cuenta Oracle</h2>
+          <dl className="divide-y divide-border">
+            {[
+              ["Precio de venta", formatMoney(sale.price)],
+              ["Pagado", formatMoney(sale.price - sale.balance)],
+              ["Saldo pendiente", formatMoney(sale.balance)],
+              ["Cuotas", `${sale.paidInstallments} / ${sale.installments}`],
+              ["Fecha de venta", sale.soldAt],
+            ].map(([label, value]) => (
+              <div key={label} className="flex flex-wrap justify-between gap-3 py-4 text-sm">
+                <dt className="text-muted-foreground">{label}</dt>
+                <dd className="font-semibold">{value}</dd>
+              </div>
+            ))}
+          </dl>
+          <p className="text-sm text-muted-foreground">{project?.location}</p>
+        </section>
+        <section className="space-y-8">
+          <div className="space-y-4">
+            <h2 className="font-bold">Contactos</h2>
+            <ContactField label="Correo del comprador" value={email} onChange={setEmail} />
+            <ContactField label="Número WhatsApp" value={phone} onChange={setPhone} />
+            <Button
+              variant="outline"
+              onClick={() =>
+                performPrototypeAction(
+                  () => updateContact(sale.id, email, phone),
+                  "Contacto actualizado.",
+                )
+              }
+            >
+              Guardar contacto
+            </Button>
+          </div>
+          <div className="space-y-4 border-t border-border pt-8">
+            <h2 className="font-bold">Entrega del lote</h2>
+            <Label htmlFor="delivery-date">Fecha estimada de entrega</Label>
+            <Input
+              id="delivery-date"
+              type="date"
+              value={date}
+              onChange={(event) => setDate(event.target.value)}
+            />
+            <Button
+              variant="outline"
+              onClick={() =>
+                performPrototypeAction(() => {
+                  if (!date) throw new Error("Selecciona una fecha.");
+                  updateCase(record.id, {
+                    estimatedDelivery: date,
+                    status: record.status === "delivered" ? "delivered" : "ready",
+                  });
+                }, "Fecha de entrega actualizada.")
+              }
+            >
+              Guardar fecha
+            </Button>
+            <div>
+              <Label htmlFor="delivery-record" className="flex items-center gap-2">
+                <FileUp className="h-4 w-4" /> Acta final · PDF o imagen
+              </Label>
+              <Input
+                id="delivery-record"
+                type="file"
+                accept="application/pdf,image/*"
+                className="mt-3"
+                onChange={handleDeliveryRecordUpload}
+              />
+            </div>
+            {record.deliveryRecord && (
+              <Button asChild variant="outline">
+                <a href={record.deliveryRecord.dataUrl} download={record.deliveryRecord.name}>
+                  <Download /> {record.deliveryRecord.name}
+                </a>
+              </Button>
+            )}
+            <div>
+              <Button
+                disabled={!record.deliveryRecord || record.status === "delivered"}
+                onClick={() =>
+                  performPrototypeAction(
+                    () =>
+                      updateCase(record.id, {
+                        status: "delivered",
+                        deliveredAt: new Date().toISOString(),
+                      }),
+                    "Entrega final registrada.",
+                  )
+                }
+              >
+                <CheckCheck />{" "}
+                {record.status === "delivered" ? "Lote entregado" : "Confirmar entrega final"}
+              </Button>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  );
 }

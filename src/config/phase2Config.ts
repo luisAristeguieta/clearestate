@@ -4,12 +4,7 @@ import { calculateAvailableBalance } from "@/config/erpConfig";
 /* ---------- Requisitions (P-04 / P-05) ---------- */
 
 export type RequisitionStatus =
-  | "pending_approval"
-  | "approved"
-  | "returned"
-  | "in_procurement"
-  | "ordered"
-  | "invoiced";
+  "pending_approval" | "approved" | "returned" | "in_procurement" | "ordered" | "invoiced";
 
 export const REQUISITION_STATUS_LABELS: Record<RequisitionStatus, string> = {
   pending_approval: "Pendiente de aprobación",
@@ -72,7 +67,10 @@ export const validateRequisition = (
 ): string | null => {
   if (amount <= 0) return "El importe estimado debe ser mayor a cero.";
   const check = evaluateRequisitionOverdraft(line, amount);
-  if (check.isOverdrawn && overdraftJustification.trim().length < MIN_OVERDRAFT_JUSTIFICATION_LENGTH) {
+  if (
+    check.isOverdrawn &&
+    overdraftJustification.trim().length < MIN_OVERDRAFT_JUSTIFICATION_LENGTH
+  ) {
     return "El importe supera el saldo disponible: registra una justificación detallada de al menos 20 caracteres.";
   }
   return null;
@@ -178,7 +176,15 @@ export const applyExecution = (line: BudgetLine, amount: number): BudgetLine => 
 export const simulateInvoiceExtraction = (
   order: Pick<PurchaseOrder, "supplierName" | "amount" | "code">,
   pdfFileName: string,
-): { issuerName: string; issuerTaxId: string; invoiceNumber: string; subtotal: number; taxAmount: number; total: number; pdfFileName: string } => {
+): {
+  issuerName: string;
+  issuerTaxId: string;
+  invoiceNumber: string;
+  subtotal: number;
+  taxAmount: number;
+  total: number;
+  pdfFileName: string;
+} => {
   const subtotal = Math.round((order.amount / (1 + IVA_RATE)) * 100) / 100;
   const { taxAmount, total } = calculateInvoiceTotals(subtotal);
   return {
@@ -201,7 +207,8 @@ export interface ContasisRow {
 
 /** Builds the tabular CSV optimized for the Contasis accounting system (RF-31). */
 export const buildContasisCsv = (rows: ContasisRow[]): string => {
-  const header = "TIPO_DOC;SERIE;NUMERO;FECHA_EMISION;RUC_EMISOR;RAZON_SOCIAL;SUBTOTAL;IVA;TOTAL;PROYECTO;PARTIDA;ORDEN";
+  const header =
+    "TIPO_DOC;SERIE;NUMERO;FECHA_EMISION;RUC_EMISOR;RAZON_SOCIAL;SUBTOTAL;IVA;TOTAL;PROYECTO;PARTIDA;ORDEN";
   const escapeCell = (value: string): string => value.replace(/;/g, ",").trim();
   const lines = rows.map(({ invoice, orderCode, budgetLineCode, projectName }) => {
     const [serie = "", ...numberParts] = invoice.invoiceNumber.split("-");
@@ -258,18 +265,25 @@ export interface WorkContract {
 }
 
 /** Milestone amounts must add up to the contract amount. */
-export const validateMilestoneSplit = (contractAmount: number, milestones: Pick<ContractMilestone, "amount">[]): string | null => {
+export const validateMilestoneSplit = (
+  contractAmount: number,
+  milestones: Pick<ContractMilestone, "amount">[],
+): string | null => {
   const total = milestones.reduce((sum, milestone) => sum + milestone.amount, 0);
   if (milestones.length === 0) return "Define al menos un hito de avance.";
-  if (Math.abs(total - contractAmount) > 0.01) return "La suma de los hitos debe ser igual al monto del contrato.";
+  if (Math.abs(total - contractAmount) > 0.01)
+    return "La suma de los hitos debe ser igual al monto del contrato.";
   return null;
 };
 
 /* ---------- Seed data ---------- */
 
-const seedTimeline = (actorName: string, action: string, at: string, note: string | null = null): TimelineEvent[] => [
-  { id: `ev-${at}`, at, actorName, action, note },
-];
+const seedTimeline = (
+  actorName: string,
+  action: string,
+  at: string,
+  note: string | null = null,
+): TimelineEvent[] => [{ id: `ev-${at}`, at, actorName, action, note }];
 
 export const SEED_REQUISITIONS: Requisition[] = [
   {
@@ -277,7 +291,8 @@ export const SEED_REQUISITIONS: Requisition[] = [
     code: "REQ-2026-001",
     title: "Campaña digital de lanzamiento etapa II",
     description: "Pauta digital, producción de video y piezas para redes sociales de la etapa II.",
-    justification: "Se requiere sostener el ritmo de ventas de la etapa II durante el último trimestre.",
+    justification:
+      "Se requiere sostener el ritmo de ventas de la etapa II durante el último trimestre.",
     estimatedAmount: 45000,
     projectId: "paris",
     phaseId: null,
@@ -289,7 +304,12 @@ export const SEED_REQUISITIONS: Requisition[] = [
     createdAt: "2026-10-28T09:30:00.000Z",
     timeline: [
       ...seedTimeline("Carlos Mendoza", "Requerimiento creado", "2026-10-28T09:30:00.000Z"),
-      ...seedTimeline("Elena Vargas", "Requerimiento aprobado", "2026-10-29T15:10:00.000Z", "Aprobado dentro del saldo de la partida de Marketing."),
+      ...seedTimeline(
+        "Elena Vargas",
+        "Requerimiento aprobado",
+        "2026-10-29T15:10:00.000Z",
+        "Aprobado dentro del saldo de la partida de Marketing.",
+      ),
       ...seedTimeline("Roberto Silva", "Enviado a adquisiciones", "2026-10-30T08:05:00.000Z"),
     ],
   },
@@ -314,8 +334,10 @@ export const SEED_REQUISITIONS: Requisition[] = [
     id: "req-03",
     code: "REQ-2026-003",
     title: "Vigilancia privada de obra",
-    description: "Servicio de vigilancia 24/7 para el almacén de obra y las maquinarias del proyecto.",
-    justification: "Se registraron dos intentos de robo en octubre; la póliza exige vigilancia permanente.",
+    description:
+      "Servicio de vigilancia 24/7 para el almacén de obra y las maquinarias del proyecto.",
+    justification:
+      "Se registraron dos intentos de robo en octubre; la póliza exige vigilancia permanente.",
     estimatedAmount: 12000,
     projectId: "paris",
     phaseId: "ph-par-2",
@@ -331,7 +353,8 @@ export const SEED_REQUISITIONS: Requisition[] = [
     id: "req-04",
     code: "REQ-2026-004",
     title: "Estudio de suelos complementario",
-    description: "Ensayos de laboratorio y calicatas adicionales para la zona de muros de contención.",
+    description:
+      "Ensayos de laboratorio y calicatas adicionales para la zona de muros de contención.",
     justification: "El informe geotécnico inicial no cubre el talud norte.",
     estimatedAmount: 52000,
     projectId: "sagaleta",
@@ -344,7 +367,12 @@ export const SEED_REQUISITIONS: Requisition[] = [
     createdAt: "2026-10-20T10:00:00.000Z",
     timeline: [
       ...seedTimeline("Ing. Marcos Ríos", "Requerimiento creado", "2026-10-20T10:00:00.000Z"),
-      ...seedTimeline("Elena Vargas", "Devuelto con observación", "2026-10-21T16:40:00.000Z", "Adjuntar el alcance del estudio inicial y cotizar con dos laboratorios más."),
+      ...seedTimeline(
+        "Elena Vargas",
+        "Devuelto con observación",
+        "2026-10-21T16:40:00.000Z",
+        "Adjuntar el alcance del estudio inicial y cotizar con dos laboratorios más.",
+      ),
     ],
   },
 ];
@@ -426,9 +454,27 @@ export const SEED_CONTRACTS: WorkContract[] = [
     startDate: "2026-03-01",
     endDate: "2026-11-30",
     milestones: [
-      { id: "hit-01", name: "Movimiento de tierras y plataformas", percent: 40, amount: 344000, status: "validated" },
-      { id: "hit-02", name: "Muros de contención y obras de drenaje", percent: 35, amount: 301000, status: "billed" },
-      { id: "hit-03", name: "Acabados, señalización y entrega", percent: 25, amount: 215000, status: "pending" },
+      {
+        id: "hit-01",
+        name: "Movimiento de tierras y plataformas",
+        percent: 40,
+        amount: 344000,
+        status: "validated",
+      },
+      {
+        id: "hit-02",
+        name: "Muros de contención y obras de drenaje",
+        percent: 35,
+        amount: 301000,
+        status: "billed",
+      },
+      {
+        id: "hit-03",
+        name: "Acabados, señalización y entrega",
+        percent: 25,
+        amount: 215000,
+        status: "pending",
+      },
     ],
     createdBy: "Ing. Marcos Ríos",
     createdAt: "2026-02-20T09:00:00.000Z",

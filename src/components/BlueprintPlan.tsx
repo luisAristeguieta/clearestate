@@ -54,9 +54,34 @@ export function BlueprintPlan() {
           </pattern>
         </defs>
         <rect width="320" height="240" fill="url(#blueprint-grid)" />
-        <rect x="10" y="10" width="300" height="220" rx="6" className="fill-none stroke-foreground" strokeWidth="1" strokeDasharray="4 3" />
-        <line x1="10" y1="120" x2="310" y2="120" className="stroke-muted-foreground" strokeWidth="0.6" strokeDasharray="6 4" />
-        <line x1="160" y1="10" x2="160" y2="230" className="stroke-muted-foreground" strokeWidth="0.6" strokeDasharray="6 4" />
+        <rect
+          x="10"
+          y="10"
+          width="300"
+          height="220"
+          rx="6"
+          className="fill-none stroke-foreground"
+          strokeWidth="1"
+          strokeDasharray="4 3"
+        />
+        <line
+          x1="10"
+          y1="120"
+          x2="310"
+          y2="120"
+          className="stroke-muted-foreground"
+          strokeWidth="0.6"
+          strokeDasharray="6 4"
+        />
+        <line
+          x1="160"
+          y1="10"
+          x2="160"
+          y2="230"
+          className="stroke-muted-foreground"
+          strokeWidth="0.6"
+          strokeDasharray="6 4"
+        />
         {LOTS.map((lot) => (
           <rect
             key={lot.lotId}
@@ -72,16 +97,33 @@ export function BlueprintPlan() {
           />
         ))}
         {BLOCKS.map((block) => (
-          <text key={block.blockLabel} x={block.originX + 60} y={block.originY + 95} textAnchor="middle" className="fill-foreground text-[8px] font-semibold tracking-widest">
+          <text
+            key={block.blockLabel}
+            x={block.originX + 60}
+            y={block.originY + 95}
+            textAnchor="middle"
+            className="fill-foreground text-[8px] font-semibold tracking-widest"
+          >
             MZ {block.blockLabel}
           </text>
         ))}
       </svg>
       <div className="mt-3 flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
-        <span className="inline-flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-full bg-primary" />Vendido</span>
-        <span className="inline-flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-full bg-highlight" />Destacado</span>
-        <span className="inline-flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-full border border-foreground bg-background" />Disponible</span>
-        <span className="ml-auto font-medium text-foreground">{hoveredLot ? `Lote ${hoveredLot.lotId}` : "Pasa el cursor sobre un lote"}</span>
+        <span className="inline-flex items-center gap-1.5">
+          <span className="h-2.5 w-2.5 rounded-full bg-primary" />
+          Vendido
+        </span>
+        <span className="inline-flex items-center gap-1.5">
+          <span className="h-2.5 w-2.5 rounded-full bg-highlight" />
+          Destacado
+        </span>
+        <span className="inline-flex items-center gap-1.5">
+          <span className="h-2.5 w-2.5 rounded-full border border-foreground bg-background" />
+          Disponible
+        </span>
+        <span className="ml-auto font-medium text-foreground">
+          {hoveredLot ? `Lote ${hoveredLot.lotId}` : "Pasa el cursor sobre un lote"}
+        </span>
       </div>
     </div>
   );

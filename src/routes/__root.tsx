@@ -64,13 +64,21 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "ClearEstate ERP" },
-      { name: "description", content: "Backoffice de presupuestos, adquisiciones y posventa para Proyecto París y Proyecto Sagaleta." },
+      {
+        name: "description",
+        content:
+          "Backoffice de presupuestos, adquisiciones y posventa para Proyecto París y Proyecto Sagaleta.",
+      },
       { name: "author", content: "ClearEstate" },
       { property: "og:title", content: "ClearEstate ERP" },
-      { property: "og:description", content: "Backoffice de presupuestos, adquisiciones y posventa para Proyecto París y Proyecto Sagaleta." },
+      {
+        property: "og:description",
+        content:
+          "Backoffice de presupuestos, adquisiciones y posventa para Proyecto París y Proyecto Sagaleta.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-          ],
+    ],
     links: [
       {
         rel: "stylesheet",
@@ -78,7 +86,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
-      { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" },
+      {
+        rel: "stylesheet",
+        href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap",
+      },
       { rel: "icon", href: "/favicon.svg", type: "image/svg+xml", sizes: "any" },
       { rel: "icon", href: "/favicon-32.png", type: "image/png", sizes: "32x32" },
       { rel: "icon", href: "/favicon-16.png", type: "image/png", sizes: "16x16" },
@@ -112,9 +123,9 @@ function RootComponent() {
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <ErpProvider>
         <Phase3Provider>
-        <DocumentTitle />
-        <Outlet />
-        <Toaster position="top-right" />
+          <DocumentTitle />
+          <Outlet />
+          <Toaster position="top-right" />
         </Phase3Provider>
       </ErpProvider>
     </QueryClientProvider>

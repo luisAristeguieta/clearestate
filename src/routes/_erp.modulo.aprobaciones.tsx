@@ -17,9 +17,16 @@ export const Route = createFileRoute("/_erp/modulo/aprobaciones")({
   head: () => ({
     meta: [
       { title: getViewTitle("/modulo/aprobaciones") },
-      { name: "description", content: "Bandeja de aprobaciones gerenciales con línea de tiempo auditable de cada expediente." },
+      {
+        name: "description",
+        content:
+          "Bandeja de aprobaciones gerenciales con línea de tiempo auditable de cada expediente.",
+      },
       { property: "og:title", content: getViewTitle("/modulo/aprobaciones") },
-      { property: "og:description", content: "Aprobación o devolución de requerimientos con observaciones trazables." },
+      {
+        property: "og:description",
+        content: "Aprobación o devolución de requerimientos con observaciones trazables.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -32,10 +39,14 @@ function ApprovalsPage() {
   const [observations, setObservations] = useState<Record<string, string>>({});
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
-  const pendingRequisitions = requisitions.filter((requisition) => requisition.status === "pending_approval");
-  const resolvedRequisitions = requisitions.filter((requisition) => requisition.status !== "pending_approval");
+  const pendingRequisitions = requisitions.filter(
+    (requisition) => requisition.status === "pending_approval",
+  );
+  const resolvedRequisitions = requisitions.filter(
+    (requisition) => requisition.status !== "pending_approval",
+  );
 
-  const handleApprove = (requisitionId: string, code: string) => {
+  const handleApproveRequisition = (requisitionId: string, code: string) => {
     try {
       approveRequisition(requisitionId);
       toast.success(`${code} aprobado y enviado a Logística.`);
@@ -44,7 +55,7 @@ function ApprovalsPage() {
     }
   };
 
-  const handleReturn = (requisitionId: string, code: string) => {
+  const handleReturnRequisition = (requisitionId: string, code: string) => {
     try {
       returnRequisition(requisitionId, observations[requisitionId] ?? "");
       toast.success(`${code} devuelto con observación.`);
@@ -62,9 +73,13 @@ function ApprovalsPage() {
       />
 
       <section className="space-y-4">
-        <h2 className="text-lg font-bold tracking-tight">Pendientes de decisión ({pendingRequisitions.length})</h2>
+        <h2 className="text-lg font-bold tracking-tight">
+          Pendientes de decisión ({pendingRequisitions.length})
+        </h2>
         {pendingRequisitions.length === 0 && (
-          <div className="surface-card p-8 text-center text-muted-foreground">No hay solicitudes pendientes. Todo está al día.</div>
+          <div className="surface-card p-8 text-center text-muted-foreground">
+            No hay solicitudes pendientes. Todo está al día.
+          </div>
         )}
         {pendingRequisitions.map((requisition) => {
           const line = budgetLines.find((item) => item.id === requisition.budgetLineId);
@@ -79,15 +94,19 @@ function ApprovalsPage() {
                   <h3 className="mt-1 text-base font-bold tracking-tight">{requisition.title}</h3>
                   <p className="mt-1 text-sm text-muted-foreground">{requisition.description}</p>
                   <p className="mt-2 text-sm">
-                    <span className="font-semibold">Justificación:</span> {requisition.justification}
+                    <span className="font-semibold">Justificación:</span>{" "}
+                    {requisition.justification}
                   </p>
                   {line && (
                     <p className="mt-1 text-xs text-muted-foreground">
-                      Partida {line.code} · disponible {formatCurrency(line.approved - line.committed - line.executed)}
+                      Partida {line.code} · disponible{" "}
+                      {formatCurrency(line.approved - line.committed - line.executed)}
                     </p>
                   )}
                 </div>
-                <span className="text-xl font-bold tracking-tight">{formatCurrency(requisition.estimatedAmount)}</span>
+                <span className="text-xl font-bold tracking-tight">
+                  {formatCurrency(requisition.estimatedAmount)}
+                </span>
               </div>
 
               {requisition.overdraftJustification && (
@@ -99,23 +118,44 @@ function ApprovalsPage() {
               <div className="mt-4 space-y-3 border-t border-border pt-4">
                 <Textarea
                   value={observations[requisition.id] ?? ""}
-                  onChange={(event) => setObservations((previous) => ({ ...previous, [requisition.id]: event.target.value }))}
+                  onChange={(event) =>
+                    setObservations((previous) => ({
+                      ...previous,
+                      [requisition.id]: event.target.value,
+                    }))
+                  }
                   placeholder="Observación para devolver (obligatoria solo si devuelves)"
                   rows={2}
                   maxLength={300}
                 />
                 <div className="flex flex-wrap gap-2">
-                  <Button variant="default" className="rounded-full" onClick={() => handleApprove(requisition.id, requisition.code)}>
+                  <Button
+                    variant="default"
+                    className="rounded-full"
+                    onClick={() => handleApproveRequisition(requisition.id, requisition.code)}
+                  >
                     <CheckCheck /> Aprobar
                   </Button>
-                  <Button variant="outline" className="rounded-full" onClick={() => handleReturn(requisition.id, requisition.code)}>
+                  <Button
+                    variant="outline"
+                    className="rounded-full"
+                    onClick={() => handleReturnRequisition(requisition.id, requisition.code)}
+                  >
                     <RotateCcw /> Devolver con observación
                   </Button>
-                  <Button variant="ghost" className="rounded-full" onClick={() => setExpandedId(expandedId === requisition.id ? null : requisition.id)}>
+                  <Button
+                    variant="ghost"
+                    className="rounded-full"
+                    onClick={() =>
+                      setExpandedId(expandedId === requisition.id ? null : requisition.id)
+                    }
+                  >
                     {expandedId === requisition.id ? "Ocultar expediente" : "Ver expediente"}
                   </Button>
                 </div>
-                {expandedId === requisition.id && <RequisitionTimeline events={requisition.timeline} />}
+                {expandedId === requisition.id && (
+                  <RequisitionTimeline events={requisition.timeline} />
+                )}
               </div>
             </article>
           );
@@ -126,12 +166,27 @@ function ApprovalsPage() {
         <h2 className="text-lg font-bold tracking-tight">Expedientes resueltos</h2>
         <div className="surface-card divide-y divide-border">
           {resolvedRequisitions.map((requisition) => (
-            <div key={requisition.id} className="flex flex-wrap items-center justify-between gap-3 px-5 py-4">
+            <div
+              key={requisition.id}
+              className="flex flex-wrap items-center justify-between gap-3 px-5 py-4"
+            >
               <div className="min-w-0">
-                <p className="text-sm font-semibold">{requisition.code} · {requisition.title}</p>
-                <p className="text-xs text-muted-foreground">{requisition.requesterArea} · {formatCurrency(requisition.estimatedAmount)}</p>
+                <p className="text-sm font-semibold">
+                  {requisition.code} · {requisition.title}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  {requisition.requesterArea} · {formatCurrency(requisition.estimatedAmount)}
+                </p>
               </div>
-              <StatusBadge tone={requisition.status === "returned" ? "attention" : requisition.status === "approved" ? "complete" : "neutral"}>
+              <StatusBadge
+                tone={
+                  requisition.status === "returned"
+                    ? "attention"
+                    : requisition.status === "approved"
+                      ? "complete"
+                      : "neutral"
+                }
+              >
                 {REQUISITION_STATUS_LABELS[requisition.status]}
               </StatusBadge>
             </div>

@@ -1,6 +1,10 @@
 import { describe, expect, it } from "vitest";
 
-import { calculateAvailableBalance, evaluateBudgetHealth, validateAdjustment } from "@/config/erpConfig";
+import {
+  calculateAvailableBalance,
+  evaluateBudgetHealth,
+  validateAdjustment,
+} from "@/config/erpConfig";
 
 describe("budget rules", () => {
   it("available = approved - committed - executed", () => {
@@ -13,11 +17,17 @@ describe("budget rules", () => {
   });
 
   it("flags negative available balance as overdrawn", () => {
-    expect(evaluateBudgetHealth({ approved: 1000, committed: 600, executed: 500 })).toBe("overdrawn");
+    expect(evaluateBudgetHealth({ approved: 1000, committed: 600, executed: 500 })).toBe(
+      "overdrawn",
+    );
   });
 
   it("rejects a reduction larger than the available balance", () => {
-    expect(validateAdjustment({ approved: 1000, committed: 300, executed: 200 }, "Reducción", 600)).not.toBeNull();
-    expect(validateAdjustment({ approved: 1000, committed: 300, executed: 200 }, "Reducción", 500)).toBeNull();
+    expect(
+      validateAdjustment({ approved: 1000, committed: 300, executed: 200 }, "Reducción", 600),
+    ).not.toBeNull();
+    expect(
+      validateAdjustment({ approved: 1000, committed: 300, executed: 200 }, "Reducción", 500),
+    ).toBeNull();
   });
 });

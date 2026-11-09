@@ -1,6 +1,14 @@
 # Roadmap
 
+## Fase 4 — Refinamiento Arquitectónico, Clean Code y Verificación de Calidad
+
+- [x] Auditoría exhaustiva de código: cero variables o funciones de una sola letra, tipado estricto sin `any` y verbos semánticos en inglés.
+- [x] Operaciones asíncronas y lecturas de archivos protegidas con bloques `try/catch`.
+- [x] Sistema de diseño Planpoint Blueprint confirmado: paleta clara (`#ffffff`, `#f0f2f4`, `#0f68ea`, `#1d1d1f`), `rounded-[28px]` en tarjetas, píldoras `rounded-full` y cero emojis (100% `lucide-react`).
+- [x] Protocolo de verificación estricto superado: `typecheck` limpio, ESLint sin advertencias ni errores, suite completa de Vitest en verde (29/29 tests) y compilación de producción exitosa.
+
 ## Fase 3 — Oracle, posventa y gestión
+
 - [x] Modelo simulado de ventas, expedientes únicos y campañas por proyecto, con pruebas.
 - [x] Oracle y ficha de comprador con cuenta, fecha de entrega y acta adjunta.
 - [x] Campañas WhatsApp/correo, programación y seguimiento con corrección de contactos y reintentos.
@@ -8,10 +16,12 @@
 - [x] Verificación integral y diseño Planpoint en escritorio y móvil.
 
 ## Diseño Planpoint de Fase 2
+
 - [x] Unificar colores, acciones principales, formularios y estados según DESIGN-2.md, sin cambiar reglas de negocio.
 - [x] Verificar módulos en escritorio y móvil.
 
 ## Fase 2 — Ciclo transaccional y documental
+
 - [x] Modelo de datos y reglas Fase 2 (requerimientos, invitaciones, OC, facturas, contratos) + pruebas.
 - [x] P-04 Requerimientos: formulario con alerta de sobregiro y listado con historial.
 - [x] P-05 Aprobaciones: aprobar/devolver con observación y línea de tiempo auditable (RF-15).
