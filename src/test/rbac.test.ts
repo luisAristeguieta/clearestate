@@ -26,7 +26,7 @@ describe("RBAC — Permisos y Redirección por Rol", () => {
 
   describe("getHomeRouteForRole", () => {
     it("asigna la ruta de inicio canónica para cada rol", () => {
-      expect(getHomeRouteForRole("systemAdmin")).toBe("/modulo/roles");
+      expect(getHomeRouteForRole("systemAdmin")).toBe("/dashboard");
       expect(getHomeRouteForRole("marketing")).toBe("/modulo/requerimientos");
       expect(getHomeRouteForRole("management")).toBe("/dashboard");
       expect(getHomeRouteForRole("logistics")).toBe("/modulo/logistica");

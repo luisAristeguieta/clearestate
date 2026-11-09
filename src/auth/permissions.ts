@@ -28,7 +28,7 @@ export const ALL_INTERNAL_ROUTES: readonly string[] = [
 
 export const ROLE_PERMISSIONS: Record<RoleId, RolePermissionConfig> = {
   systemAdmin: {
-    homeRoute: "/modulo/roles",
+    homeRoute: "/dashboard",
     allowedRoutes: ALL_INTERNAL_ROUTES,
   },
   marketing: {
@@ -107,7 +107,7 @@ export type RoleNavigator = ReturnType<typeof useNavigate>;
 export function navigateToRoleHome(navigate: RoleNavigator, roleId: RoleId): void {
   switch (roleId) {
     case "systemAdmin":
-      navigate({ to: "/modulo/$moduleId", params: { moduleId: "roles" }, replace: true });
+      navigate({ to: "/dashboard", replace: true });
       break;
     case "marketing":
       navigate({ to: "/modulo/$moduleId", params: { moduleId: "requerimientos" }, replace: true });

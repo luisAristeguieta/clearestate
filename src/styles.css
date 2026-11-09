@@ -186,10 +186,19 @@
   box-shadow: none;
 }
 
-.phase2-view button {
+.phase2-view
+  button:not([role="checkbox"]):not([role="switch"]):not([data-slot="checkbox"]):not(
+    [data-slot="switch"]
+  ) {
   white-space: normal;
   height: auto;
   min-height: 40px;
+}
+
+.phase2-view button[role="checkbox"],
+.phase2-view button[role="switch"] {
+  min-height: unset;
+  height: auto;
 }
 
 .phase2-view button[data-slot="select-trigger"] {
@@ -206,4 +215,69 @@
 
 .phase2-view > .grid > :first-child {
   align-self: start;
+}
+
+/* Sonner Notification & Toast Enhancements (Planpoint Design System) */
+[data-sonner-toast] {
+  border-radius: 20px !important;
+  font-family: var(--font-sans) !important;
+}
+
+/* Top-right close button positioned explicitly */
+[data-sonner-toast] [data-close-button] {
+  left: auto !important;
+  right: 12px !important;
+  top: 12px !important;
+  transform: none !important;
+  height: 24px !important;
+  width: 24px !important;
+  background: rgba(255, 255, 255, 0.92) !important;
+  border: 1px solid #e5e6e8 !important;
+  color: #64748b !important;
+  border-radius: 9999px !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+  transition: all 0.15s ease !important;
+  opacity: 1 !important;
+}
+
+[data-sonner-toast] [data-close-button]:hover {
+  background: #ffffff !important;
+  color: #0f172a !important;
+  border-color: #cbd5e1 !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08) !important;
+}
+
+/* Subtle emerald green styling for success toasts */
+[data-sonner-toast][data-type="success"] {
+  background: #f0fdf4 !important; /* bg-emerald-50 */
+  border: 1px solid #a7f3d0 !important; /* border-emerald-200 */
+  color: #064e3b !important; /* text-emerald-950 */
+  box-shadow:
+    0 4px 16px -2px rgba(16, 185, 129, 0.12),
+    0 2px 6px -1px rgba(0, 0, 0, 0.04) !important;
+}
+
+[data-sonner-toast][data-type="success"] [data-title],
+[data-sonner-toast][data-type="success"] [data-description] {
+  color: #064e3b !important;
+}
+
+[data-sonner-toast][data-type="success"] [data-icon] {
+  color: #047857 !important; /* text-emerald-700 */
+}
+
+[data-sonner-toast][data-type="success"] [data-close-button] {
+  background: #ffffff !important;
+  border-color: #a7f3d0 !important;
+  color: #047857 !important;
+}
+
+[data-sonner-toast][data-type="success"] [data-close-button]:hover {
+  background: #ecfdf5 !important;
+  border-color: #6ee7b7 !important;
+  color: #065f46 !important;
 }
