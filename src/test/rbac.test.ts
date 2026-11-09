@@ -57,14 +57,23 @@ describe("RBAC — Permisos y Redirección por Rol", () => {
   });
 
   describe("isRouteAllowedForRole", () => {
-    it("systemAdmin solo accede a roles, proyectos y presupuestos", () => {
+    it("systemAdmin tiene acceso global de supervisión y auditoría a todos los módulos internos", () => {
       expect(isRouteAllowedForRole("systemAdmin", "/modulo/roles")).toBe(true);
       expect(isRouteAllowedForRole("systemAdmin", "/proyectos")).toBe(true);
       expect(isRouteAllowedForRole("systemAdmin", "/presupuestos")).toBe(true);
+      expect(isRouteAllowedForRole("systemAdmin", "/dashboard")).toBe(true);
+      expect(isRouteAllowedForRole("systemAdmin", "/modulo/logistica")).toBe(true);
+      expect(isRouteAllowedForRole("systemAdmin", "/modulo/aprobaciones")).toBe(true);
+      expect(isRouteAllowedForRole("systemAdmin", "/modulo/comprobantes")).toBe(true);
+      expect(isRouteAllowedForRole("systemAdmin", "/modulo/contratos")).toBe(true);
+      expect(isRouteAllowedForRole("systemAdmin", "/modulo/oracle")).toBe(true);
+      expect(isRouteAllowedForRole("systemAdmin", "/modulo/posventa")).toBe(true);
+      expect(isRouteAllowedForRole("systemAdmin", "/modulo/campanas")).toBe(true);
+      expect(isRouteAllowedForRole("systemAdmin", "/modulo/informes")).toBe(true);
+      expect(isRouteAllowedForRole("systemAdmin", "/modulo/asistente-ia")).toBe(true);
 
-      expect(isRouteAllowedForRole("systemAdmin", "/dashboard")).toBe(false);
-      expect(isRouteAllowedForRole("systemAdmin", "/modulo/logistica")).toBe(false);
-      expect(isRouteAllowedForRole("systemAdmin", "/modulo/aprobaciones")).toBe(false);
+      // Bloqueado estrictamente del portal público del proveedor externo
+      expect(isRouteAllowedForRole("systemAdmin", "/portal-proveedor/prov-andes-01")).toBe(false);
     });
 
     it("marketing solo accede a requerimientos y campañas (con subrutas)", () => {
@@ -148,6 +157,15 @@ describe("RBAC — Permisos y Redirección por Rol", () => {
   });
 
   describe("getAllowedRoutesForRole", () => {
+    it("systemAdmin retorna todas las rutas internas del ERP", () => {
+      const adminRoutes = getAllowedRoutesForRole("systemAdmin");
+      expect(adminRoutes).toContain("/dashboard");
+      expect(adminRoutes).toContain("/modulo/roles");
+      expect(adminRoutes).toContain("/modulo/logistica");
+      expect(adminRoutes).toContain("/modulo/posventa");
+      expect(adminRoutes).not.toContain("/portal-proveedor");
+    });
+
     it("retorna la lista inmutable de rutas autorizadas", () => {
       const logisticsRoutes = getAllowedRoutesForRole("logistics");
       expect(logisticsRoutes).toContain("/modulo/logistica");

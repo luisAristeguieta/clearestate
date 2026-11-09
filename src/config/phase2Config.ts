@@ -81,6 +81,7 @@ export const validateRequisition = (
 export interface SupplierOffer {
   price: number;
   termDays: number;
+  validityDays?: number;
   conditions: string;
   pdfFileName: string;
   submittedAt: string;
@@ -388,6 +389,7 @@ export const SEED_INVITATIONS: SupplierInvitation[] = [
     offer: {
       price: 42500,
       termDays: 30,
+      validityDays: 60,
       conditions: "50% de anticipo, saldo contra entrega. Incluye 2 rondas de ajustes.",
       pdfFileName: "propuesta-prisma-etapa2.pdf",
       submittedAt: "2026-11-02T13:15:00.000Z",

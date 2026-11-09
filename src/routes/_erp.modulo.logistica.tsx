@@ -258,7 +258,7 @@ function LogisticsPage() {
                   Referencia: {formatCurrency(requisition.estimatedAmount)}
                 </p>
 
-                <div className="mt-4 grid gap-4 md:grid-cols-2">
+                <div className="mt-4 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                   {requisitionInvitations.map((invitation) => {
                     const isBestPrice = invitation.offer?.price === bestPrice;
                     return (
@@ -283,6 +283,12 @@ function LogisticsPage() {
                               <dt className="text-muted-foreground">Plazo</dt>
                               <dd>{invitation.offer.termDays} días</dd>
                             </div>
+                            {invitation.offer.validityDays ? (
+                              <div className="flex justify-between">
+                                <dt className="text-muted-foreground">Vigencia</dt>
+                                <dd>{invitation.offer.validityDays} días</dd>
+                              </div>
+                            ) : null}
                             <div className="flex justify-between">
                               <dt className="text-muted-foreground">Propuesta</dt>
                               <dd className="truncate pl-4 text-xs">

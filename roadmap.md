@@ -5,13 +5,16 @@
 - [x] Auditoría exhaustiva de código: cero variables o funciones de una sola letra, tipado estricto sin `any` y verbos semánticos en inglés.
 - [x] Operaciones asíncronas y lecturas de archivos protegidas con bloques `try/catch`.
 - [x] Sistema de diseño Planpoint Blueprint confirmado: paleta clara (`#ffffff`, `#f0f2f4`, `#0f68ea`, `#1d1d1f`), `rounded-[28px]` en tarjetas, píldoras `rounded-full` y cero emojis (100% `lucide-react`).
-- [x] Protocolo de verificación estricto superado: `typecheck` limpio, ESLint sin advertencias ni errores, suite completa de Vitest en verde (41/41 tests) y compilación de producción exitosa.
-- [x] **Plan Maestro de Seguridad y Control de Acceso por Roles (RBAC)**:
-  - [x] Matriz centralizada de permisos (`src/auth/permissions.ts`) para los 8 roles del sistema (`systemAdmin`, `marketing`, `management`, `logistics`, `finance`, `projects`, `postSales`, `externalSupplier`).
+- [x] Protocolo de verificación estricto superado: `typecheck` limpio, ESLint sin advertencias ni errores, suite completa de Vitest en verde (42/42 tests) y compilación de producción exitosa.
+- [x] **Plan Maestro de Seguridad, Control de Acceso por Roles (RBAC) y Portal de Proveedores**:
+  - [x] Matriz centralizada de permisos (`src/auth/permissions.ts`) para los 8 roles del sistema.
+  - [x] Superusuario Administrador (`systemAdmin` - Diego Paredes) con supervisión y auditoría global sobre los 20 módulos internos del ERP.
+  - [x] Roles acotados estrictos: `marketing`, `management`, `logistics`, `finance`, `projects`, `postSales`.
   - [x] Redirección canónica inteligente según rol (`navigateToRoleHome` / `getHomeRouteForRole`) desde Login y cambio en tiempo real en Topbar.
-  - [x] Aislamiento estricto de Proveedor Externo fuera del layout interno `/_erp/*` hacia `/portal-proveedor/:token`.
+  - [x] Aislamiento estricto de Proveedor Externo fuera del layout interno `/_erp/*` hacia su portal público seguro `/portal-proveedor/:token`.
+  - [x] Portal interactivo del Proveedor Externo: cotización económica completa (precio, plazo de ejecución, vigencia de oferta, condiciones comerciales y propuesta PDF), con reflejo instantáneo en el Cuadro Comparativo de Logística (`P-08`).
   - [x] Guardia de rutas `ProtectedRoute.tsx` y filtrado dinámico del menú lateral `ModernSidebar.tsx`.
-  - [x] Suite de pruebas unitarias y de aceptación RBAC (`src/test/rbac.test.ts`, 12 tests específicos).
+  - [x] Suite de pruebas unitarias y de aceptación RBAC (`src/test/rbac.test.ts`, 13 tests específicos).
 
 ## Fase 3 — Oracle, posventa y gestión
 

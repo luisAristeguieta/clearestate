@@ -8,10 +8,28 @@ export interface RolePermissionConfig {
   isExternal?: boolean;
 }
 
+/** Todos los módulos y rutas internas del ERP accesibles por el Superusuario Administrador */
+export const ALL_INTERNAL_ROUTES: readonly string[] = [
+  "/dashboard",
+  "/proyectos",
+  "/presupuestos",
+  "/modulo/requerimientos",
+  "/modulo/aprobaciones",
+  "/modulo/logistica",
+  "/modulo/comprobantes",
+  "/modulo/contratos",
+  "/modulo/oracle",
+  "/modulo/posventa",
+  "/modulo/campanas",
+  "/modulo/informes",
+  "/modulo/roles",
+  "/modulo/asistente-ia",
+] as const;
+
 export const ROLE_PERMISSIONS: Record<RoleId, RolePermissionConfig> = {
   systemAdmin: {
     homeRoute: "/modulo/roles",
-    allowedRoutes: ["/modulo/roles", "/proyectos", "/presupuestos"],
+    allowedRoutes: ALL_INTERNAL_ROUTES,
   },
   marketing: {
     homeRoute: "/modulo/requerimientos",
@@ -69,6 +87,11 @@ export function isRouteAllowedForRole(roleId: RoleId, pathname: string): boolean
   // External supplier cannot access any internal ERP route
   if (config.isExternal) {
     return pathname.startsWith("/portal-proveedor");
+  }
+
+  // System Administrator has global audit and supervision access across all internal ERP modules
+  if (roleId === "systemAdmin") {
+    return !pathname.startsWith("/portal-proveedor");
   }
 
   // Non-external roles are allowed to access their declared paths or subpaths
