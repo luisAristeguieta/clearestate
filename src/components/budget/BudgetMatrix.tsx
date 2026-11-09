@@ -117,7 +117,14 @@ export function BudgetMatrix({
         </tbody>
       </table>
       {budgetLines.length === 0 && (
-        <p className="py-10 text-center text-muted-foreground">No hay partidas para este filtro.</p>
+        <div className="py-12 text-center">
+          <p className="text-sm font-semibold text-foreground">
+            No se encontraron partidas para los filtros aplicados
+          </p>
+          <p className="mt-1 text-xs text-muted-foreground">
+            Prueba ajustando el término de búsqueda o cambiando el filtro de área seleccionado.
+          </p>
+        </div>
       )}
     </div>
   );
