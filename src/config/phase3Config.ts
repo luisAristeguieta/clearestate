@@ -59,6 +59,7 @@ export interface Campaign {
   title: string;
   projectId: ProjectId;
   channel: CampaignChannel;
+  channels?: CampaignChannel[] | undefined;
   message: string;
   attachments: PrototypeAttachment[];
   scheduledAt: string | null;
@@ -156,6 +157,7 @@ export const SEED_CAMPAIGNS: Campaign[] = [
     title: "Avance de habilitación urbana Etapa 1",
     projectId: "paris",
     channel: "email",
+    channels: ["email", "whatsapp"],
     message:
       "Hola {{nombre}}, compartimos el avance de {{proyecto}} para tu lote {{lote}}. Las redes de agua y desagüe presentan un 85% de ejecución.",
     attachments: [],
@@ -187,6 +189,7 @@ export const SEED_CAMPAIGNS: Campaign[] = [
     title: "Inicio de obras de alumbrado subterráneo",
     projectId: "sagaleta",
     channel: "whatsapp",
+    channels: ["whatsapp"],
     message:
       "Hola {{nombre}}, te informamos que iniciaron las obras de canalización eléctrica para tu lote {{lote}} en {{proyecto}}.",
     attachments: [],

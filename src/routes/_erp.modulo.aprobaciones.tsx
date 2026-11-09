@@ -24,6 +24,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { getViewTitle } from "@/config/brandConfig";
 import { PROJECTS, formatCurrency } from "@/config/erpConfig";
@@ -216,38 +217,63 @@ function ApprovalsPage() {
             const line = budgetLines.find((item) => item.id === requisition.budgetLineId);
             const project = PROJECTS.find((item) => item.id === requisition.projectId);
             return (
-              <article key={requisition.id} className="surface-card">
-                <div className="flex flex-wrap items-start justify-between gap-3">
-                  <div className="min-w-0">
-                    <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                      {requisition.code} · {requisition.requesterArea} · {project?.name}
-                    </p>
-                    <h3 className="mt-1 text-base font-bold tracking-tight">{requisition.title}</h3>
-                    <p className="mt-1 text-sm text-muted-foreground">{requisition.description}</p>
-                    <p className="mt-2 text-sm">
-                      <span className="font-semibold">Justificación:</span>{" "}
-                      {requisition.justification}
-                    </p>
-                    {line && (
-                      <p className="mt-1 text-xs text-muted-foreground">
-                        Partida {line.code} · disponible{" "}
-                        {formatCurrency(line.approved - line.committed - line.executed)}
-                      </p>
-                    )}
+              <article
+                key={requisition.id}
+                className="surface-card p-5 transition-shadow hover:shadow-xs"
+              >
+                {/* Cabecera limpia y resumida con código, área, proyecto, título y monto */}
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <div className="min-w-0 flex-1">
+                    <div className="flex flex-wrap items-center gap-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                      <span className="font-bold text-primary">{requisition.code}</span>
+                      <span>·</span>
+                      <span>{requisition.requesterArea}</span>
+                      <span>·</span>
+                      <span>{project?.name}</span>
+                      {line && (
+                        <>
+                          <span>·</span>
+                          <span className="font-normal text-muted-foreground/80">
+                            Partida {line.code} (Disp.{" "}
+                            {formatCurrency(line.approved - line.committed - line.executed)})
+                          </span>
+                        </>
+                      )}
+                    </div>
+                    <h3 className="mt-1 text-base font-bold tracking-tight text-foreground">
+                      {requisition.title}
+                    </h3>
                   </div>
-                  <span className="text-xl font-bold tracking-tight">
-                    {formatCurrency(requisition.estimatedAmount)}
-                  </span>
+
+                  <div className="flex items-center gap-3 shrink-0">
+                    <span className="text-xl font-bold tabular-nums tracking-tight text-foreground">
+                      {formatCurrency(requisition.estimatedAmount)}
+                    </span>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="rounded-full text-xs"
+                      onClick={() => {
+                        setSelectedRequisitionId(requisition.id);
+                        setIsModifyingDecision(false);
+                      }}
+                    >
+                      <FileText className="mr-1.5 h-3.5 w-3.5 text-primary" />
+                      Ver expediente
+                    </Button>
+                  </div>
                 </div>
 
                 {requisition.overdraftJustification && (
-                  <p className="mt-3 rounded-2xl bg-secondary px-3 py-2 text-sm text-foreground">
-                    Excepción por sobregiro declarada: {requisition.overdraftJustification}
-                  </p>
+                  <div className="mt-2.5 flex items-center gap-2 rounded-xl border border-amber-200 bg-amber-50 px-3 py-1.5 text-xs text-amber-900">
+                    <AlertTriangle className="h-3.5 w-3.5 shrink-0 text-amber-600" />
+                    <span>Excepción por sobregiro declarada en solicitud</span>
+                  </div>
                 )}
 
-                <div className="mt-4 space-y-3 border-t border-border pt-4">
-                  <Textarea
+                {/* Acciones Rápidas con caja de observación compacta */}
+                <div className="mt-3.5 flex flex-wrap items-center gap-2.5 border-t border-border/70 pt-3.5">
+                  <Input
                     value={observations[requisition.id] ?? ""}
                     onChange={(event) =>
                       setObservations((previous) => ({
@@ -256,33 +282,25 @@ function ApprovalsPage() {
                       }))
                     }
                     placeholder="Observación para devolver (obligatoria solo si devuelves)"
-                    rows={2}
+                    className="h-9 min-w-[240px] flex-1 rounded-full text-xs bg-background"
                     maxLength={300}
                   />
-                  <div className="flex flex-wrap gap-2">
+                  <div className="flex items-center gap-2 shrink-0">
                     <Button
                       variant="default"
-                      className="rounded-full"
+                      size="sm"
+                      className="rounded-full text-xs font-semibold"
                       onClick={() => handleApproveRequisition(requisition.id, requisition.code)}
                     >
-                      <CheckCheck className="h-4 w-4" /> Aprobar
+                      <CheckCheck className="mr-1 h-3.5 w-3.5" /> Aprobar
                     </Button>
                     <Button
                       variant="outline"
-                      className="rounded-full"
+                      size="sm"
+                      className="rounded-full text-xs font-semibold text-amber-700 hover:bg-amber-50 hover:text-amber-800 border-amber-200"
                       onClick={() => handleReturnRequisition(requisition.id, requisition.code)}
                     >
-                      <RotateCcw className="h-4 w-4" /> Devolver con observación
-                    </Button>
-                    <Button
-                      variant="secondary"
-                      className="rounded-full"
-                      onClick={() => {
-                        setSelectedRequisitionId(requisition.id);
-                        setIsModifyingDecision(false);
-                      }}
-                    >
-                      <FileText className="h-4 w-4" /> Ver expediente
+                      <RotateCcw className="mr-1 h-3.5 w-3.5" /> Devolver con observación
                     </Button>
                   </div>
                 </div>

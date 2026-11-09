@@ -47,11 +47,13 @@ interface Phase3Value extends Phase3State {
     input: Pick<
       Campaign,
       "title" | "projectId" | "channel" | "message" | "attachments" | "scheduledAt"
-    >,
+    > & { channels?: CampaignChannel[] | undefined },
   ) => void;
   updateCampaign: (
     id: string,
-    patch: Partial<Pick<Campaign, "title" | "message" | "scheduledAt" | "channel">>,
+    patch: Partial<Pick<Campaign, "title" | "message" | "scheduledAt" | "channel">> & {
+      channels?: CampaignChannel[] | undefined;
+    },
   ) => void;
   deleteCampaign: (id: string) => void;
   createReminder: (reminder: Omit<AutomatedReminder, "id" | "createdAt">) => void;
@@ -77,10 +79,15 @@ export function Phase3Provider({ children }: { children: ReactNode }) {
         };
 
         // Merge seed campaigns if not present
-        const storedCampaigns = restored.campaigns ?? [];
-        const existingCmpIds = new Set(storedCampaigns.map((c) => c.id));
+        const rawCampaigns = restored.campaigns ?? [];
+        const normalizedCampaigns: Campaign[] = rawCampaigns.map((c) => ({
+          ...c,
+          channel: c.channel ?? (c.channels && c.channels[0]) ?? "email",
+          channels: c.channels && c.channels.length > 0 ? c.channels : [c.channel ?? "email"],
+        }));
+        const existingCmpIds = new Set(normalizedCampaigns.map((c) => c.id));
         const missingSeedCmps = SEED_CAMPAIGNS.filter((c) => !existingCmpIds.has(c.id));
-        restored.campaigns = [...storedCampaigns, ...missingSeedCmps];
+        restored.campaigns = [...normalizedCampaigns, ...missingSeedCmps];
 
         // Merge seed reminders if not present
         const rawReminders = restored.reminders ?? [];
@@ -164,14 +171,20 @@ export function Phase3Provider({ children }: { children: ReactNode }) {
     const at = new Date().toISOString();
     if (input.scheduledAt && new Date(input.scheduledAt).getTime() <= Date.now())
       throw new Error("La programación debe ser futura.");
+    const primaryChannel: CampaignChannel =
+      input.channel ?? (input.channels && input.channels[0]) ?? "email";
+    const campaignChannels =
+      input.channels && input.channels.length > 0 ? input.channels : [primaryChannel];
     const campaign: Campaign = {
       ...input,
+      channel: primaryChannel,
+      channels: campaignChannels,
       id: crypto.randomUUID(),
       createdAt: at,
       deliveries: buildCampaignDeliveries(
         state.sales,
         input.projectId,
-        input.channel,
+        primaryChannel,
         input.scheduledAt,
         at,
       ),
@@ -181,7 +194,17 @@ export function Phase3Provider({ children }: { children: ReactNode }) {
   const updateCampaign: Phase3Value["updateCampaign"] = (id, patch) => {
     setState((previous) => ({
       ...previous,
-      campaigns: previous.campaigns.map((c) => (c.id === id ? { ...c, ...patch } : c)),
+      campaigns: previous.campaigns.map((c) => {
+        if (c.id !== id) return c;
+        const updated: Campaign = { ...c, ...patch };
+        if (patch.channels && patch.channels.length > 0 && patch.channel === undefined) {
+          const firstChan = patch.channels[0];
+          if (firstChan !== undefined) {
+            updated.channel = firstChan;
+          }
+        }
+        return updated;
+      }),
     }));
   };
   const deleteCampaign: Phase3Value["deleteCampaign"] = (id) => {
