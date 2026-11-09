@@ -1,14 +1,18 @@
-# Welcome to your Lovable project
+# ClearEstate
+
+Ejecuta y construye el código completo de la Fase 1 siguiendo el archivo Markdown adjunto ('Construye la Fase...'), el sistema de diseño DESIGN.md (sin usar nunca el color naranja) y la estructura de layout de las 2 imágenes adjuntas.
 
 This project was built with [Lovable](https://lovable.dev).
 
+**Live app**: https://clearestate.lovable.app
+
 ## Build with Lovable
 
-Open your project in the [Lovable editor](https://lovable.dev) and keep building.
+Continue developing this project in the [Lovable editor](https://lovable.dev/projects/e8db7a23-71a5-426c-8c77-29399dfe7c98).
 
 - **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: connect the project to GitHub and every change made in Lovable is committed straight to your repository.
-- **Full ownership**: this code is yours. Push to your repository and your changes sync back into Lovable, ready for your next prompt.
+- **Stay in sync**: every change made in Lovable is committed straight to this repository.
+- **Full ownership**: this code is yours. Push to `main` on GitHub and your changes sync back into Lovable, ready for your next prompt.
 
 ## Development
 
@@ -20,10 +24,3 @@ cd <repository-name>
 npm i
 npm run dev
 ```
-
-## Built with
-
-- TanStack Start
-- TypeScript
-- React
-- Tailwind CSS
