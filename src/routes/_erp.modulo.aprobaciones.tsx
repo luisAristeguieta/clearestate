@@ -7,9 +7,11 @@ import {
   History,
   CheckCircle2,
   Clock,
+  Search,
+  X,
   XCircle,
 } from "lucide-react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { toast } from "sonner";
 
 import { PageHeader } from "@/components/PageHeader";
@@ -74,6 +76,12 @@ function ApprovalsPage() {
     "pending_approval",
   );
   const [reversalReason, setReversalReason] = useState("");
+  const [resolvedSearchQuery, setResolvedSearchQuery] = useState("");
+
+  const projectById = useMemo(
+    () => new Map(PROJECTS.map((project) => [project.id, project.name])),
+    [],
+  );
 
   const pendingRequisitions = requisitions.filter(
     (requisition) => requisition.status === "pending_approval",
@@ -91,6 +99,30 @@ function ApprovalsPage() {
   const resolvedRequisitions = requisitions.filter(
     (requisition) => requisition.status !== "pending_approval",
   );
+
+  const baseResolvedRequisitions = useMemo(() => {
+    return activeTab === "all"
+      ? resolvedRequisitions
+      : activeTab === "approved"
+        ? approvedRequisitions
+        : returnedRequisitions;
+  }, [activeTab, resolvedRequisitions, approvedRequisitions, returnedRequisitions]);
+
+  const filteredResolvedRequisitions = useMemo(() => {
+    if (!resolvedSearchQuery.trim()) {
+      return baseResolvedRequisitions;
+    }
+    const query = resolvedSearchQuery.toLowerCase().trim();
+    return baseResolvedRequisitions.filter((requisition) => {
+      const codeMatch = requisition.code.toLowerCase().includes(query);
+      const titleMatch = requisition.title.toLowerCase().includes(query);
+      const areaMatch = requisition.requesterArea.toLowerCase().includes(query);
+      const projectName = projectById.get(requisition.projectId)?.toLowerCase() ?? "";
+      const projectMatch =
+        projectName.includes(query) || requisition.projectId.toLowerCase().includes(query);
+      return codeMatch || titleMatch || areaMatch || projectMatch;
+    });
+  }, [baseResolvedRequisitions, resolvedSearchQuery, projectById]);
 
   const selectedRequisition =
     requisitions.find((requisition) => requisition.id === selectedRequisitionId) ?? null;
@@ -313,73 +345,103 @@ function ApprovalsPage() {
       {/* Sección: Expedientes Resueltos / Filtrados */}
       {activeTab !== "pending" && (
         <section className="space-y-4">
-          <h2 className="text-lg font-bold tracking-tight text-[#1d1d1f]">
-            {activeTab === "all"
-              ? `Expedientes resueltos (${resolvedRequisitions.length})`
-              : activeTab === "approved"
-                ? `Expedientes aprobados (${approvedRequisitions.length})`
-                : `Expedientes devueltos / rechazados (${returnedRequisitions.length})`}
-          </h2>
-          <div className="surface-card divide-y divide-border">
-            {(activeTab === "all"
-              ? resolvedRequisitions
-              : activeTab === "approved"
-                ? approvedRequisitions
-                : returnedRequisitions
-            ).map((requisition) => (
-              <div
-                key={requisition.id}
-                className="flex flex-wrap items-center justify-between gap-3 px-5 py-4"
-              >
-                <div className="min-w-0">
-                  <p className="text-sm font-semibold">
-                    {requisition.code} · {requisition.title}
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    {requisition.requesterArea} · {formatCurrency(requisition.estimatedAmount)}
-                  </p>
-                </div>
-                <div className="flex items-center gap-2">
-                  <StatusBadge
-                    tone={
-                      requisition.status === "returned"
-                        ? "attention"
-                        : requisition.status === "approved"
-                          ? "complete"
-                          : "neutral"
-                    }
-                  >
-                    {REQUISITION_STATUS_LABELS[requisition.status]}
-                  </StatusBadge>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="rounded-full text-xs text-[#0f68ea] hover:bg-blue-50"
-                    onClick={() => {
-                      setSelectedRequisitionId(requisition.id);
-                      setIsModifyingDecision(true);
-                      setTargetStatus(
-                        requisition.status === "returned" ? "approved" : "pending_approval",
-                      );
-                    }}
-                  >
-                    <History className="h-3.5 w-3.5 mr-1" /> Modificar decisión
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="rounded-full"
-                    onClick={() => {
-                      setSelectedRequisitionId(requisition.id);
-                      setIsModifyingDecision(false);
-                    }}
-                  >
-                    <FileText className="h-3.5 w-3.5" /> Ver expediente
-                  </Button>
-                </div>
-              </div>
-            ))}
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <h2 className="text-lg font-bold tracking-tight text-[#1d1d1f]">
+              {activeTab === "all"
+                ? `Expedientes resueltos (${filteredResolvedRequisitions.length})`
+                : activeTab === "approved"
+                  ? `Expedientes aprobados (${filteredResolvedRequisitions.length})`
+                  : `Expedientes devueltos / rechazados (${filteredResolvedRequisitions.length})`}
+            </h2>
+
+            {/* Barra de Búsqueda Rápida para Expedientes Resueltos */}
+            <div className="relative min-w-[240px] sm:w-72">
+              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <input
+                type="text"
+                value={resolvedSearchQuery}
+                onChange={(e) => setResolvedSearchQuery(e.target.value)}
+                placeholder="Buscar código, título, área o proyecto..."
+                className="h-9 w-full rounded-full border border-border bg-card pl-9 pr-8 text-xs text-foreground placeholder:text-muted-foreground transition-colors focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+              />
+              {resolvedSearchQuery && (
+                <button
+                  type="button"
+                  onClick={() => setResolvedSearchQuery("")}
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                  aria-label="Limpiar búsqueda"
+                >
+                  <X className="h-3.5 w-3.5" />
+                </button>
+              )}
+            </div>
           </div>
+
+          {filteredResolvedRequisitions.length === 0 ? (
+            <div className="surface-card py-10 text-center text-xs text-muted-foreground">
+              {resolvedSearchQuery.trim()
+                ? `No se encontraron expedientes resueltos que coincidan con "${resolvedSearchQuery}".`
+                : "No hay expedientes resueltos en esta categoría."}
+            </div>
+          ) : (
+            <div className="surface-card divide-y divide-border">
+              {filteredResolvedRequisitions.map((requisition) => (
+                <div
+                  key={requisition.id}
+                  className="flex flex-wrap items-center justify-between gap-3 px-5 py-4"
+                >
+                  <div className="min-w-0">
+                    <p className="text-sm font-semibold">
+                      {requisition.code} · {requisition.title}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {requisition.requesterArea} ·{" "}
+                      {projectById.get(requisition.projectId) || requisition.projectId} ·{" "}
+                      {formatCurrency(requisition.estimatedAmount)}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <StatusBadge
+                      tone={
+                        requisition.status === "returned"
+                          ? "attention"
+                          : requisition.status === "approved"
+                            ? "complete"
+                            : "neutral"
+                      }
+                    >
+                      {REQUISITION_STATUS_LABELS[requisition.status]}
+                    </StatusBadge>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="rounded-full text-xs text-[#0f68ea] hover:bg-blue-50"
+                      onClick={() => {
+                        setSelectedRequisitionId(requisition.id);
+                        setIsModifyingDecision(true);
+                        setTargetStatus(
+                          requisition.status === "returned" ? "approved" : "pending_approval",
+                        );
+                      }}
+                    >
+                      <History className="h-3.5 w-3.5 mr-1" /> Modificar decisión
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="rounded-full"
+                      onClick={() => {
+                        setSelectedRequisitionId(requisition.id);
+                        setIsModifyingDecision(false);
+                      }}
+                    >
+                      <FileText className="h-3.5 w-3.5" /> Ver expediente
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </section>
       )}
 
