@@ -1,0 +1,27 @@
+# ClearEstate ERP
+
+> ERP Web Administrativo e Intranet Operativa para la gestión inmobiliaria de presupuestos, adquisiciones tercerizadas y posventa de lotes residenciales (Proyecto París y Proyecto Sagaleta).
+
+## Tecnologías Principales
+- React 19 + TypeScript + Vite + TanStack Router (enrutamiento por archivos)
+- Tailwind CSS v4 + Radix UI + Lucide React (Sistema de diseño Planpoint Blueprint)
+- React Hook Form + Zod (validaciones de formulario)
+- Vitest + Testing Library (suite de pruebas unitarias)
+
+## Módulos y Reglas del Sistema
+- **Presupuestos**: Fórmula inmutable `Disponible = Aprobado − Comprometido − Ejecutado`. Alerta visual de sobregiro y justificación de excepción (RN-01, RN-02, RN-03).
+- **Requerimientos y Aprobaciones**: Solicitudes de áreas con imputación estricta (Proyecto + Fase + Partida) y trazabilidad completa de aprobaciones y devoluciones con observaciones.
+- **Logística y Proveedores**: Invitaciones con tokens públicos (`/portal-proveedor/:token`), cuadro comparativo de ofertas y emisión de órdenes de compra/servicio.
+- **Comprobantes y Obras**: Extracción simulada de facturas con revisión humana obligatoria (RN-08), pase de comprometido a ejecutado, valorizaciones por hitos de contratos tercerizados y exportación para Contasis CSV.
+- **Oracle y Posventa**: Sincronización simulada de cartera con activación de expediente único exclusivamente al alcanzar `Saldo = 0`, campañas masivas segmentadas por proyecto (WhatsApp y correo) y seguimiento de rebotes.
+
+## Roles del Backoffice
+1. `ADMIN` (Administrador)
+2. `REQUESTER` (Solicitante)
+3. `APPROVER` (Aprobador / Gerencia)
+4. `LOGISTICS` (Logística)
+5. `FINANCE` (Finanzas)
+6. `PROJECTS` (Proyectos y Obras)
+7. `AFTERSALES` (Posventa)
+8. `SUPPLIER` (Proveedor externo)
+

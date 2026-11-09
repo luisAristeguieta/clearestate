@@ -1,5 +1,5 @@
-import { createFileRoute, notFound } from "@tanstack/react-router";
-import { CheckCircle2, FileUp, Lock } from "lucide-react";
+import { Link, createFileRoute, notFound } from "@tanstack/react-router";
+import { CheckCircle2, FileUp, Lock, LogOut } from "lucide-react";
 import { useRef, useState, type FormEvent } from "react";
 import { toast } from "sonner";
 
@@ -92,9 +92,16 @@ function SupplierPortalPage() {
       <header className="border-b border-border bg-card/80 backdrop-blur-md">
         <div className="mx-auto flex max-w-3xl flex-wrap items-center justify-between gap-4 px-4 py-4">
           <BrandLogo />
-          <span className="pill-badge bg-secondary text-muted-foreground">
-            <Lock className="h-3 w-3" /> Acceso seguro por invitación
-          </span>
+          <div className="flex items-center gap-3">
+            <span className="pill-badge bg-secondary text-muted-foreground">
+              <Lock className="h-3 w-3" /> Acceso seguro por invitación
+            </span>
+            <Button asChild variant="ghost" size="sm" className="rounded-full">
+              <Link to="/login">
+                <LogOut className="h-3.5 w-3.5" /> Salir
+              </Link>
+            </Button>
+          </div>
         </div>
       </header>
 

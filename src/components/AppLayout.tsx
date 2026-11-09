@@ -1,9 +1,10 @@
-import { useNavigate } from "@tanstack/react-router";
+import { useNavigate, useRouterState } from "@tanstack/react-router";
 import { Bell, Check, ChevronDown, MapPin, PanelLeft, Repeat2 } from "lucide-react";
 import { useState, type ReactNode } from "react";
 
 import { ModernSidebar } from "@/components/ModernSidebar";
 import { RoleAvatar } from "@/components/RoleAvatar";
+import { isRouteAllowedForRole, navigateToRoleHome } from "@/auth/permissions";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -13,7 +14,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ERP_ROLES, PROJECTS, type ProjectFilter } from "@/config/erpConfig";
+import { ERP_ROLES, PROJECTS, type ProjectFilter, type RoleId } from "@/config/erpConfig";
 import { useErp } from "@/context/ErpContext";
 import { cn } from "@/lib/utils";
 
@@ -27,6 +28,16 @@ export function AppLayout({ children }: { children: ReactNode }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { activeRole, projectFilter, setProjectFilter, signInAsRole, signOut } = useErp();
   const navigate = useNavigate();
+  const currentPath = useRouterState({
+    select: (routerState) => routerState.location.pathname,
+  });
+
+  const handleRoleSwitch = (nextRoleId: RoleId) => {
+    signInAsRole(nextRoleId);
+    if (!isRouteAllowedForRole(nextRoleId, currentPath)) {
+      navigateToRoleHome(navigate, nextRoleId);
+    }
+  };
 
   const handleSignOut = () => {
     signOut();
@@ -134,7 +145,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
                     return (
                       <DropdownMenuItem
                         key={role.id}
-                        onSelect={() => signInAsRole(role.id)}
+                        onSelect={() => handleRoleSwitch(role.id)}
                         className="gap-3 rounded-[14px] py-2"
                       >
                         <RoleAvatar role={role} sizeClass="h-8 w-8" />

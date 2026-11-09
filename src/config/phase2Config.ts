@@ -404,6 +404,16 @@ export const SEED_INVITATIONS: SupplierInvitation[] = [
     offer: null,
     createdAt: "2026-10-30T08:12:00.000Z",
   },
+  {
+    id: "inv-03",
+    token: "prov-andes-01",
+    requisitionId: "req-01",
+    supplierName: "Constructora Andes S.A.",
+    supplierEmail: "contacto@constructoraandes.ec",
+    status: "sent",
+    offer: null,
+    createdAt: "2026-10-30T09:00:00.000Z",
+  },
 ];
 
 export const SEED_PURCHASE_ORDERS: PurchaseOrder[] = [

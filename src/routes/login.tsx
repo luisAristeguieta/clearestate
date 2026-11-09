@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ERP_ROLES, type RoleId } from "@/config/erpConfig";
+import { navigateToRoleHome } from "@/auth/permissions";
 import { useErp } from "@/context/ErpContext";
 
 export const Route = createFileRoute("/login")({
@@ -54,7 +55,7 @@ function LoginPage() {
 
   const handleRoleQuickSignIn = (roleId: RoleId) => {
     signInAsRole(roleId);
-    navigate({ to: "/dashboard" });
+    navigateToRoleHome(navigate, roleId);
   };
 
   const handleLoginSubmit = async (values: LoginFormValues) => {

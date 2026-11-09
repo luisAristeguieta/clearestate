@@ -3,6 +3,7 @@ import { ChevronsLeft, ChevronsRight, LogOut } from "lucide-react";
 
 import { BrandLogo } from "@/components/BrandLogo";
 import { Button } from "@/components/ui/button";
+import { isRouteAllowedForRole } from "@/auth/permissions";
 import { NAVIGATION_GROUPS, type NavigationItem } from "@/config/erpConfig";
 import { cn } from "@/lib/utils";
 import { usePhase3 } from "@/context/Phase3Context";
@@ -120,7 +121,14 @@ function SidebarLink({
 export function ModernSidebar({ isCollapsed, onToggleCollapse, onSignOut }: ModernSidebarProps) {
   const currentPath = useRouterState({ select: (routerState) => routerState.location.pathname });
   const { cases } = usePhase3();
-  const { requisitions } = useErp();
+  const { activeRole, requisitions } = useErp();
+
+  const visibleGroups = NAVIGATION_GROUPS.map((group) => ({
+    ...group,
+    items: group.items.filter((item) =>
+      activeRole ? isRouteAllowedForRole(activeRole.id, resolveItemPath(item)) : false,
+    ),
+  })).filter((group) => group.items.length > 0);
 
   return (
     <>
@@ -158,7 +166,7 @@ export function ModernSidebar({ isCollapsed, onToggleCollapse, onSignOut }: Mode
         </div>
 
         <nav className="flex-1 space-y-5 overflow-y-auto px-3 py-5">
-          {NAVIGATION_GROUPS.map((group) => (
+          {visibleGroups.map((group) => (
             <div key={group.title}>
               <p
                 className={cn(
