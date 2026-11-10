@@ -72,8 +72,8 @@ const BASE_AI_INSIGHTS: AiInsight[] = [
       "El rubro de infraestructura sanitaria en Proyecto París muestra un margen disponible del 14%; se recomienda reasignar fondos preventivos a las terminaciones y alumbrado de la etapa II para mitigar riesgos en la entrega.",
     metricBadge: "+14% disponible",
     badgeTone: "blue",
-    targetRoute: "/presupuestos",
-    targetLabel: "Ver presupuestos",
+    targetRoute: "/proyectos",
+    targetLabel: "Ver proyectos",
   },
   {
     id: "ins-02",
@@ -123,8 +123,8 @@ const REFRESHED_AI_INSIGHTS: AiInsight[] = [
       "La relación entre comprometido ($2.717.000) y ejecutado ($4.684.500) refleja una absorción financiera saludable del 63.3%, garantizando liquidez sin sobregiros durante el trimestre en curso.",
     metricBadge: "Ratio 63.3% óptimo",
     badgeTone: "blue",
-    targetRoute: "/presupuestos",
-    targetLabel: "Ver presupuestos",
+    targetRoute: "/proyectos",
+    targetLabel: "Ver proyectos",
   },
   {
     id: "ins-02-ref",

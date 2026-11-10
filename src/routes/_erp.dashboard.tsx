@@ -303,7 +303,7 @@ function DashboardPage() {
                     title={action.title}
                   >
                     {action.isBudget ? (
-                      <Link to="/presupuestos">
+                      <Link to="/proyectos">
                         <ArrowUpRight />
                       </Link>
                     ) : (

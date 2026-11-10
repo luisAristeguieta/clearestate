@@ -160,8 +160,7 @@ export interface NavigationItem {
   icon: LucideIcon;
   /** Built route path, or a module slug rendered by the generic module route. */
   target:
-    | { kind: "route"; path: "/dashboard" | "/proyectos" | "/presupuestos" }
-    | { kind: "module"; moduleId: string };
+    { kind: "route"; path: "/dashboard" | "/proyectos" } | { kind: "module"; moduleId: string };
   badgeCount?: number;
 }
 
@@ -187,12 +186,6 @@ export const NAVIGATION_GROUPS: NavigationGroup[] = [
         code: "P-02",
         icon: FolderKanban,
         target: { kind: "route", path: "/proyectos" },
-      },
-      {
-        label: "Presupuestos",
-        code: "P-03",
-        icon: Wallet,
-        target: { kind: "route", path: "/presupuestos" },
       },
     ],
   },

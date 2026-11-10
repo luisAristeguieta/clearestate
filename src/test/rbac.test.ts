@@ -60,7 +60,6 @@ describe("RBAC — Permisos y Redirección por Rol", () => {
     it("systemAdmin tiene acceso global de supervisión y auditoría a todos los módulos internos", () => {
       expect(isRouteAllowedForRole("systemAdmin", "/modulo/roles")).toBe(true);
       expect(isRouteAllowedForRole("systemAdmin", "/proyectos")).toBe(true);
-      expect(isRouteAllowedForRole("systemAdmin", "/presupuestos")).toBe(true);
       expect(isRouteAllowedForRole("systemAdmin", "/dashboard")).toBe(true);
       expect(isRouteAllowedForRole("systemAdmin", "/modulo/logistica")).toBe(true);
       expect(isRouteAllowedForRole("systemAdmin", "/modulo/aprobaciones")).toBe(true);
@@ -82,14 +81,12 @@ describe("RBAC — Permisos y Redirección por Rol", () => {
       expect(isRouteAllowedForRole("marketing", "/modulo/campanas/seguimiento")).toBe(true);
 
       expect(isRouteAllowedForRole("marketing", "/dashboard")).toBe(false);
-      expect(isRouteAllowedForRole("marketing", "/presupuestos")).toBe(false);
       expect(isRouteAllowedForRole("marketing", "/modulo/aprobaciones")).toBe(false);
       expect(isRouteAllowedForRole("marketing", "/modulo/logistica")).toBe(false);
     });
 
-    it("management (Gerencia) accede a tablero, presupuestos, aprobaciones, informes e IA", () => {
+    it("management (Gerencia) accede a tablero, aprobaciones, informes e IA", () => {
       expect(isRouteAllowedForRole("management", "/dashboard")).toBe(true);
-      expect(isRouteAllowedForRole("management", "/presupuestos")).toBe(true);
       expect(isRouteAllowedForRole("management", "/modulo/aprobaciones")).toBe(true);
       expect(isRouteAllowedForRole("management", "/modulo/informes")).toBe(true);
       expect(isRouteAllowedForRole("management", "/modulo/asistente-ia")).toBe(true);
@@ -104,13 +101,11 @@ describe("RBAC — Permisos y Redirección por Rol", () => {
       expect(isRouteAllowedForRole("logistics", "/modulo/requerimientos")).toBe(true);
 
       expect(isRouteAllowedForRole("logistics", "/dashboard")).toBe(false);
-      expect(isRouteAllowedForRole("logistics", "/presupuestos")).toBe(false);
       expect(isRouteAllowedForRole("logistics", "/modulo/comprobantes")).toBe(false);
     });
 
-    it("finance (Finanzas) accede a comprobantes, presupuestos e informes", () => {
+    it("finance (Finanzas) accede a comprobantes e informes", () => {
       expect(isRouteAllowedForRole("finance", "/modulo/comprobantes")).toBe(true);
-      expect(isRouteAllowedForRole("finance", "/presupuestos")).toBe(true);
       expect(isRouteAllowedForRole("finance", "/modulo/informes")).toBe(true);
 
       expect(isRouteAllowedForRole("finance", "/dashboard")).toBe(false);
@@ -124,7 +119,6 @@ describe("RBAC — Permisos y Redirección por Rol", () => {
       expect(isRouteAllowedForRole("projects", "/modulo/requerimientos")).toBe(true);
 
       expect(isRouteAllowedForRole("projects", "/dashboard")).toBe(false);
-      expect(isRouteAllowedForRole("projects", "/presupuestos")).toBe(false);
       expect(isRouteAllowedForRole("projects", "/modulo/posventa")).toBe(false);
     });
 
@@ -150,7 +144,6 @@ describe("RBAC — Permisos y Redirección por Rol", () => {
 
       expect(isRouteAllowedForRole("externalSupplier", "/dashboard")).toBe(false);
       expect(isRouteAllowedForRole("externalSupplier", "/proyectos")).toBe(false);
-      expect(isRouteAllowedForRole("externalSupplier", "/presupuestos")).toBe(false);
       expect(isRouteAllowedForRole("externalSupplier", "/modulo/logistica")).toBe(false);
       expect(isRouteAllowedForRole("externalSupplier", "/modulo/requerimientos")).toBe(false);
     });

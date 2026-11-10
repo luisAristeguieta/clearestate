@@ -12,7 +12,6 @@ export interface RolePermissionConfig {
 export const ALL_INTERNAL_ROUTES: readonly string[] = [
   "/dashboard",
   "/proyectos",
-  "/presupuestos",
   "/modulo/requerimientos",
   "/modulo/aprobaciones",
   "/modulo/logistica",
@@ -39,7 +38,6 @@ export const ROLE_PERMISSIONS: Record<RoleId, RolePermissionConfig> = {
     homeRoute: "/dashboard",
     allowedRoutes: [
       "/dashboard",
-      "/presupuestos",
       "/modulo/aprobaciones",
       "/modulo/informes",
       "/modulo/asistente-ia",
@@ -51,7 +49,7 @@ export const ROLE_PERMISSIONS: Record<RoleId, RolePermissionConfig> = {
   },
   finance: {
     homeRoute: "/modulo/comprobantes",
-    allowedRoutes: ["/modulo/comprobantes", "/presupuestos", "/modulo/informes"],
+    allowedRoutes: ["/modulo/comprobantes", "/modulo/informes"],
   },
   projects: {
     homeRoute: "/modulo/contratos",

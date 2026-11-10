@@ -54,7 +54,7 @@ function ModulePage() {
           {moduleItem.label} estará disponible pronto
         </h2>
         <p className="mt-2 max-w-md text-muted-foreground">
-          La Fase 1 cubre Tablero, Proyectos y Fases y Presupuestos.
+          La Fase 1 cubre Tablero y Proyectos y Fases.
         </p>
         <Button asChild variant="ink" className="mt-6">
           <Link to="/dashboard">
