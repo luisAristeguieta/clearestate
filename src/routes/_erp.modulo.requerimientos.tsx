@@ -204,7 +204,10 @@ function RequisitionsPage() {
     () => budgetLines.filter((line) => line.projectId === projectId),
     [budgetLines, projectId],
   );
-  const selectedLine = budgetLines.find((line) => line.id === budgetLineId) ?? null;
+  const selectedLine =
+    budgetLineId && budgetLineId !== "none"
+      ? (budgetLines.find((line) => line.id === budgetLineId) ?? null)
+      : null;
   const parsedAmount = Number(estimatedAmount) || 0;
   const overdraftCheck =
     selectedLine && parsedAmount > 0
@@ -243,7 +246,12 @@ function RequisitionsPage() {
   const handleRequisitionSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     try {
-      if (!selectedLine) throw new Error("Selecciona la partida presupuestaria.");
+      if (overdraftCheck?.isOverdrawn && overdraftJustification.trim().length < 20) {
+        throw new Error(
+          "Se detectó sobregiro presupuestario. Registra una justificación de al menos 20 caracteres.",
+        );
+      }
+
       const created = createRequisition({
         title: title.trim(),
         description: description.trim(),
@@ -251,15 +259,20 @@ function RequisitionsPage() {
         estimatedAmount: parsedAmount,
         projectId,
         phaseId: phaseId === "none" ? null : phaseId,
-        budgetLineId: selectedLine.id,
+        budgetLineId: selectedLine ? selectedLine.id : null,
         requesterArea: activeRole?.area ?? "General",
         overdraftJustification,
       });
-      toast.success(`Requerimiento ${created.code} enviado a aprobación.`);
+      toast.success(
+        selectedLine
+          ? `Requerimiento ${created.code} enviado a aprobación.`
+          : `Requerimiento ${created.code} enviado a aprobación con nueva partida presupuestaria generada.`,
+      );
       setTitle("");
       setDescription("");
       setJustification("");
       setEstimatedAmount("");
+      setBudgetLineId("");
       setOverdraftJustification("");
       setIsCreateOpen(false);
     } catch (submitError) {
@@ -615,12 +628,21 @@ function RequisitionsPage() {
             </div>
 
             <div className="space-y-2">
-              <Label>Partida presupuestaria</Label>
-              <Select value={budgetLineId} onValueChange={setBudgetLineId}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecciona la partida" />
+              <div className="flex items-center justify-between">
+                <Label htmlFor="req-budget-line">Partida presupuestaria</Label>
+                <span className="text-[11px] font-semibold text-muted-foreground/80">Opcional</span>
+              </div>
+              <Select
+                value={budgetLineId || "none"}
+                onValueChange={(val) => setBudgetLineId(val === "none" ? "" : val)}
+              >
+                <SelectTrigger id="req-budget-line" className="h-10 text-xs sm:text-sm">
+                  <SelectValue placeholder="Opcional - Seleccionar partida existente o dejar en blanco para generar nueva partida con el requerimiento" />
                 </SelectTrigger>
                 <SelectContent>
+                  <SelectItem value="none" className="text-muted-foreground italic">
+                    Sin partida asignada (se generará nueva partida con el requerimiento)
+                  </SelectItem>
                   {projectLines.map((line) => (
                     <SelectItem key={line.id} value={line.id}>
                       {line.code} · {line.name}
@@ -628,7 +650,7 @@ function RequisitionsPage() {
                   ))}
                 </SelectContent>
               </Select>
-              {selectedLine && (
+              {selectedLine ? (
                 <p className="text-xs text-muted-foreground">
                   Disponible actual:{" "}
                   <span className="font-semibold text-foreground">
@@ -636,6 +658,11 @@ function RequisitionsPage() {
                       selectedLine.approved - selectedLine.committed - selectedLine.executed,
                     )}
                   </span>
+                </p>
+              ) : (
+                <p className="text-[11px] text-muted-foreground/80">
+                  Opcional · Seleccionar partida existente o dejar en blanco para generar nueva
+                  partida con el requerimiento.
                 </p>
               )}
             </div>
@@ -839,7 +866,9 @@ function RequisitionsPage() {
                         )}
                       </div>
                     ) : (
-                      <p className="text-xs text-muted-foreground">Partida no identificada.</p>
+                      <p className="text-xs text-muted-foreground">
+                        Nueva partida presupuestaria vinculada automáticamente al requerimiento.
+                      </p>
                     )}
                   </div>
 

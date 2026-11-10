@@ -9,12 +9,14 @@ import {
 } from "react";
 
 import {
+  BUDGET_AREAS,
   SEED_BUDGET_LINES,
   SEED_PHASES,
   findRoleById,
   validateAdjustment,
   type AdjustmentType,
   type BudgetAdjustment,
+  type BudgetArea,
   type BudgetLine,
   type ErpRole,
   type ProjectFilter,
@@ -73,7 +75,7 @@ export interface NewRequisitionInput {
   estimatedAmount: number;
   projectId: Requisition["projectId"];
   phaseId: string | null;
-  budgetLineId: string;
+  budgetLineId?: string | null;
   requesterArea: string;
   overdraftJustification: string;
 }
@@ -310,14 +312,51 @@ export function ErpProvider({ children }: { children: ReactNode }) {
 
   const createRequisition = useCallback(
     (input: NewRequisitionInput): Requisition => {
-      const targetLine = state.budgetLines.find((line) => line.id === input.budgetLineId);
-      if (!targetLine) throw new Error("La partida seleccionada no existe.");
-      const validationError = validateRequisition(
-        targetLine,
-        input.estimatedAmount,
-        input.overdraftJustification,
-      );
-      if (validationError) throw new Error(validationError);
+      let finalBudgetLineId: string;
+      let newBudgetLines = state.budgetLines;
+
+      if (input.budgetLineId && input.budgetLineId !== "none") {
+        const targetLine = state.budgetLines.find((line) => line.id === input.budgetLineId);
+        if (!targetLine) throw new Error("La partida seleccionada no existe.");
+        const validationError = validateRequisition(
+          targetLine,
+          input.estimatedAmount,
+          input.overdraftJustification,
+        );
+        if (validationError) throw new Error(validationError);
+        finalBudgetLineId = targetLine.id;
+      } else {
+        // Dynamic budget line creation when no existing budget line is selected
+        const projectPrefix = input.projectId === "paris" ? "PAR" : "SAG";
+        const matchedArea: BudgetArea =
+          BUDGET_AREAS.find(
+            (area) =>
+              area.toLowerCase().includes(input.requesterArea.toLowerCase()) ||
+              input.requesterArea.toLowerCase().includes(area.toLowerCase()),
+          ) ?? "Proyectos y Obras";
+
+        const areaPrefix = matchedArea.split(" ")[0]?.toUpperCase().slice(0, 3) ?? "GEN";
+
+        const countForProject = state.budgetLines.filter(
+          (line) => line.projectId === input.projectId,
+        ).length;
+        const lineCode = `${projectPrefix}-${areaPrefix}-${String(countForProject + 1).padStart(3, "0")}`;
+
+        const dynamicLine: BudgetLine = {
+          id: generateId("bl"),
+          code: lineCode,
+          name: input.title,
+          projectId: input.projectId,
+          area: matchedArea,
+          phaseId: input.phaseId,
+          approved: input.estimatedAmount,
+          committed: 0,
+          executed: 0,
+        };
+
+        newBudgetLines = [...state.budgetLines, dynamicLine];
+        finalBudgetLineId = dynamicLine.id;
+      }
 
       const requisition: Requisition = {
         id: generateId("req"),
@@ -331,7 +370,7 @@ export function ErpProvider({ children }: { children: ReactNode }) {
         estimatedAmount: input.estimatedAmount,
         projectId: input.projectId,
         phaseId: input.phaseId,
-        budgetLineId: input.budgetLineId,
+        budgetLineId: finalBudgetLineId,
         requesterArea: input.requesterArea,
         status: "pending_approval",
         overdraftJustification: input.overdraftJustification.trim()
@@ -343,6 +382,7 @@ export function ErpProvider({ children }: { children: ReactNode }) {
       };
       setState((previous) => ({
         ...previous,
+        budgetLines: newBudgetLines,
         requisitions: [requisition, ...previous.requisitions],
       }));
       return requisition;
