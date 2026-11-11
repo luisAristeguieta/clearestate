@@ -21,12 +21,12 @@ export async function sendMessageToFidel({
   injectedDataSummary = '',
 }: SendFidelMessageParams): Promise<FidelChatResponse> {
   const apiUrl =
-    (typeof process !== 'undefined' && process.env?.NEXT_PUBLIC_FIDEL_API_URL) ||
+    (typeof process !== 'undefined' && process.env?.['NEXT_PUBLIC_FIDEL_API_URL']) ||
     (import.meta as any).env?.VITE_FIDEL_API_URL ||
     'https://fidelback-mcp.onrender.com/api';
 
   const tenantKey =
-    (typeof process !== 'undefined' && process.env?.NEXT_PUBLIC_FIDEL_TENANT_KEY) ||
+    (typeof process !== 'undefined' && process.env?.['NEXT_PUBLIC_FIDEL_TENANT_KEY']) ||
     (import.meta as any).env?.VITE_FIDEL_TENANT_KEY;
 
   if (!tenantKey) {
