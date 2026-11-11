@@ -1,4 +1,4 @@
-import { Bot, UserRound, Copy } from "lucide-react";
+import { Bot, UserRound, Copy, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
 import type { ChatMessage } from "./types";
 import { Button } from "@/components/ui/button";
@@ -9,6 +9,7 @@ interface AssistantMessageItemProps {
 
 export function AssistantMessageItem({ message }: AssistantMessageItemProps) {
   const isUser = message.role === "user";
+  const isSystem = message.role === "system";
 
   const handleCopyText = () => {
     try {
@@ -18,6 +19,26 @@ export function AssistantMessageItem({ message }: AssistantMessageItemProps) {
       toast.error("No se pudo copiar el contenido.");
     }
   };
+
+  if (isSystem) {
+    return (
+      <article
+        className="flex items-start gap-3 rounded-2xl border border-red-200 bg-red-50/70 p-4 text-red-800 shadow-xs"
+        aria-label="Mensaje del sistema"
+      >
+        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-red-100 text-red-600 border border-red-200">
+          <AlertCircle className="h-5 w-5" />
+        </div>
+        <div className="min-w-0 flex-1 space-y-1">
+          <div className="flex items-center justify-between gap-2 border-b border-red-200/60 pb-1.5">
+            <span className="text-xs font-bold text-red-900">Sistema / Error</span>
+            <span className="text-[11px] text-red-500">{message.time}</span>
+          </div>
+          <p className="text-xs md:text-sm leading-relaxed whitespace-pre-wrap">{message.text}</p>
+        </div>
+      </article>
+    );
+  }
 
   if (isUser) {
     return (
